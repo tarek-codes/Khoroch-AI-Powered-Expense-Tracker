@@ -1,0 +1,341 @@
+@import "tailwindcss";
+
+/* ─── Premium Modern SaaS Design System (High-Contrast Vivid Typography) ─── */
+@layer base {
+  :root {
+    /* Page Canvas & Neutral Surfaces */
+    --bg-page: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-raised: #ffffff;
+    --bg-surface-sunken: #f1f5f9;
+    --bg-surface-hover: #f8fafc;
+
+    /* High-Contrast Crisp Typography (NO Dull Grey Texts) */
+    --text-primary: #090d16;
+    --text-secondary: #1e293b;
+    --text-muted: #334155;
+    --text-on-accent: #ffffff;
+
+    /* Hairline Subtle Neutral Borders */
+    --border-primary: rgba(203, 213, 225, 0.8);
+    --border-subtle: rgba(226, 232, 240, 0.85);
+
+    /* Purposeful Emerald Accent (Brand & Active Elements) */
+    --accent: #059669;
+    --accent-hover: #047857;
+    --accent-subtle: #ecfdf5;
+    --accent-text: #047857;
+    --accent-shadow: rgba(5, 150, 105, 0.22);
+
+    /* Semantic Status */
+    --success: #059669;
+    --success-subtle: #ecfdf5;
+    --success-text: #047857;
+    --info: #0284c7;
+    --info-subtle: #f0f9ff;
+    --warning: #d97706;
+    --warning-subtle: #fffbeb;
+    --destructive: #dc2626;
+    --destructive-subtle: #fef2f2;
+
+    /* Refined Form Controls */
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
+    --input-border-focus: #059669;
+    --input-text: #090d16;
+    --input-placeholder: #475569;
+
+    /* Scrollbar */
+    --scrollbar-thumb: rgba(100, 116, 139, 0.4);
+
+    /* Modal Overlay */
+    --overlay: rgba(15, 23, 42, 0.6);
+
+    /* Clean Chart Tokens */
+    --chart-axis: #334155;
+    --chart-tooltip-bg: #ffffff;
+    --chart-tooltip-border: #cbd5e1;
+    --chart-tooltip-text: #090d16;
+
+    /* Multi-layered Ambient Shadows */
+    --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 8px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
+    --shadow-lg: 0 12px 20px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+
+    /* Modern Radii */
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+  }
+
+  .dark {
+    /* Deep Obsidian Canvas & Refined Dark Surfaces */
+    --bg-page: #09090b;
+    --bg-surface: #111114;
+    --bg-surface-raised: #18181c;
+    --bg-surface-sunken: #0c0c0f;
+    --bg-surface-hover: #1c1c22;
+
+    /* Crisp Vivid Dark Typography (100% White/Bright Slates, NO Invisible Greys) */
+    --text-primary: #ffffff;
+    --text-secondary: #f1f5f9;
+    --text-muted: #cbd5e1;
+    --text-on-accent: #ffffff;
+
+    /* Hairline Dark Borders */
+    --border-primary: rgba(255, 255, 255, 0.12);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+
+    /* Crisp Emerald Dark Accent */
+    --accent: #10b981;
+    --accent-hover: #059669;
+    --accent-subtle: rgba(16, 185, 129, 0.16);
+    --accent-text: #34d399;
+    --accent-shadow: rgba(16, 185, 129, 0.28);
+
+    /* Semantic Status */
+    --success: #10b981;
+    --success-subtle: rgba(16, 185, 129, 0.16);
+    --success-text: #34d399;
+    --info: #38bdf8;
+    --info-subtle: rgba(56, 189, 248, 0.16);
+    --warning: #f59e0b;
+    --warning-subtle: rgba(245, 158, 11, 0.16);
+    --destructive: #f87171;
+    --destructive-subtle: rgba(239, 68, 68, 0.16);
+
+    /* Form Controls */
+    --input-bg: #121215;
+    --input-border: rgba(255, 255, 255, 0.15);
+    --input-border-focus: #10b981;
+    --input-text: #ffffff;
+    --input-placeholder: #94a3b8;
+
+    /* Scrollbar */
+    --scrollbar-thumb: rgba(255, 255, 255, 0.25);
+
+    /* Modal Overlay */
+    --overlay: rgba(0, 0, 0, 0.8);
+
+    /* Chart Tokens */
+    --chart-axis: #cbd5e1;
+    --chart-tooltip-bg: #18181c;
+    --chart-tooltip-border: rgba(255, 255, 255, 0.15);
+    --chart-tooltip-text: #ffffff;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.45);
+    --shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.55), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 12px 20px -3px rgba(0, 0, 0, 0.65), 0 4px 6px -4px rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* ─── Base Styles ─── */
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans), var(--font-bangla), system-ui, sans-serif;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+/* ─── Reusable Surface Classes ─── */
+.surface-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.surface-card:hover {
+  border-color: rgba(16, 185, 129, 0.25);
+  box-shadow: var(--shadow-md);
+}
+
+.surface-raised {
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.surface-sunken {
+  background-color: var(--bg-surface-sunken);
+  border-radius: var(--radius-sm);
+}
+
+.surface-glass {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-primary);
+}
+
+.dark .surface-glass {
+  background-color: rgba(17, 17, 20, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-primary);
+}
+
+/* ─── Form Input Base ─── */
+.input-base {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.25rem;
+  color: var(--input-text);
+  outline: none;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+.input-base::placeholder {
+  color: var(--input-placeholder);
+}
+.input-base:focus {
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+/* ─── Buttons ─── */
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.15rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px var(--accent-shadow);
+}
+.btn-accent:hover {
+  background-color: var(--accent-hover);
+  box-shadow: 0 6px 16px var(--accent-shadow);
+  transform: translateY(-1px);
+}
+.btn-accent:active {
+  transform: scale(0.98);
+}
+.btn-accent:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.15rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+  transform: translateY(-1px);
+}
+
+/* ─── Radix Dialog Animations ─── */
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes contentSlideIn {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ─── Radix Tabs ─── */
+.radix-tabs-list {
+  display: flex;
+  gap: 0.375rem;
+  padding: 0.375rem;
+  background-color: var(--bg-surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+}
+.radix-tabs-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.775rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+}
+.radix-tabs-trigger[data-state="active"] {
+  background-color: var(--accent);
+  color: #ffffff !important;
+  box-shadow: var(--shadow-sm);
+}
+.radix-tabs-trigger[data-state="active"] svg {
+  color: #ffffff !important;
+}
+.radix-tabs-trigger:hover:not([data-state="active"]) {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* ─── Text Selection ─── */
+::selection {
+  background: var(--accent);
+  color: white;
+}
+
+/* ─── Ultra-Readable Modern Digits (0-9) & Currency Typography ─── */
+.tabular-nums,
+[class*="tabular-nums"],
+[style*="monospace"],
+[style*="font-geist-mono"] {
+  font-family: var(--font-digits), var(--font-geist-mono), 'Outfit', 'Inter', -apple-system, sans-serif !important;
+  font-variant-numeric: tabular-nums lining-nums !important;
+  font-feature-settings: "tnum" 1, "lnum" 1, "cv01" 1, "zero" 1 !important;
+  letter-spacing: -0.015em;
+}
+
+input[type="number"],
+input[type="datetime-local"],
+input[type="date"] {
+  font-family: var(--font-digits), var(--font-sans), sans-serif;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
