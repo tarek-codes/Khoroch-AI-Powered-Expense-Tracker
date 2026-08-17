@@ -4,6 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useSpring } from 'motion/react';
 import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Sector,
+} from 'recharts';
+import {
   Microphone,
   Receipt,
   ArrowRight,
@@ -36,6 +44,9 @@ export default function LandingPage() {
   // Interactive Live Budget Slider
   const [interactiveBudget, setInteractiveBudget] = useState(35000);
   const [interactiveSpent, setInteractiveSpent] = useState(14850);
+
+  // Category Pie Chart Hover State
+  const [activePieIndex, setActivePieIndex] = useState(0);
 
   const voiceDemos = {
     bn: {
@@ -533,11 +544,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── 7. Spending Insights ─── */}
+      {/* ─── 7. Spending Insights with Interactive Pie Chart ─── */}
       <section id="insights" className="w-full bg-white py-28 border-b border-neutral-200/50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
           <div className="max-w-xl space-y-2">
-            <h3 className="text-3xl font-bold tracking-tight text-neutral-900">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#179B51]">
+              Category Analytics
+            </span>
+            <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
               {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
             </h3>
             <p className="text-base text-neutral-500">
@@ -547,69 +561,126 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-medium text-neutral-700">
-                <span>Food & Dining</span>
-                <span className="font-mono font-semibold">৳ 4,200 (35%)</span>
-              </div>
-              <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: '65%' }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
-                  className="h-full bg-[#179B51] rounded-full"
-                />
+          {/* Interactive Pie Chart Showcase */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-[#FAFAF8] p-6 sm:p-10 rounded-3xl border border-neutral-200/80 shadow-2xs">
+            {/* Left Column: Recharts Pie Chart with Hover Animation */}
+            <div className="lg:col-span-6 h-72 sm:h-80 relative flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-neutral-900 text-white px-3.5 py-2 rounded-xl text-xs shadow-lg border border-neutral-800 space-y-0.5">
+                            <p className="font-semibold">{locale === 'bn' ? data.nameBn : data.name}</p>
+                            <p className="font-mono text-[#FBC02B] font-bold">
+                              ৳ {data.value.toLocaleString()} ({data.percentage}%)
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Pie
+                    data={[
+                      { name: 'Food & Dining', nameBn: 'খাবার ও রেস্তোরাঁ', value: 4200, percentage: 35, color: '#179B51' },
+                      { name: 'Utility Bills', nameBn: 'ইউটিলিটি ও বিল', value: 3200, percentage: 26, color: '#148344' },
+                      { name: 'Groceries & Shopping', nameBn: 'বাজার ও কেনাকাটা', value: 2300, percentage: 19, color: '#FBC02B' },
+                      { name: 'Transportation', nameBn: 'যাতায়াত ও ভ্রমণ', value: 1850, percentage: 15, color: '#171717' },
+                      { name: 'Others', nameBn: 'অন্যান্য', value: 600, percentage: 5, color: '#9CA3AF' },
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={105}
+                    paddingAngle={4}
+                    dataKey="value"
+                    activeIndex={activePieIndex}
+                    activeShape={(props: any) => {
+                      const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+                      return (
+                        <g>
+                          <Sector
+                            cx={cx}
+                            cy={cy}
+                            innerRadius={innerRadius - 4}
+                            outerRadius={outerRadius + 8}
+                            startAngle={startAngle}
+                            endAngle={endAngle}
+                            fill={fill}
+                            className="transition-all duration-300 drop-shadow-md"
+                          />
+                        </g>
+                      );
+                    }}
+                    onMouseEnter={(_, index) => setActivePieIndex(index)}
+                  >
+                    {[
+                      { color: '#179B51' },
+                      { color: '#148344' },
+                      { color: '#FBC02B' },
+                      { color: '#171717' },
+                      { color: '#9CA3AF' },
+                    ].map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.color}
+                        className="cursor-pointer outline-none transition-all duration-300"
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+
+              {/* Centered Donut Badge */}
+              <div className="absolute flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-xs text-neutral-400 font-medium">Total Tracked</span>
+                <span className="text-xl sm:text-2xl font-black text-neutral-900 font-mono">৳ 12,150</span>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-medium text-neutral-700">
-                <span>Utility Bills</span>
-                <span className="font-mono font-semibold">৳ 3,200 (26%)</span>
-              </div>
-              <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: '48%' }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.1 }}
-                  className="h-full bg-[#179B51] rounded-full"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-medium text-neutral-700">
-                <span>Groceries & Shopping</span>
-                <span className="font-mono font-semibold">৳ 2,300 (19%)</span>
-              </div>
-              <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: '35%' }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="h-full bg-[#FBC02B] rounded-full"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-medium text-neutral-700">
-                <span>Transportation</span>
-                <span className="font-mono font-semibold">৳ 1,850 (15%)</span>
-              </div>
-              <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: '28%' }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                  className="h-full bg-neutral-800 rounded-full"
-                />
-              </div>
+            {/* Right Column: Interactive Category Legend Cards */}
+            <div className="lg:col-span-6 space-y-2.5">
+              {[
+                { name: 'Food & Dining', nameBn: 'খাবার ও রেস্তোরাঁ', value: 4200, percentage: 35, color: '#179B51' },
+                { name: 'Utility Bills', nameBn: 'ইউটিলিটি ও বিল', value: 3200, percentage: 26, color: '#148344' },
+                { name: 'Groceries & Shopping', nameBn: 'বাজার ও কেনাকাটা', value: 2300, percentage: 19, color: '#FBC02B' },
+                { name: 'Transportation', nameBn: 'যাতায়াত ও ভ্রমণ', value: 1850, percentage: 15, color: '#171717' },
+                { name: 'Others', nameBn: 'অন্যান্য', value: 600, percentage: 5, color: '#9CA3AF' },
+              ].map((item, idx) => {
+                const isActive = activePieIndex === idx;
+                return (
+                  <motion.div
+                    key={idx}
+                    onMouseEnter={() => setActivePieIndex(idx)}
+                    whileHover={{ scale: 1.01 }}
+                    className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-white border-neutral-300 shadow-xs'
+                        : 'bg-white/60 border-neutral-200/60 hover:bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="w-3 h-3 rounded-full shrink-0 transition-transform"
+                        style={{
+                          backgroundColor: item.color,
+                          transform: isActive ? 'scale(1.25)' : 'scale(1)',
+                        }}
+                      />
+                      <span className="text-xs sm:text-sm font-semibold text-neutral-800">
+                        {locale === 'bn' ? item.nameBn : item.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 font-mono text-xs sm:text-sm">
+                      <span className="font-bold text-neutral-900">৳ {item.value.toLocaleString()}</span>
+                      <span className="text-neutral-400 font-medium text-xs">({item.percentage}%)</span>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </div>
