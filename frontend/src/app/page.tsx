@@ -161,101 +161,78 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ─── 1. Hero Section (Minimalist Layout) ─── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-28 lg:pt-24 lg:pb-36">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left Column: Minimal Typography */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7 space-y-8"
-          >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-neutral-950 flex flex-wrap items-center gap-x-3 gap-y-2">
-              {locale === 'bn' ? (
-                <>
-                  <span>দৈনন্দিন</span>
-                  <img
-                    src="/logo-smooth-rounded.svg"
-                    alt="খরচ"
-                    className="inline-block h-10 sm:h-12 lg:h-14 w-auto object-contain align-middle translate-y-[2px]"
-                  />
-                  <span>-এর ওপর সম্পূর্ণ</span>
-                  <span className="text-[#179B51] font-extrabold">নিয়ন্ত্রণ</span>
-                  <span>নিন।</span>
-                </>
-              ) : (
-                <>
-                  Take control of your everyday{' '}
-                  <span className="text-[#179B51] font-extrabold">spending</span>.
-                </>
-              )}
-            </h1>
+      {/* ─── 1. Hero Section (Centered Minimalist Layout) ─── */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-28 lg:pt-28 lg:pb-36 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-8 flex flex-col items-center"
+        >
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.15] text-neutral-950 flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-3">
+            {locale === 'bn' ? (
+              <>
+                <span>দৈনন্দিন</span>
+                <img
+                  src="/logo-smooth-rounded.svg"
+                  alt="খরচ"
+                  className="inline-block h-12 sm:h-16 lg:h-20 w-auto object-contain align-middle translate-y-[2px]"
+                />
+                <span>-এর ওপর সম্পূর্ণ</span>
+                <span className="text-[#179B51] font-extrabold">নিয়ন্ত্রণ</span>
+                <span>নিন।</span>
+              </>
+            ) : (
+              <>
+                <span>Take control of your everyday</span>
+                <span className="text-[#179B51] font-extrabold">spending</span>.
+              </>
+            )}
+          </h1>
 
-            <p className="text-base sm:text-lg text-neutral-500 font-normal leading-relaxed max-w-[48ch]">
-              {locale === 'bn'
-                ? 'বাংলা বা ইংরেজিতে কথা বলে খরচ এন্ট্রি করুন, রসিদ স্ক্যান করুন এবং মাসিক বাজেট রাখুন সম্পূর্ণ নিয়ন্ত্রণে।'
-                : 'Track expenses with natural voice, scan paper receipts with vision AI, and understand your cashflow in real time.'}
-            </p>
+          <p className="text-base sm:text-lg text-neutral-500 font-normal leading-relaxed max-w-[54ch] mx-auto">
+            {locale === 'bn'
+              ? 'বাংলা বা ইংরেজিতে কথা বলে খরচ এন্ট্রি করুন, রসিদ স্ক্যান করুন এবং মাসিক বাজেট রাখুন সম্পূর্ণ নিয়ন্ত্রণে।'
+              : 'Track expenses with natural voice, scan paper receipts with vision AI, and understand your cashflow in real time.'}
+          </p>
 
-            {/* Minimalist CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-1">
-              <Link
-                href="/register"
-                className="px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#179B51] hover:bg-[#148344] transition-all text-center flex items-center justify-center gap-2 group shadow-xs"
-              >
-                <span>{locale === 'bn' ? 'বিনামূল্যে শুরু করুন' : 'Get Started Free'}</span>
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-              </Link>
-
-              <a
-                href="#voice"
-                className="px-7 py-3.5 rounded-full text-base font-medium text-neutral-700 bg-white border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all text-center flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
-              >
-                <Microphone size={18} className="text-[#179B51]" />
-                <span>{locale === 'bn' ? 'কীভাবে ভয়েস কাজ করে' : 'Explore Voice AI'}</span>
-              </a>
-            </div>
-
-            {/* Minimal Metric Strip */}
-            <div className="flex items-center gap-8 sm:gap-12 pt-8 border-t border-neutral-200/60">
-              <div>
-                <p className="font-mono text-2xl font-bold text-neutral-900">৳ 0</p>
-                <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? '১০০% ফ্রি' : 'Platform Fee'}</p>
-              </div>
-              <div className="w-px h-7 bg-neutral-200" />
-              <div>
-                <p className="font-mono text-2xl font-bold text-[#179B51]">&lt; 300ms</p>
-                <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? 'এআই স্পিড' : 'AI Parse Speed'}</p>
-              </div>
-              <div className="w-px h-7 bg-neutral-200" />
-              <div>
-                <p className="font-mono text-2xl font-bold text-neutral-900">100%</p>
-                <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? 'এনক্রিপ্টেড' : 'Private & Secure'}</p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Column: Hero Brand Showcase with Much Larger Logo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 flex flex-col items-center justify-center text-center p-6 sm:p-10"
-          >
-            <motion.div
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-              className="cursor-pointer"
+          {/* Minimalist CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+            <Link
+              href="/register"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#179B51] hover:bg-[#148344] transition-all text-center flex items-center justify-center gap-2 group shadow-xs"
             >
-              <img
-                src="/logo-smooth-rounded.svg"
-                alt="খরচ"
-                className="h-48 sm:h-64 md:h-76 w-auto object-contain transition-transform"
-              />
-            </motion.div>
-          </motion.div>
-        </div>
+              <span>{locale === 'bn' ? 'বিনামূল্যে শুরু করুন' : 'Get Started Free'}</span>
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            </Link>
+
+            <a
+              href="#voice"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-base font-medium text-neutral-700 bg-white border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all text-center flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+            >
+              <Microphone size={18} className="text-[#179B51]" />
+              <span>{locale === 'bn' ? 'কীভাবে ভয়েস কাজ করে' : 'Explore Voice AI'}</span>
+            </a>
+          </div>
+
+          {/* Minimal Metric Strip */}
+          <div className="flex items-center justify-center gap-8 sm:gap-14 pt-8 border-t border-neutral-200/60 max-w-lg mx-auto w-full">
+            <div>
+              <p className="font-mono text-2xl font-bold text-neutral-900">৳ 0</p>
+              <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? '১০০% ফ্রি' : 'Platform Fee'}</p>
+            </div>
+            <div className="w-px h-7 bg-neutral-200" />
+            <div>
+              <p className="font-mono text-2xl font-bold text-[#179B51]">&lt; 300ms</p>
+              <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? 'এআই স্পিড' : 'AI Parse Speed'}</p>
+            </div>
+            <div className="w-px h-7 bg-neutral-200" />
+            <div>
+              <p className="font-mono text-2xl font-bold text-neutral-900">100%</p>
+              <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? 'এনক্রিপ্টেড' : 'Private & Secure'}</p>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* ─── 2. Minimal Scrolling Ticker ─── */}
