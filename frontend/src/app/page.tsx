@@ -1,33 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useSpring, useTransform, AnimatePresence } from 'motion/react';
+import { motion, useScroll, useSpring, AnimatePresence } from 'motion/react';
 import {
   Microphone,
   Receipt,
   ArrowRight,
-  Check,
   Globe,
   Plus,
-  Sparkle,
-  Lightning,
-  Buildings,
   Wallet,
-  Clock,
-  ChartPie,
-  CreditCard,
   CheckCircle,
-  Copy,
-  ArrowsLeftRight,
   TrendUp,
-  Scan,
-  ShieldCheck,
   Sliders,
-  CaretRight,
-  ArrowDown,
-  Soundwave,
-  DeviceMobile,
 } from '@phosphor-icons/react';
 import { useAppStore } from '@/store/appStore';
 import { translations, toBengaliNumber } from '@/lib/i18n';
@@ -51,11 +36,11 @@ export default function LandingPage() {
   const [copiedInstall, setCopiedInstall] = useState(false);
   const [activeVoiceTab, setActiveVoiceTab] = useState<'bn' | 'mixed' | 'en'>('bn');
 
-  // Interactive Live Budget Slider in Feature Section
+  // Interactive Live Budget Slider
   const [interactiveBudget, setInteractiveBudget] = useState(35000);
   const [interactiveSpent, setInteractiveSpent] = useState(14850);
 
-  // Live Hero Transaction Stream State
+  // Live Hero Transaction Stream
   const [heroExpenses, setHeroExpenses] = useState([
     { id: 1, name: 'Lunch & Cafe', category: 'Food & Dining', amount: 350, method: 'bKash', time: '12:30 PM' },
     { id: 2, name: 'Uber Ride', category: 'Transportation', amount: 420, method: 'Nagad', time: '09:15 AM' },
@@ -113,6 +98,8 @@ export default function LandingPage() {
     setTimeout(() => setCopiedInstall(false), 2000);
   };
 
+  const remainingBalance = 30000 - heroExpenses.reduce((s, e) => s + e.amount, 9000);
+
   return (
     <div
       className="min-h-screen text-[#171717] selection:bg-[#179B51] selection:text-white relative overflow-x-hidden"
@@ -121,27 +108,26 @@ export default function LandingPage() {
         fontFamily: 'var(--font-jakarta), var(--font-sans), Inter, sans-serif',
       }}
     >
-      {/* ─── Scroll Progress Bar at Top ─── */}
+      {/* ─── Scroll Progress Bar ─── */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-[#179B51] origin-left z-[100]"
         style={{ scaleX }}
       />
 
-      {/* ─── Navigation Bar ─── */}
-      <header className="w-full bg-[#FAFAF7]/85 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-200/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
+      {/* ─── Navigation Bar with Prominent Logo ─── */}
+      <header className="w-full bg-[#FAFAF7]/90 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-200/70">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+          {/* Prominent Khoroch Logo */}
+          <Link href="/" className="flex items-center group py-2">
             <img
               src="/logo-smooth-rounded.svg"
-              alt="খরচ"
-              className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
+              alt="খরচ — Khoroch"
+              className="h-11 sm:h-12 w-auto object-contain transition-transform group-hover:scale-103"
             />
-            <span className="hidden sm:inline-block font-mono text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FBC02B]/20 text-[#92400e]">
-              Fintech
-            </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-[#171717]">
+          {/* Clean Navigation Links */}
+          <nav className="hidden md:flex items-center gap-9 text-[15px] font-semibold text-[#171717]">
             <a href="#voice" className="hover:text-[#179B51] transition-colors">
               {locale === 'bn' ? 'ভয়েস এআই' : 'Voice AI'}
             </a>
@@ -159,19 +145,21 @@ export default function LandingPage() {
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          {/* Action Area */}
+          <div className="flex items-center gap-3.5">
+            {/* Language Switch */}
             <button
               onClick={() => setLocale(locale === 'en' ? 'bn' : 'en')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-neutral-300 bg-white shadow-2xs hover:border-[#179B51] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-neutral-300 bg-white shadow-2xs hover:border-[#179B51] transition-all cursor-pointer"
             >
-              <Globe size={14} weight="bold" className="text-[#179B51]" />
-              <span>{locale === 'en' ? 'বাংলা' : 'EN'}</span>
+              <Globe size={15} weight="bold" className="text-[#179B51]" />
+              <span>{locale === 'en' ? 'বাংলা' : 'English'}</span>
             </button>
 
             {isHydrated && user ? (
               <Link
                 href="/dashboard"
-                className="px-4.5 py-2 rounded-xl text-xs font-bold text-white bg-[#179B51] shadow-xs hover:bg-[#148344] hover:shadow-md transition-all flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#179B51] shadow-xs hover:bg-[#148344] hover:shadow-md transition-all flex items-center gap-1.5"
               >
                 <span>{locale === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}</span>
                 <ArrowRight size={13} weight="bold" />
@@ -180,13 +168,13 @@ export default function LandingPage() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="px-3 py-1.5 text-xs font-bold text-[#171717] hover:text-[#179B51] transition-colors"
+                  className="px-3.5 py-2 text-xs font-bold text-[#171717] hover:text-[#179B51] transition-colors"
                 >
                   {t.login}
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4.5 py-2 rounded-xl text-xs font-bold text-white bg-[#179B51] shadow-xs hover:bg-[#148344] hover:shadow-md transition-all flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#179B51] shadow-xs hover:bg-[#148344] hover:shadow-md transition-all flex items-center gap-1.5"
                 >
                   <span>{locale === 'bn' ? 'শুরু করুন' : 'Get Started'}</span>
                   <ArrowRight size={13} weight="bold" />
@@ -197,27 +185,17 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ─── Hero Section: Open Asymmetric Layout ─── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-20 lg:pt-20 lg:pb-28">
+      {/* ─── Hero Section with Generous Spacing ─── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-24 lg:pt-24 lg:pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left Hero Content */}
+          {/* Left Column */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7 space-y-6"
+            className="lg:col-span-7 space-y-7"
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#FBC02B]/20 rounded-full text-xs font-bold text-[#92400e]"
-            >
-              <Sparkle size={14} weight="fill" className="text-[#d97706]" />
-              <span>{locale === 'bn' ? 'বাংলা ও ইংরেজি এআই খরচ ট্র্যাকার' : 'Bilingual Personal Expense Platform'}</span>
-            </motion.div>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-[#171717]">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.06] text-[#171717]">
               {locale === 'bn' ? (
                 <>
                   দৈনন্দিন খরচের ওপর সম্পূর্ণ{' '}
@@ -242,12 +220,12 @@ export default function LandingPage() {
                 : 'Track expenses with natural voice, scan paper receipts with vision AI, and understand your cashflow in real time.'}
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+            {/* Hero CTAs */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-1">
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Link
                   href="/register"
-                  className="px-7 py-3.5 rounded-xl text-base font-bold text-white bg-[#179B51] shadow-sm hover:bg-[#148344] hover:shadow-md transition-all text-center flex items-center justify-center gap-2 group"
+                  className="px-8 py-4 rounded-xl text-base font-bold text-white bg-[#179B51] shadow-md hover:bg-[#148344] hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
                 >
                   <span>{locale === 'bn' ? 'বিনামূল্যে শুরু করুন' : 'Get Started Free'}</span>
                   <ArrowRight size={16} weight="bold" className="transition-transform group-hover:translate-x-1" />
@@ -257,7 +235,7 @@ export default function LandingPage() {
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <button
                   onClick={() => setIsVoiceModalOpen(true)}
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-xl text-base font-bold text-[#171717] bg-white border border-neutral-300 shadow-2xs hover:border-[#179B51] hover:bg-neutral-50 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto px-7 py-4 rounded-xl text-base font-bold text-[#171717] bg-white border border-neutral-300 shadow-2xs hover:border-[#179B51] hover:bg-neutral-50 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
                   <Microphone size={18} weight="fill" className="text-red-500" />
@@ -266,7 +244,7 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
-            {/* Fluid Metric Strip (No boxed cards, open layout) */}
+            {/* Fluid Open Stat Strip */}
             <div className="flex items-center gap-8 sm:gap-12 pt-6 border-t border-neutral-200/80">
               <div>
                 <p className="font-mono text-2xl font-black text-[#179B51]">৳ 0</p>
@@ -285,16 +263,13 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* Right Hero Product Stage (Floating Open Showcase) */}
+          {/* Right Column Product Stage */}
           <motion.div
             initial={{ opacity: 0, x: 25 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-5 relative"
           >
-            {/* Ambient Brand Glow */}
-            <div className="absolute -inset-4 bg-gradient-to-tr from-[#179B51]/10 via-[#FBC02B]/10 to-transparent rounded-3xl blur-2xl -z-10" />
-
             <div className="bg-white/95 backdrop-blur-xl border border-neutral-200/90 rounded-3xl p-6 sm:p-7 shadow-xl space-y-5">
               <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                 <div className="flex items-center gap-2.5">
@@ -306,12 +281,12 @@ export default function LandingPage() {
                 </span>
               </div>
 
-              {/* Balance Counter with Spring animation */}
+              {/* Balance Counter */}
               <div className="space-y-1">
                 <p className="text-xs font-semibold text-[#777777] uppercase tracking-wider">Remaining Balance</p>
                 <div className="flex items-baseline justify-between">
                   <p className="text-3xl sm:text-4xl font-black text-[#171717] font-mono tracking-tight">
-                    ৳ {(30000 - heroExpenses.reduce((s, e) => s + e.amount, 9000)).toLocaleString()}
+                    ৳ {remainingBalance.toLocaleString()}
                   </p>
                   <span className="text-xs font-bold text-[#179B51] bg-[#179B51]/10 px-2.5 py-1 rounded-full flex items-center gap-1">
                     <TrendUp size={12} weight="bold" />
@@ -416,21 +391,12 @@ export default function LandingPage() {
         </motion.div>
       </div>
 
-      {/* ─── Problem Statement: Open Editorial Layout ─── */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-24 text-center space-y-5">
-        <motion.span
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="font-mono text-xs font-bold uppercase tracking-wider text-[#179B51] bg-[#179B51]/10 px-3 py-1 rounded-full inline-block"
-        >
-          Daily Financial Reality
-        </motion.span>
+      {/* ─── Editorial Problem Statement ─── */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-28 text-center space-y-6">
         <motion.h2
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
           className="text-3xl sm:text-5xl font-black tracking-tight text-[#171717]"
         >
           {locale === 'bn' ? (
@@ -449,7 +415,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.1 }}
           className="text-base sm:text-lg text-[#666666] font-normal leading-relaxed max-w-[62ch] mx-auto"
         >
           {locale === 'bn'
@@ -458,7 +424,7 @@ export default function LandingPage() {
         </motion.p>
       </section>
 
-      {/* ─── Feature 1: Spoken Voice AI (Open Flowing Canvas) ─── */}
+      {/* ─── Feature 1: Spoken Voice AI ─── */}
       <section id="voice" className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <motion.div
@@ -561,7 +527,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Feature 2: Receipt Vision OCR (Open Split) ─── */}
+      {/* ─── Feature 2: Receipt Vision OCR ─── */}
       <section id="vision" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 border-t border-neutral-200/60">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <motion.div
@@ -771,12 +737,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Spending Insights: Open Typographic Layout ─── */}
+      {/* ─── Spending Insights ─── */}
       <section id="insights" className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
         <div className="max-w-2xl mb-12 space-y-3">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#179B51] bg-[#179B51]/10 px-3 py-1 rounded-full inline-block">
-            Analytics & Patterns
-          </span>
           <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-[#171717]">
             {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
           </h3>
@@ -854,7 +817,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── How It Works: Connected Editorial Timeline (No Repetitive Box Cards) ─── */}
+      {/* ─── How It Works ─── */}
       <section id="how-it-works" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 border-t border-neutral-200/60">
         <div className="max-w-2xl mb-14 space-y-2">
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[#171717]">
@@ -977,11 +940,11 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Clean Dark Footer ─── */}
-      <footer className="w-full bg-[#171717] text-[#FAFAF7] py-12 border-t border-neutral-800">
+      <footer className="w-full bg-[#171717] text-[#FAFAF7] py-14 border-t border-neutral-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-2">
-              <img src="/logo-smooth-rounded.svg" alt="খরচ" className="h-7 w-auto object-contain bg-white rounded p-0.5" />
+              <img src="/logo-smooth-rounded.svg" alt="খরচ" className="h-8 w-auto object-contain bg-white rounded p-0.5" />
               <span className="font-bold text-base text-[#FAFAF7]">Khoroch</span>
             </div>
             <p className="text-xs text-[#999999]">
