@@ -45,8 +45,8 @@ export default function LandingPage() {
   const [interactiveBudget, setInteractiveBudget] = useState(35000);
   const [interactiveSpent, setInteractiveSpent] = useState(14850);
 
-  // Category Pie Chart Hover State
-  const [activePieIndex, setActivePieIndex] = useState(0);
+  // Category Pie Chart Hover State (null when not hovered)
+  const [activePieIndex, setActivePieIndex] = useState<number | null>(null);
 
   const voiceDemos = {
     bn: {
@@ -546,48 +546,54 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── 7. Spending Insights with Interactive Pie Chart (Rich Golden Amber Background) ─── */}
-      <section id="insights" className="relative z-10 w-full bg-[#FAF3E1] py-28 border-b border-[#EADBBD]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      {/* ─── 7. Spending Insights with Interactive Pie Chart (Compact & Fixed Hover Reset) ─── */}
+      <section id="insights" className="relative z-10 w-full bg-[#FAF3E1] py-20 border-b border-[#EADBBD]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
 
           {/* Header */}
-          <div className="flex flex-col items-center text-center mb-16 space-y-3">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#B45309] bg-[#F5E6C4] px-4 py-1.5 rounded-full border border-[#DFC48C]">
+          <div className="flex flex-col items-center text-center mb-10 space-y-2">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-widest text-[#B45309] bg-[#F5E6C4] px-3.5 py-1 rounded-full border border-[#DFC48C]">
               Category Analytics
             </span>
-            <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
+            <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
               {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
             </h3>
-            <p className="text-base text-neutral-700 max-w-md">
+            <p className="text-sm text-neutral-600 max-w-sm">
               {locale === 'bn'
                 ? 'ক্যাটাগরি অনুযায়ী খরচের বিশ্লেষণ দেখে বুঝে নিন কোন খাতে বেশি খরচ হচ্ছে।'
                 : 'Hover any slice or category to explore your spending breakdown.'}
             </p>
           </div>
 
-          {/* Chart + Legend side by side — NO BOXES */}
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-16">
+          {/* Chart + Legend side by side — Compact & Centered */}
+          <div
+            className="flex flex-col md:flex-row items-center justify-center gap-10 lg:gap-14"
+            onMouseLeave={() => setActivePieIndex(null)}
+          >
 
             {/* Donut Chart */}
-            <div className="relative w-72 h-72 sm:w-80 sm:h-80 shrink-0">
+            <div
+              className="relative w-64 h-64 sm:w-72 sm:h-72 shrink-0"
+              onMouseLeave={() => setActivePieIndex(null)}
+            >
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+                <PieChart onMouseLeave={() => setActivePieIndex(null)}>
                   <Tooltip
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
                         return (
                           <div style={{
-                            background: 'rgba(10,10,10,0.88)',
-                            backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            borderRadius: '12px',
-                            padding: '10px 14px',
+                            background: 'rgba(10,10,10,0.92)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '10px',
+                            padding: '8px 12px',
                           }}>
                             <p style={{ color: '#fff', fontSize: '11px', fontWeight: 600, margin: 0 }}>
                               {locale === 'bn' ? data.nameBn : data.name}
                             </p>
-                            <p style={{ color: '#FBC02B', fontSize: '13px', fontWeight: 700, fontFamily: 'monospace', margin: '3px 0 0' }}>
+                            <p style={{ color: '#FBC02B', fontSize: '12px', fontWeight: 700, fontFamily: 'monospace', margin: '2px 0 0' }}>
                               ৳ {data.value.toLocaleString()} · {data.percentage}%
                             </p>
                           </div>
@@ -602,36 +608,37 @@ export default function LandingPage() {
                       { name: 'Utility Bills',         nameBn: 'ইউটিলিটি ও বিল',   value: 3200, percentage: 26, color: '#10b981' },
                       { name: 'Groceries & Shopping', nameBn: 'বাজার ও কেনাকাটা',  value: 2300, percentage: 19, color: '#FBC02B' },
                       { name: 'Transportation',        nameBn: 'যাতায়াত ও ভ্রমণ',   value: 1850, percentage: 15, color: '#334155' },
-                      { name: 'Others',                nameBn: 'অন্যান্য',            value: 600,  percentage: 5,  color: '#d1d5db' },
+                      { name: 'Others',                nameBn: 'অন্যান্য',            value: 600,  percentage: 5,  color: '#9CA3AF' },
                     ]}
                     cx="50%"
                     cy="50%"
-                    innerRadius={88}
-                    outerRadius={118}
+                    innerRadius={76}
+                    outerRadius={104}
                     paddingAngle={3}
                     dataKey="value"
-                    activeIndex={activePieIndex}
+                    activeIndex={activePieIndex !== null ? activePieIndex : undefined}
                     activeShape={(props: any) => {
                       const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
                       return (
                         <g>
                           <Sector
                             cx={cx} cy={cy}
-                            innerRadius={innerRadius - 5}
-                            outerRadius={outerRadius + 10}
+                            innerRadius={innerRadius - 4}
+                            outerRadius={outerRadius + 8}
                             startAngle={startAngle}
                             endAngle={endAngle}
                             fill={fill}
-                            style={{ filter: `drop-shadow(0 4px 16px ${fill}55)` }}
+                            style={{ filter: `drop-shadow(0 3px 12px ${fill}60)` }}
                           />
                         </g>
                       );
                     }}
                     onMouseEnter={(_, index) => setActivePieIndex(index)}
+                    onMouseLeave={() => setActivePieIndex(null)}
                     stroke="none"
                   >
                     {[
-                      '#179B51', '#10b981', '#FBC02B', '#334155', '#d1d5db'
+                      '#179B51', '#10b981', '#FBC02B', '#334155', '#9CA3AF'
                     ].map((color, index) => (
                       <Cell key={`cell-${index}`} fill={color} stroke="none" className="cursor-pointer" />
                     ))}
@@ -639,53 +646,58 @@ export default function LandingPage() {
                 </PieChart>
               </ResponsiveContainer>
 
-              {/* Center label — floating, no box */}
+              {/* Center label */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-[11px] font-medium text-neutral-500 tracking-wide uppercase">This Month</span>
-                <span className="text-3xl font-black text-neutral-900 font-mono leading-tight">৳ 12,150</span>
+                <span className="text-[10px] font-semibold text-neutral-500 tracking-wider uppercase">This Month</span>
+                <span className="text-2xl sm:text-3xl font-black text-neutral-900 font-mono leading-tight">৳ 12,150</span>
               </div>
             </div>
 
-            {/* Legend — clean rows, no boxes */}
-            <div className="w-full lg:w-auto space-y-0 divide-y divide-[#EADBBD]/80">
+            {/* Legend — compact rows with hover & mouse leave */}
+            <div
+              className="w-full max-w-xs sm:max-w-sm space-y-0 divide-y divide-[#EADBBD]/80"
+              onMouseLeave={() => setActivePieIndex(null)}
+            >
               {[
                 { name: 'Food & Dining',        nameBn: 'খাবার ও রেস্তোরাঁ', value: 4200, percentage: 35, color: '#179B51' },
                 { name: 'Utility Bills',         nameBn: 'ইউটিলিটি ও বিল',   value: 3200, percentage: 26, color: '#10b981' },
                 { name: 'Groceries & Shopping', nameBn: 'বাজার ও কেনাকাটা',  value: 2300, percentage: 19, color: '#FBC02B' },
                 { name: 'Transportation',        nameBn: 'যাতায়াত ও ভ্রমণ',   value: 1850, percentage: 15, color: '#334155' },
-                { name: 'Others',                nameBn: 'অন্যান্য',            value: 600,  percentage: 5,  color: '#d1d5db' },
+                { name: 'Others',                nameBn: 'অন্যান্য',            value: 600,  percentage: 5,  color: '#9CA3AF' },
               ].map((item, idx) => {
+                const isHovered = activePieIndex !== null;
                 const isActive = activePieIndex === idx;
                 return (
                   <motion.div
                     key={idx}
                     onMouseEnter={() => setActivePieIndex(idx)}
-                    animate={{ opacity: isActive ? 1 : 0.6 }}
-                    transition={{ duration: 0.18 }}
-                    className="flex items-center justify-between gap-8 py-4 cursor-pointer"
+                    onMouseLeave={() => setActivePieIndex(null)}
+                    animate={{ opacity: !isHovered || isActive ? 1 : 0.45 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex items-center justify-between gap-4 py-2.5 cursor-pointer select-none"
                   >
                     {/* Left: dot + category name + bar */}
-                    <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <span
                         className="w-2.5 h-2.5 rounded-full shrink-0"
                         style={{
                           backgroundColor: item.color,
-                          boxShadow: isActive ? `0 0 0 3px ${item.color}30` : 'none',
-                          transform: isActive ? 'scale(1.3)' : 'scale(1)',
-                          transition: 'all 0.2s ease',
+                          boxShadow: isActive ? `0 0 0 3px ${item.color}35` : 'none',
+                          transform: isActive ? 'scale(1.25)' : 'scale(1)',
+                          transition: 'all 0.15s ease',
                         }}
                       />
-                      <div className="flex flex-col gap-1">
-                        <span className={`text-sm font-semibold transition-colors ${isActive ? 'text-neutral-950' : 'text-neutral-700'}`}>
+                      <div className="flex flex-col gap-0.5 min-w-0">
+                        <span className={`text-xs font-semibold truncate transition-colors ${isActive ? 'text-neutral-950 font-bold' : 'text-neutral-700'}`}>
                           {locale === 'bn' ? item.nameBn : item.name}
                         </span>
                         {/* Thin progress bar */}
-                        <div className="w-32 sm:w-44 h-1.5 bg-[#EADBBD]/60 rounded-full overflow-hidden">
+                        <div className="w-24 sm:w-32 h-1 bg-[#EADBBD]/70 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             whileInView={{ width: `${item.percentage * 2.5}%` }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.7, delay: idx * 0.08 }}
+                            transition={{ duration: 0.6, delay: idx * 0.05 }}
                             className="h-full rounded-full"
                             style={{ backgroundColor: item.color }}
                           />
@@ -695,10 +707,10 @@ export default function LandingPage() {
 
                     {/* Right: amount + percent */}
                     <div className="text-right shrink-0">
-                      <p className={`font-mono font-bold text-sm transition-colors ${isActive ? 'text-neutral-950' : 'text-neutral-700'}`}>
+                      <p className={`font-mono font-bold text-xs transition-colors ${isActive ? 'text-neutral-950' : 'text-neutral-700'}`}>
                         ৳ {item.value.toLocaleString()}
                       </p>
-                      <p className="text-xs font-semibold text-neutral-500">{item.percentage}%</p>
+                      <p className="text-[10px] font-medium text-neutral-500">{item.percentage}%</p>
                     </div>
                   </motion.div>
                 );
