@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 
 export default function AnalyticsPage() {
   const router = useRouter();
-  const { user, locale, theme } = useAppStore();
+  const { user, isHydrated, locale, theme } = useAppStore();
   const t = translations[locale];
 
   const [period, setPeriod] = useState<'daily' | 'monthly'>('monthly');
@@ -46,12 +46,13 @@ export default function AnalyticsPage() {
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!user) {
       router.push('/login');
       return;
     }
     fetchAnalytics();
-  }, [user, period]);
+  }, [user, isHydrated, period]);
 
   const fetchAnalytics = async () => {
     try {
@@ -130,7 +131,13 @@ export default function AnalyticsPage() {
     return periodStr;
   };
 
-  if (!user) return null;
+  if (!isHydrated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-page)' }}>
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -143,7 +150,7 @@ export default function AnalyticsPage() {
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <main className="p-6 lg:p-8 space-y-6 max-w-[1520px] w-full mx-auto">
+        <main className="p-6 lg:p-8 space-y-6 max-w-[1520px] w-full mx-auto dashboard-scaled-text">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -213,7 +220,7 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div className="surface-card p-5 space-y-1">
               <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                Total Tracked Spending
+                {t.totalSpendingTracked}
               </span>
               <p
                 className="text-2xl lg:text-[26px] font-extrabold tracking-tight tabular-nums"
@@ -222,28 +229,28 @@ export default function AnalyticsPage() {
                 {formatMoney(totalTracked, locale)}
               </p>
               <p className="text-[11px] font-medium" style={{ color: 'var(--accent)' }}>
-                Calculated from all confirmed expenses
+                {t.calculatedFromConfirmed}
               </p>
             </div>
 
             <div className="surface-card p-5 space-y-1">
               <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                Active Categories
+                {t.activeCategories}
               </span>
               <p
                 className="text-2xl lg:text-[26px] font-extrabold tracking-tight tabular-nums"
                 style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-geist-mono), monospace' }}
               >
-                {categoryBreakdown.length}
+                {locale === 'bn' ? toBengaliNumber(categoryBreakdown.length) : categoryBreakdown.length}
               </p>
               <p className="text-[11px] font-medium" style={{ color: 'var(--success-text)' }}>
-                Top category: {categoryBreakdown[0]?.name || 'None'}
+                {locale === 'bn' ? 'শীর্ষ ক্যাটাগরি:' : 'Top category:'} {categoryBreakdown[0] ? (locale === 'bn' ? (categoryBreakdown[0]?.nameBn || categoryBreakdown[0]?.name) : categoryBreakdown[0]?.name) : (locale === 'bn' ? 'নেই' : 'None')}
               </p>
             </div>
 
             <div className="surface-card p-5 space-y-1.5">
               <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-                Payment Channels
+                {t.paymentChannels}
               </span>
               <p
                 className="text-2xl lg:text-3xl font-extrabold tracking-tight tabular-nums"
@@ -270,14 +277,14 @@ export default function AnalyticsPage() {
                     </h3>
                   </div>
                   <span className="text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--bg-surface-sunken)', color: 'var(--text-secondary)' }}>
-                    {period === 'daily' ? 'Daily Velocity' : 'Monthly Spending'}
+                    {period === 'daily' ? (locale === 'bn' ? 'দৈনিক খরচ' : 'Daily Velocity') : (locale === 'bn' ? 'মাসিক খরচ' : 'Monthly Spending')}
                   </span>
                 </div>
 
                 <div className="h-64 w-full">
                   {trendsData.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                      No trend data available
+                      {locale === 'bn' ? 'কোনো ট্রেন্ড তথ্য পাওয়া যায়নি' : 'No trend data available'}
                     </div>
                   ) : (
                     <ResponsiveContainer width="100%" height="100%">
@@ -297,7 +304,7 @@ export default function AnalyticsPage() {
                           fontWeight={600}
                           tickLine={false}
                           axisLine={false}
-                          tickFormatter={(v) => `৳${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`}
+                          tickFormatter={(v) => locale === 'bn' ? `${toBengaliNumber(v >= 1000 ? `${Math.round(v / 1000)}k` : v)} ৳` : `৳${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`}
                         />
                         <Tooltip
                           contentStyle={{
@@ -311,7 +318,7 @@ export default function AnalyticsPage() {
                           }}
                           labelFormatter={formatTooltipLabel}
                           cursor={{ fill: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
-                          formatter={(val: any) => [formatMoney(val, locale), 'Spent']}
+                          formatter={(val: any) => [formatMoney(val, locale), locale === 'bn' ? 'খরচ' : 'Spent']}
                         />
                         <Bar
                           dataKey="total"
@@ -323,11 +330,6 @@ export default function AnalyticsPage() {
                   )}
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 text-xs font-semibold pt-3 border-t" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-secondary)' }}>
-                <CalendarBlank size={15} weight="bold" />
-                <span>Grouped chronologically without ISO timestamps</span>
-              </div>
             </div>
 
             {/* Category Distribution Breakdown (5 Cols) */}
@@ -337,18 +339,18 @@ export default function AnalyticsPage() {
                   <div className="flex items-center gap-2.5">
                     <ChartPie size={20} weight="bold" style={{ color: 'var(--success)' }} />
                     <h3 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                      Category Spending
+                      {t.categoryBreakdown}
                     </h3>
                   </div>
                   <span className="text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--bg-surface-sunken)', color: 'var(--text-secondary)' }}>
-                    Share %
+                    {locale === 'bn' ? 'শতকরা হার' : 'Share %'}
                   </span>
                 </div>
 
                 <div className="space-y-3.5 max-h-64 overflow-y-auto pr-1">
                   {categoryBreakdown.length === 0 ? (
                     <div className="text-center py-10 text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                      No category breakdown data
+                      {locale === 'bn' ? 'কোনো ক্যাটাগরি তথ্য নেই' : 'No category breakdown data'}
                     </div>
                   ) : (
                     categoryBreakdown.map((cat, idx) => (
@@ -379,10 +381,6 @@ export default function AnalyticsPage() {
                   )}
                 </div>
               </div>
-
-              <div className="pt-3 border-t text-xs font-medium" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
-                Itemized distribution across recorded expense categories
-              </div>
             </div>
           </div>
 
@@ -392,11 +390,11 @@ export default function AnalyticsPage() {
               <div className="flex items-center gap-2">
                 <CreditCard size={17} weight="bold" style={{ color: 'var(--accent)' }} />
                 <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>
-                  Payment Method Share
+                  {locale === 'bn' ? 'পেমেন্ট মাধ্যমের শতকরা হার' : 'Payment Method Share'}
                 </h3>
               </div>
               <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                {paymentBreakdown.length} Active Channels
+                {locale === 'bn' ? toBengaliNumber(paymentBreakdown.length) : paymentBreakdown.length} {locale === 'bn' ? 'টি মাধ্যম সক্রিয়' : 'Active Channels'}
               </span>
             </div>
 
@@ -417,7 +415,7 @@ export default function AnalyticsPage() {
                         {pm.name}
                       </p>
                       <p className="text-[10px] font-medium leading-tight mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                        {locale === 'bn' ? toBengaliNumber(Math.round(pm.percentage)) : Math.round(pm.percentage)}% share
+                        {locale === 'bn' ? `${toBengaliNumber(Math.round(pm.percentage))}% শেয়ার` : `${Math.round(pm.percentage)}% share`}
                       </p>
                     </div>
                   </div>

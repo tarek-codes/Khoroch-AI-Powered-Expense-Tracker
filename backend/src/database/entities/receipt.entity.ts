@@ -42,13 +42,13 @@ export class Receipt {
   @Column({ name: 'original_filename', type: 'varchar', length: 255 })
   originalFilename: string;
 
-  @Column({ name: 'file_url', type: 'varchar', length: 500 })
+  @Column({ name: 'file_url', type: 'text' })
   fileUrl: string;
 
   @Column({ name: 'file_size', type: 'integer' })
   fileSize: number;
 
-  @Column({ name: 'mime_type', type: 'varchar', length: 20 })
+  @Column({ name: 'mime_type', type: 'varchar', length: 100 })
   mimeType: string;
 
   @Column({ name: 'ai_extracted_data', type: 'jsonb', nullable: true })

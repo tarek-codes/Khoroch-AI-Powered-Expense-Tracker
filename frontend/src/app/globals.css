@@ -130,11 +130,39 @@
   }
 }
 
-/* ─── Base Styles ─── */
+/* ─── Base Styles & Dynamic Global Typography ─── */
+:root {
+  --font-current: var(--font-jakarta), var(--font-bangla), system-ui, sans-serif;
+}
+
+html[data-font="jakarta"] {
+  --font-current: var(--font-jakarta), var(--font-bangla), system-ui, sans-serif;
+}
+
+html[data-font="inter"] {
+  --font-current: var(--font-inter), var(--font-bangla), system-ui, sans-serif;
+}
+
+html[data-font="outfit"] {
+  --font-current: var(--font-outfit), var(--font-bangla), system-ui, sans-serif;
+}
+
+html[data-font="poppins"] {
+  --font-current: var(--font-poppins), var(--font-bangla), system-ui, sans-serif;
+}
+
+html[data-font="roboto"] {
+  --font-current: var(--font-roboto), var(--font-bangla), system-ui, sans-serif;
+}
+
+html[data-font="geist"] {
+  --font-current: var(--font-geist-mono), var(--font-bangla), monospace;
+}
+
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
-  font-family: var(--font-sans), var(--font-bangla), system-ui, sans-serif;
+  font-family: var(--font-current);
   overflow-x: hidden;
   letter-spacing: -0.01em;
   transition: background-color 0.15s ease, color 0.15s ease;
@@ -338,4 +366,84 @@ input[type="date"] {
   font-family: var(--font-digits), var(--font-sans), sans-serif;
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* ─── Dashboard Proportional +2px Typography Scale ─── */
+.dashboard-scaled-text .text-\[10px\] {
+  font-size: 12px !important;
+}
+
+.dashboard-scaled-text .text-\[11px\] {
+  font-size: 13px !important;
+}
+
+.dashboard-scaled-text .text-xs {
+  font-size: 14px !important;
+  line-height: 1.35rem !important;
+}
+
+.dashboard-scaled-text .text-sm {
+  font-size: 16px !important;
+  line-height: 1.45rem !important;
+}
+
+.dashboard-scaled-text .text-base {
+  font-size: 18px !important;
+  line-height: 1.6rem !important;
+}
+
+.dashboard-scaled-text .text-lg {
+  font-size: 20px !important;
+}
+
+.dashboard-scaled-text .text-xl {
+  font-size: 22px !important;
+}
+
+.dashboard-scaled-text .text-2xl {
+  font-size: 26px !important;
+}
+
+.dashboard-scaled-text .lg\:text-3xl {
+  font-size: 32px !important;
+}
+
+.dashboard-scaled-text .text-3xl {
+  font-size: 32px !important;
+}
+
+/* ─── Table Text Sizing Scale (+2px for maximum legibility) ─── */
+.dashboard-scaled-text table {
+  font-size: 14px !important;
+}
+
+.dashboard-scaled-text table th {
+  font-size: 13px !important;
+  letter-spacing: 0.02em !important;
+}
+
+.dashboard-scaled-text table td {
+  font-size: 14px !important;
+}
+
+.dashboard-scaled-text table td .text-\[13px\] {
+  font-size: 15px !important;
+}
+
+.dashboard-scaled-text table td .text-\[11px\] {
+  font-size: 13px !important;
+}
+
+/* ─── Recent Expenses 1px Compact Refinement ─── */
+.dashboard-scaled-text .recent-expenses-compact .text-\[10px\] {
+  font-size: 11px !important;
+}
+
+.dashboard-scaled-text .recent-expenses-compact .text-xs {
+  font-size: 13px !important;
+  line-height: 1.25rem !important;
+}
+
+.dashboard-scaled-text .recent-expenses-compact .text-base {
+  font-size: 17px !important;
 }

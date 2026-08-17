@@ -39,6 +39,53 @@ export class AiService {
     if (apiKey) {
       this.genAI = new GoogleGenerativeAI(apiKey);
     }
+
+    const cloudName = this.configService.get<string>('services.cloudinary.cloudName');
+    const cloudApiKey = this.configService.get<string>('services.cloudinary.apiKey');
+    const cloudApiSecret = this.configService.get<string>('services.cloudinary.apiSecret');
+    if (cloudName && cloudApiKey && cloudApiSecret) {
+      cloudinary.config({
+        cloud_name: cloudName,
+        api_key: cloudApiKey,
+        api_secret: cloudApiSecret,
+      });
+    }
+  }
+
+  private async parseWithGroq(prompt: string): Promise<any> {
+    const groqApiKey = this.configService.get<string>('services.groqApiKey');
+    if (!groqApiKey) return null;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${groqApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are an expert bilingual financial reasoning AI that meticulously extracts every single expense from user speech or text into strict JSON format.',
+          },
+          { role: 'user', content: prompt },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.1,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Groq API responded with status ${response.status}: ${errText}`);
+    }
+
+    const data = await response.json();
+    const content = data?.choices?.[0]?.message?.content;
+    if (!content) throw new Error('Empty response from Groq API');
+    return JSON.parse(content);
   }
 
   async parseVoice(userId: string, text: string, language = 'bn') {
@@ -72,8 +119,11 @@ export class AiService {
 You are an intelligent bilingual (English and Bangla) AI expense parser for an expense tracker called Khoroch.
 Analyze the following user input text. 
 
-IMPORTANT RULE: The user may describe ONE or MULTIPLE expenses in a single utterance (e.g. "Dinner 500 and coffee 120 using bkash", "বাজার করলাম ১০০০ টাকার এবং রিকশা ভাড়া দিলাম ৫০ টাকা", "Bought groceries 450, medicine 200, paid with card").
-You MUST extract EVERY discrete expense as a separate individual object inside the "expenses" array. Do NOT combine or merge multiple expenses into one.
+CRITICAL RULE FOR MULTIPLE EXPENSES:
+- The user may describe ONE or MULTIPLE expenses in a single utterance (e.g. "Dinner 500 and coffee 120 using bkash", "বাজার ১০০০ টাকা আর রিকশা ৫০ টাকা", "Bought groceries 450, medicine 200, fuel 300, paid with card").
+- You MUST extract EVERY discrete expense as an individual separate object inside the "expenses" array!
+- Do NOT merge, sum, or combine multiple expenses into one item under any circumstance.
+- Note: No description field is required for each expense.
 
 Input Text: "${text}"
 Current Date: "${new Date().toISOString().split('T')[0]}"
@@ -86,7 +136,6 @@ Tasks:
 2. For each expense, extract:
    - "amount" (number, positive float)
    - "currency" (always "BDT" unless specified otherwise)
-   - "description" (specific item name or activity description)
    - "merchant" (merchant or vendor name if mentioned, otherwise null)
    - "expenseDate" (YYYY-MM-DD format, relative to Current Date if mentioned like today/yesterday)
    - "categoryId" (the best matching category ID from the list, or null)
@@ -95,7 +144,7 @@ Tasks:
    - "subcategoryName" (matched subcategory English name, or null)
    - "paymentMethodId" (best matching payment method ID, or null)
    - "paymentMethodName" (matched payment method name, or null)
-3. Detect the primary language ("bn" or "en" or "bilingual").
+3. Detect the primary language ("bn", "en", or "bilingual").
 4. Rate overall confidence (0.00 to 1.00).
 
 Return ONLY valid JSON matching this exact structure:
@@ -106,15 +155,14 @@ Return ONLY valid JSON matching this exact structure:
     {
       "amount": 50,
       "currency": "BDT",
-      "description": "...",
       "merchant": null,
-      "expenseDate": "2026-08-16",
+      "expenseDate": "2026-08-17",
       "categoryId": "...",
-      "categoryName": "...",
+      "categoryName": "Transportation",
       "subcategoryId": null,
       "subcategoryName": null,
       "paymentMethodId": "...",
-      "paymentMethodName": "..."
+      "paymentMethodName": "Cash"
     }
   ]
 }
@@ -127,7 +175,11 @@ Return ONLY valid JSON matching this exact structure:
     };
 
     try {
-      if (this.genAI) {
+      // 1. Prioritize Groq with Llama-3.3-70B for exceptional reasoning and multiple expense extraction
+      const groqApiKey = this.configService.get<string>('services.groqApiKey');
+      if (groqApiKey) {
+        parsedResult = await this.parseWithGroq(prompt);
+      } else if (this.genAI) {
         const model = this.genAI.getGenerativeModel({
           model: 'gemini-1.5-flash',
           generationConfig: { responseMimeType: 'application/json' },
@@ -136,12 +188,26 @@ Return ONLY valid JSON matching this exact structure:
         const textResponse = result.response.text();
         parsedResult = JSON.parse(textResponse);
       } else {
-        // Fallback demo parser if API key is not ready
         parsedResult = this.heuristicVoiceParser(text, categories, paymentMethods);
       }
     } catch (error) {
-      this.logger.error(`AI Voice Parsing failed: ${error.message}`);
-      parsedResult = this.heuristicVoiceParser(text, categories, paymentMethods);
+      this.logger.error(`AI Voice Parsing failed with primary provider: ${error.message}`);
+      // Fallback to Gemini if Groq fails, or heuristic
+      try {
+        if (this.genAI) {
+          const model = this.genAI.getGenerativeModel({
+            model: 'gemini-1.5-flash',
+            generationConfig: { responseMimeType: 'application/json' },
+          });
+          const result = await model.generateContent(prompt);
+          parsedResult = JSON.parse(result.response.text());
+        } else {
+          parsedResult = this.heuristicVoiceParser(text, categories, paymentMethods);
+        }
+      } catch (fallbackError) {
+        this.logger.error(`Fallback parser failed: ${fallbackError.message}`);
+        parsedResult = this.heuristicVoiceParser(text, categories, paymentMethods);
+      }
     }
 
     const duration = Date.now() - startTime;
@@ -303,19 +369,25 @@ Return ONLY valid JSON matching this exact structure:
       throw new BadRequestException('No receipt image file uploaded');
     }
 
-    // Upload to Cloudinary
-    const uploadResult: any = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'khoroch/receipts' },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        },
-      );
-      uploadStream.end(file.buffer);
-    });
-
-    const fileUrl = uploadResult.secure_url;
+    // Upload to Cloudinary with fallback
+    let fileUrl = `data:${file.mimetype || 'image/jpeg'};base64,${file.buffer.toString('base64')}`;
+    try {
+      const uploadResult: any = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'khoroch/receipts' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        );
+        uploadStream.end(file.buffer);
+      });
+      if (uploadResult?.secure_url) {
+        fileUrl = uploadResult.secure_url;
+      }
+    } catch (uploadError: any) {
+      this.logger.warn(`Cloudinary upload failed: ${uploadError?.message || uploadError}, using base64 fallback`);
+    }
     const categories = await this.categoryRepository.find({
       where: { isEnabled: true },
       relations: ['subcategories'],
@@ -329,7 +401,7 @@ Return ONLY valid JSON matching this exact structure:
     try {
       if (this.genAI) {
         const model = this.genAI.getGenerativeModel({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-3.7-flash',
           generationConfig: { responseMimeType: 'application/json' },
         });
 
@@ -353,27 +425,33 @@ Return ONLY valid JSON matching this exact structure:
         }));
 
         const prompt = `
-You are an expert OCR receipt scanning assistant for an expense tracker called Khoroch.
-Analyze this receipt image thoroughly and extract all expense data.
+You are an expert bilingual (English and Bengali / Bangla) OCR receipt and memo scanning assistant for an expense tracker called Khoroch (খরচ).
+Analyze this receipt or memo image thoroughly. The receipt may be in English, Bangla script, or a bilingual mix (e.g., supermarket receipt, restaurant bill, pharmacy cash memo, utility receipt, handwritten slip).
 
 Tasks:
-1. Identify merchant name, receipt date (YYYY-MM-DD), and total amount.
-2. Categorize the receipt into one of the Available Categories.
-3. Identify payment method if visible on the receipt.
-4. Extract all individual line items with item name, quantity, unit price, and total price.
-5. Rate confidence score (0.00 to 1.00).
+1. Identify merchant name or store title (merchant).
+2. Identify receipt / invoice date in YYYY-MM-DD format (date). If only time or year is present, use current date ${new Date().toISOString().split('T')[0]}.
+3. Identify total amount / Net Payable as a positive number (totalAmount).
+4. Identify currency (default "BDT").
+5. Categorize the receipt into one of the Available Categories (categoryId and categoryName).
+6. Identify payment method (e.g. Cash, bKash, Nagad, Card) from Available Payment Methods if visible (paymentMethodId and paymentMethodName).
+7. Extract all line items (items) with item name (name), quantity (quantity, default 1), unit price (unitPrice), and item total price (totalPrice).
+8. Rate confidence score between 0.00 and 1.00.
+9. Detect language ("bn", "en", or "bilingual").
 
 Available Categories: ${JSON.stringify(categoryContext)}
 Available Payment Methods: ${JSON.stringify(paymentMethodContext)}
 
 Return ONLY valid JSON matching this exact structure:
 {
-  "merchant": "Vendor Name",
-  "date": "2026-08-16",
+  "merchant": "Store or Vendor Name",
+  "merchantName": "Store or Vendor Name",
+  "date": "YYYY-MM-DD",
   "totalAmount": 1500.00,
   "currency": "BDT",
   "categoryId": "...",
   "categoryName": "...",
+  "categorySuggested": "...",
   "paymentMethodId": "...",
   "paymentMethodName": "...",
   "items": [
@@ -381,7 +459,9 @@ Return ONLY valid JSON matching this exact structure:
       "name": "Item description",
       "quantity": 1,
       "unitPrice": 1500.00,
-      "totalPrice": 1500.00
+      "totalPrice": 1500.00,
+      "price": 1500.00,
+      "total": 1500.00
     }
   ],
   "confidence": 0.95,
@@ -390,7 +470,12 @@ Return ONLY valid JSON matching this exact structure:
 `;
 
         const result = await model.generateContent([prompt, imagePart]);
-        extractedData = JSON.parse(result.response.text());
+        const textResponse = result.response.text();
+        extractedData = JSON.parse(textResponse);
+        if (extractedData) {
+          extractedData.merchantName = extractedData.merchantName || extractedData.merchant;
+          extractedData.categorySuggested = extractedData.categorySuggested || extractedData.categoryName;
+        }
       }
     } catch (error) {
       this.logger.error(`AI Receipt Scanning failed: ${error.message}`);

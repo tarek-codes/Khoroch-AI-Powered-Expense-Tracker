@@ -16,7 +16,7 @@ import {
 } from '@phosphor-icons/react';
 import { api } from '@/lib/api';
 import { useAppStore } from '@/store/appStore';
-import { translations, formatMoney } from '@/lib/i18n';
+import { translations, formatMoney, formatUserName } from '@/lib/i18n';
 import { Sidebar } from '@/components/Sidebar';
 import { HeaderControls } from '@/components/HeaderControls';
 import { VoiceModal } from '@/components/VoiceModal';
@@ -25,7 +25,7 @@ import { toast } from 'sonner';
 
 export default function AdminPage() {
   const router = useRouter();
-  const { user, locale } = useAppStore();
+  const { user, isHydrated, locale } = useAppStore();
   const t = translations[locale];
 
   const [tab, setTab] = useState('overview');
@@ -111,7 +111,13 @@ export default function AdminPage() {
     }
   };
 
-  if (!user || user.role !== 'admin') return null;
+  if (!isHydrated || !user || user.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-page)' }}>
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -254,7 +260,7 @@ export default function AdminPage() {
                           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)'; }}
                           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                         >
-                          <td className="py-3 px-4 font-semibold" style={{ color: 'var(--text-primary)' }}>{u.firstName} {u.lastName}</td>
+                          <td className="py-3 px-4 font-semibold" style={{ color: 'var(--text-primary)' }}>{formatUserName(u, locale)}</td>
                           <td className="py-3 px-4" style={{ color: 'var(--text-secondary)' }}>{u.email}</td>
                           <td className="py-3 px-4 capitalize">
                             <span

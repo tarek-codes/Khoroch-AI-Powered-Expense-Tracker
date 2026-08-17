@@ -121,7 +121,7 @@ export class Expense {
   @Column({ name: 'is_confirmed', type: 'boolean', default: false })
   isConfirmed: boolean;
 
-  @Column({ name: 'receipt_url', type: 'varchar', length: 500, nullable: true })
+  @Column({ name: 'receipt_url', type: 'text', nullable: true })
   receiptUrl: string;
 
   @Column({ name: 'ai_raw_text', type: 'text', nullable: true })

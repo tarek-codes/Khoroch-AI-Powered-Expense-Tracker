@@ -6,7 +6,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { X, UploadSimple, Check, Lightning, Image } from '@phosphor-icons/react';
 import { api } from '@/lib/api';
 import { useAppStore } from '@/store/appStore';
-import { translations, formatMoney } from '@/lib/i18n';
+import { translations, formatMoney, toBengaliNumber } from '@/lib/i18n';
 import { toast } from 'sonner';
 
 interface ReceiptModalProps {
@@ -68,30 +68,34 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
     try {
       setIsScanning(true);
       const formData = new FormData();
-      formData.append('receipt', selectedFile);
+      formData.append('file', selectedFile);
 
       const res: any = await api.post('/ai/receipts/scan', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      if (res.data) {
-        setScannedData(res.data);
-        setReceiptId(res.data.receiptId || null);
-        setAiLogId(res.data.aiLogId || null);
+      const payload = res?.data?.data || res?.data || res;
+      if (payload) {
+        setScannedData(payload);
+        setReceiptId(payload.receiptId || null);
+        setAiLogId(payload.aiLogId || null);
 
-        const extracted = res.data.extractedData || {};
+        const extracted = payload.extractedData || {};
         setAmount(extracted.totalAmount || 0);
-        setMerchant(extracted.merchantName || '');
-        setDescription(extracted.merchantName ? `Receipt from ${extracted.merchantName}` : 'Receipt Expense');
+        setMerchant(extracted.merchantName || extracted.merchant || '');
+        setDescription(extracted.merchantName || extracted.merchant ? `Receipt from ${extracted.merchantName || extracted.merchant}` : 'Receipt Expense');
         setExpenseDate(extracted.date || new Date().toISOString().split('T')[0]);
         setItems(extracted.items || []);
 
         const matchedCat = categories.find(
           (c) =>
-            c.name.toLowerCase() === (extracted.categorySuggested || '').toLowerCase() ||
-            (c.nameBn && c.nameBn === extracted.categorySuggested),
+            c.name.toLowerCase() === (extracted.categorySuggested || extracted.categoryName || '').toLowerCase() ||
+            (c.nameBn && (c.nameBn === extracted.categorySuggested || c.nameBn === extracted.categoryName)),
         );
         setCategoryId(matchedCat?.id || categories[0]?.id || '');
+        if (extracted.paymentMethodId) {
+          setPaymentMethodId(extracted.paymentMethodId);
+        }
       }
     } catch (err: any) {
       toast.error(err.message || 'Failed to scan receipt image');
@@ -235,7 +239,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             <div className="flex justify-end mt-4">
               <button onClick={handleScan} disabled={isScanning} className="btn-accent flex items-center gap-2">
                 <Lightning size={16} weight="fill" />
-                <span>{isScanning ? t.processingAi : 'Scan & Extract with AI'}</span>
+                <span>{isScanning ? t.processingAi : (locale === 'bn' ? 'এআই দিয়ে স্ক্যান ও এক্সট্র্যাক্ট করুন' : 'Scan & Extract with AI')}</span>
               </button>
             </div>
           )}
@@ -287,7 +291,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                     onChange={(e) => setPaymentMethodId(e.target.value)}
                     className="input-base w-full font-bold cursor-pointer"
                   >
-                    <option value="">Default Payment</option>
+                    <option value="">{locale === 'bn' ? 'ডিফল্ট পেমেন্ট' : 'Default Payment'}</option>
                     {paymentMethods.map((p) => (
                       <option key={p.id} value={p.id}>
                         {locale === 'bn' ? (p.nameBn || p.name) : p.name}
@@ -301,7 +305,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               {items.length > 0 && (
                 <div className="rounded-[10px] overflow-hidden" style={{ border: '1px solid var(--border-primary)' }}>
                   <div className="px-4 py-2 text-xs font-semibold" style={{ backgroundColor: 'var(--bg-surface-sunken)', color: 'var(--text-secondary)' }}>
-                    Extracted Receipt Items ({items.length})
+                    {locale === 'bn' ? `রসিদের আইটেম সমূহ (${toBengaliNumber(items.length)})` : `Extracted Receipt Items (${items.length})`}
                   </div>
                   <div className="max-h-40 overflow-y-auto text-xs" style={{ borderTop: '1px solid var(--border-primary)' }}>
                     {items.map((item, idx) => (
@@ -310,9 +314,9 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                         className="px-4 py-2 flex items-center justify-between"
                         style={{ borderBottom: idx < items.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}
                       >
-                        <span style={{ color: 'var(--text-secondary)' }}>{item.name || `Item #${idx + 1}`}</span>
+                        <span style={{ color: 'var(--text-secondary)' }}>{item.name || (locale === 'bn' ? `আইটেম #${toBengaliNumber(idx + 1)}` : `Item #${idx + 1}`)}</span>
                         <span className="font-semibold tabular-nums" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-geist-mono), monospace' }}>
-                          {formatMoney(item.total || item.price || 0, locale)}
+                          {formatMoney(item.totalPrice || item.total || item.price || item.unitPrice || 0, locale)}
                         </span>
                       </div>
                     ))}
@@ -331,7 +335,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                   className="btn-accent flex items-center gap-2"
                 >
                   <Check size={16} weight="bold" />
-                  <span>{isSaving ? 'Saving...' : 'Confirm & Save Receipt'}</span>
+                  <span>{isSaving ? (locale === 'bn' ? 'সংরক্ষণ হচ্ছে...' : 'Saving...') : (locale === 'bn' ? 'রসিদ সেভ করুন' : 'Confirm & Save Receipt')}</span>
                 </button>
               </div>
             </div>

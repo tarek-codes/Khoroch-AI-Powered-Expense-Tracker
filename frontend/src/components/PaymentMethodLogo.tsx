@@ -22,53 +22,44 @@ export const PaymentMethodLogo: React.FC<PaymentMethodLogoProps> = ({
 }) => {
   const normalized = name.toLowerCase().trim();
 
-  // 1. bKash Official Colors and Mark
+  // 1. bKash Official Logo
   if (normalized.includes('bkash')) {
     return (
       <div
-        className={`flex items-center justify-center rounded-lg font-black text-white shrink-0 select-none shadow-sm ${className}`}
+        className={`flex items-center justify-center rounded-lg bg-white overflow-hidden shrink-0 select-none shadow-sm border border-slate-200/60 dark:border-zinc-700/60 p-0.5 ${className}`}
         style={{
           width: size,
           height: size,
-          backgroundColor: '#e2136e',
         }}
         title="bKash"
       >
-        <svg
-          viewBox="0 0 100 100"
-          width={Math.round(size * 0.7)}
-          height={Math.round(size * 0.7)}
-          fill="none"
-        >
-          {/* Bird beak / origami shape */}
-          <path
-            d="M50 15 L85 50 L50 85 L15 50 Z"
-            fill="#ffffff"
-          />
-          <path
-            d="M50 30 L70 50 L50 70 L30 50 Z"
-            fill="#e2136e"
-          />
-        </svg>
+        <img
+          src="/bkash.png"
+          alt="bKash"
+          className="w-full h-full object-contain"
+          loading="lazy"
+        />
       </div>
     );
   }
 
-  // 2. Nagad Official Colors and Mark
+  // 2. Nagad Official Logo
   if (normalized.includes('nagad')) {
     return (
       <div
-        className={`flex items-center justify-center rounded-lg font-black text-white shrink-0 select-none shadow-sm ${className}`}
+        className={`flex items-center justify-center rounded-lg bg-white overflow-hidden shrink-0 select-none shadow-sm border border-slate-200/60 dark:border-zinc-700/60 p-0.5 ${className}`}
         style={{
           width: size,
           height: size,
-          background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
         }}
         title="Nagad"
       >
-        <span style={{ fontSize: `${Math.round(size * 0.48)}px`, fontWeight: 900, letterSpacing: '-0.5px' }}>
-          ন
-        </span>
+        <img
+          src="/nagad.png"
+          alt="Nagad"
+          className="w-full h-full object-contain"
+          loading="lazy"
+        />
       </div>
     );
   }

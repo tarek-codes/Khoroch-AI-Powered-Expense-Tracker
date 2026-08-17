@@ -14,7 +14,7 @@ import {
 } from '@phosphor-icons/react';
 import { api } from '@/lib/api';
 import { useAppStore } from '@/store/appStore';
-import { translations, formatMoney } from '@/lib/i18n';
+import { translations, formatMoney, toBengaliNumber } from '@/lib/i18n';
 import { toast } from 'sonner';
 
 interface VoiceModalProps {
@@ -54,6 +54,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
   const silenceIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const hasSpokenRef = useRef<boolean>(false);
   const lastSoundTimeRef = useRef<number>(Date.now());
+  const transcriptRef = useRef<string>('');
 
   useEffect(() => {
     liveLangRef.current = liveLang;
@@ -210,7 +211,11 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
         const audioBlob = new Blob(audioChunksRef.current, {
           type: mimeType || 'audio/webm',
         });
-        if (audioBlob.size > 0) {
+
+        // If we already have live transcribed text, use high-speed Groq directly for instant extraction
+        if (transcriptRef.current.trim()) {
+          await handleAnalyzeText(transcriptRef.current.trim());
+        } else if (audioBlob.size > 0) {
           await processAudioWithGemini(audioBlob);
         }
       };
@@ -250,6 +255,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
         }
         if (fullText.trim()) {
           setTranscript(fullText);
+          transcriptRef.current = fullText;
           const lang = detectLanguageFromText(fullText);
           setDetectedLang(lang);
         }
@@ -294,6 +300,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
         }
         if (currentText.trim()) {
           setTranscript(currentText);
+          transcriptRef.current = currentText;
           const lang = detectLanguageFromText(currentText);
           setDetectedLang(lang);
         }
@@ -301,6 +308,9 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
 
       recognition.onend = () => {
         setIsRecording(false);
+        if (transcriptRef.current.trim()) {
+          handleAnalyzeText(transcriptRef.current.trim());
+        }
       };
 
       recognition.start();
@@ -339,6 +349,13 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
     }
+
+    // Automatically trigger AI extraction immediately when speech stops
+    setTimeout(() => {
+      if (transcriptRef.current.trim()) {
+        handleAnalyzeText(transcriptRef.current.trim());
+      }
+    }, 150);
   };
 
   const processAudioWithGemini = async (audioBlob: Blob) => {
@@ -366,8 +383,8 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
           serverLang === 'bn'
             ? 'বাংলা (Bengali Detected)'
             : serverLang === 'en'
-            ? 'English (Detected)'
-            : 'Bilingual (বাংলা + English)',
+              ? 'English (Detected)'
+              : 'Bilingual (বাংলা + English)',
         );
 
         setAiLogId(payload.aiLogId || null);
@@ -376,8 +393,8 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
       }
     } catch (err: any) {
       console.warn('Audio parse error, attempting text parse fallback:', err);
-      if (transcript.trim()) {
-        handleAnalyzeText();
+      if (transcriptRef.current.trim()) {
+        handleAnalyzeText(transcriptRef.current.trim());
       } else {
         toast.error('AI voice recognition failed. Please try speaking again or type.');
       }
@@ -386,20 +403,20 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
     }
   };
 
-  const handleAnalyzeText = async () => {
-    if (!transcript.trim()) {
-      toast.error('Please speak or type an expense description first.');
+  const handleAnalyzeText = async (textToParse?: string) => {
+    const rawText = (typeof textToParse === 'string' ? textToParse : transcript).trim();
+    if (!rawText) {
       return;
     }
 
     try {
       setIsAnalyzing(true);
-      const autoLang = detectLanguageFromText(transcript);
+      const autoLang = detectLanguageFromText(rawText);
       const languageToSend = autoLang === 'bn' ? 'bn' : autoLang === 'en' ? 'en' : 'auto';
 
       const res: any = await api.post('/ai/voice/parse', {
-        text: transcript.trim(),
-        transcript: transcript.trim(),
+        text: rawText,
+        transcript: rawText,
         language: languageToSend,
       });
 
@@ -412,13 +429,13 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
           serverLang === 'bn'
             ? 'বাংলা (Bengali Processed)'
             : serverLang === 'en'
-            ? 'English (Processed)'
-            : 'Bilingual (বাংলা + English)',
+              ? 'English (Processed)'
+              : 'Bilingual (বাংলা + English)',
         );
         const expList = payload.parsedExpenses || payload.expenses || [];
         mapAndSetExpenses(expList);
         if (expList.length > 0) {
-          toast.success(`Successfully extracted ${expList.length} expense(s)!`);
+          toast.success(`Extracted ${expList.length} expense(s)!`);
         }
       }
     } catch (err: any) {
@@ -488,7 +505,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
         categoryName: finalCat?.name || 'General',
         paymentMethodId: finalPm?.id || '',
         paymentMethodName: finalPm?.name || 'Cash',
-        description: exp.description || 'Expense',
+        description: exp.description || finalCat?.name || 'Expense',
         merchant: exp.merchant || '',
         expenseDate: exp.expenseDate || exp.date || new Date().toISOString().split('T')[0],
       };
@@ -518,7 +535,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
           currency: 'BDT',
           categoryId: exp.categoryId,
           paymentMethodId: exp.paymentMethodId || null,
-          description: exp.description,
+          description: exp.description || exp.categoryName || 'Voice Expense',
           merchant: exp.merchant || null,
           expenseDate: exp.expenseDate,
         })),
@@ -578,7 +595,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                 </span>
               </Dialog.Title>
               <Dialog.Description className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                Automatic Language Detection (বাংলা + English) • Code-switch mid speech seamlessly
+                Switch Between The Supported Languages (বাংলা + English)
               </Dialog.Description>
             </div>
           </div>
@@ -599,11 +616,10 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setLiveLang('bn-BD')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border ${
-                    liveLang === 'bn-BD'
+                  className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border ${liveLang === 'bn-BD'
                       ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/40 shadow-sm scale-105'
                       : 'bg-transparent text-slate-500 border-transparent hover:bg-slate-100 dark:hover:bg-zinc-800'
-                  }`}
+                    }`}
                   title="Bangla Speech Recognition (bn-BD)"
                 >
                   🇧🇩 বাংলা (bn-BD)
@@ -611,11 +627,10 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setLiveLang('en-US')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border ${
-                    liveLang === 'en-US'
+                  className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border ${liveLang === 'en-US'
                       ? 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/40 shadow-sm scale-105'
                       : 'bg-transparent text-slate-500 border-transparent hover:bg-slate-100 dark:hover:bg-zinc-800'
-                  }`}
+                    }`}
                   title="English Speech Recognition (en-US)"
                 >
                   🇺🇸 English (en-US)
@@ -648,15 +663,15 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
               </button>
               <p className="text-sm font-extrabold mt-3" style={{ color: isRecording ? '#ef4444' : 'var(--text-primary)' }}>
                 {isRecording
-                  ? 'Listening... (Auto-stops after 3s of silence)'
+                  ? (locale === 'bn' ? 'শুনছি... সম্পন্ন করতে মাইক্রোফোনে ক্লিক করুন' : 'Listening... Click mic to stop & extract')
                   : isAnalyzing
-                  ? 'Processing audio with Gemini AI...'
-                  : 'Click to Speak in Bangla, English, or Mixed'}
+                    ? (locale === 'bn' ? 'এআই বিশ্লেষণ ও খরচ বের করছে...' : 'Analyzing & extracting with AI...')
+                    : t.clickToSpeak}
               </p>
               <p className="text-xs mt-1 text-center font-medium" style={{ color: 'var(--text-secondary)' }}>
                 {isRecording
-                  ? 'Speak naturally • You can edit or correct the transcript below anytime'
-                  : 'e.g. "Uber ride 250 taka and dinner 450 taka বিকাশে দিলাম"'}
+                  ? (locale === 'bn' ? 'কথা বলা শেষ হলে নিজে নিজেই এক্সট্র্যাক্ট হবে অথবা মাইকে ক্লিক করুন' : 'Auto-stops after silence or click mic to finish & extract immediately')
+                  : t.voiceHintEg}
               </p>
             </div>
 
@@ -664,9 +679,9 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
-                  <span>Transcribed Text</span>
+                  <span>{t.speechTranscript}</span>
                   <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-                    (Editable — fix typos anytime)
+                    {locale === 'bn' ? '(প্রয়োজনে লিখে এডিট করতে পারেন)' : '(Editable — fix typos anytime)'}
                   </span>
                 </label>
                 {transcript && (
@@ -679,16 +694,25 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                     }}
                     className="text-xs font-bold text-red-500 hover:underline"
                   >
-                    Clear Text
+                    {locale === 'bn' ? 'মুছে ফেলুন' : 'Clear Text'}
                   </button>
                 )}
               </div>
               <div className="relative">
                 <textarea
                   value={transcript}
-                  onChange={(e) => setTranscript(e.target.value)}
-                  placeholder="Speech appears here in real-time as you talk. You can pause, type, or edit any mistake midway..."
-                  rows={3}
+                  onChange={(e) => {
+                    setTranscript(e.target.value);
+                    transcriptRef.current = e.target.value;
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAnalyzeText(transcript.trim());
+                    }
+                  }}
+                  placeholder={locale === 'bn' ? 'কথা বললে এখানে টেক্সট দেখা যাবে। এন্টার চাপলে এআই হিসাব করবে...' : 'Speech appears here in real-time as you talk. Press Enter to parse typed text...'}
+                  rows={2}
                   className="input-base w-full p-3 rounded-xl text-xs font-medium outline-none resize-none transition-colors leading-relaxed border"
                   style={{
                     backgroundColor: 'var(--bg-surface)',
@@ -698,25 +722,6 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                 />
               </div>
             </div>
-
-            {/* Parse / Manual Trigger Button */}
-            <button
-              onClick={handleAnalyzeText}
-              disabled={isAnalyzing || !transcript.trim()}
-              className="w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 btn-accent"
-            >
-              {isAnalyzing ? (
-                <>
-                  <CircleNotch size={16} className="animate-spin" />
-                  <span>Analyzing with AI...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkle size={16} weight="fill" />
-                  <span>Parse &amp; Extract Expenses</span>
-                </>
-              )}
-            </button>
           </div>
 
           {/* 3. Parsed Output & Confirmation Area */}
@@ -725,10 +730,10 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-extrabold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                   <Sparkle size={16} weight="fill" style={{ color: 'var(--accent)' }} />
-                  <span>Extracted Expenses ({parsedExpenses.length})</span>
+                  <span>{locale === 'bn' ? `এক্সট্র্যাক্ট করা খরচ (${toBengaliNumber(parsedExpenses.length)})` : `Extracted Expenses (${parsedExpenses.length})`}</span>
                 </h3>
                 <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                  Review &amp; Confirm
+                  {locale === 'bn' ? 'রিভিউ ও কনফার্ম করুন' : 'Review & Confirm'}
                 </span>
               </div>
 
@@ -739,27 +744,10 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                     className="p-4 rounded-xl space-y-3 transition-all"
                     style={{ backgroundColor: 'var(--bg-surface-sunken)', border: '1px solid var(--border-subtle)' }}
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-secondary)' }}>
-                          Description
-                        </label>
-                        <input
-                          type="text"
-                          value={exp.description}
-                          onChange={(e) => handleUpdateItem(idx, 'description', e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg text-xs font-bold outline-none"
-                          style={{
-                            backgroundColor: 'var(--bg-surface)',
-                            border: '1px solid var(--border-subtle)',
-                            color: 'var(--text-primary)',
-                          }}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-secondary)' }}>
-                          Amount (৳)
+                          {t.amountTaka}
                         </label>
                         <input
                           type="number"
@@ -777,7 +765,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
 
                       <div>
                         <label className="text-xs font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-secondary)' }}>
-                          Category
+                          {t.category}
                         </label>
                         <select
                           value={exp.categoryId}
@@ -801,13 +789,13 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
                       <div>
                         <label className="text-xs font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-secondary)' }}>
-                          Merchant (Optional)
+                          {locale === 'bn' ? 'মার্চেন্ট / দোকান (ঐচ্ছিক)' : 'Merchant (Optional)'}
                         </label>
                         <input
                           type="text"
                           value={exp.merchant}
                           onChange={(e) => handleUpdateItem(idx, 'merchant', e.target.value)}
-                          placeholder="e.g. Uber, Meena Bazar"
+                          placeholder={locale === 'bn' ? 'যেমন: উবার, মীনা বাজার' : 'e.g. Uber, Meena Bazar'}
                           className="w-full px-3 py-2 rounded-lg text-xs font-bold outline-none"
                           style={{
                             backgroundColor: 'var(--bg-surface)',
@@ -819,7 +807,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
 
                       <div>
                         <label className="text-xs font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-secondary)' }}>
-                          Payment Method
+                          {t.paymentMethod}
                         </label>
                         <select
                           value={exp.paymentMethodId}
@@ -844,7 +832,7 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                           onClick={() => handleRemoveItem(idx)}
                           className="px-3 py-2 rounded-lg text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                         >
-                          Remove
+                          {locale === 'bn' ? 'বাতিল' : 'Remove'}
                         </button>
                       </div>
                     </div>
@@ -858,12 +846,12 @@ export const VoiceModal: React.FC<VoiceModalProps> = ({
                   className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
                   style={{ backgroundColor: 'var(--bg-surface-sunken)', color: 'var(--text-secondary)' }}
                 >
-                  Discard
+                  {locale === 'bn' ? 'মুছে ফেলুন' : 'Discard'}
                 </button>
                 <button
                   onClick={handleConfirmAll}
                   disabled={isConfirming}
-                  className="btn-accent flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-extrabold"
+                  className="btn-accent flex items-center gap-2 text-xs font-extrabold px-5 py-2.5 rounded-xl shadow-md"
                 >
                   <Check size={16} weight="bold" />
                   <span>{isConfirming ? 'Saving...' : `Confirm & Save (${parsedExpenses.length})`}</span>

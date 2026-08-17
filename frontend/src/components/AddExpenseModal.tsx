@@ -115,7 +115,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 {t.addExpense}
               </Dialog.Title>
               <Dialog.Description className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                Manual transaction entry
+                {locale === 'bn' ? 'ম্যানুয়াল খরচ এন্ট্রি' : 'Manual transaction entry'}
               </Dialog.Description>
             </div>
           </div>
@@ -165,7 +165,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                   disabled={subcategories.length === 0}
                   className="input-base w-full disabled:opacity-40"
                 >
-                  <option value="">None</option>
+                  <option value="">{locale === 'bn' ? 'কোনোটি নয়' : 'None'}</option>
                   {subcategories.map((s: any) => (
                     <option key={s.id} value={s.id}>
                       {locale === 'bn' ? (s.nameBn || s.name) : s.name}
@@ -198,7 +198,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Shwapno, KFC"
+                  placeholder={locale === 'bn' ? 'যেমন: স্বপ্ন, কেএফসি' : 'e.g. Shwapno, KFC'}
                   value={merchant}
                   onChange={(e) => setMerchant(e.target.value)}
                   className="input-base w-full"
@@ -238,7 +238,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
               </label>
               <input
                 type="text"
-                placeholder="What was this expense for?"
+                placeholder={locale === 'bn' ? 'খরচের বিবরণ লিখুন' : 'What was this expense for?'}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="input-base w-full"
@@ -251,7 +251,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
               </button>
               <button type="submit" disabled={isSubmitting} className="btn-accent flex items-center gap-2">
                 <Check size={16} weight="bold" />
-                <span>{isSubmitting ? 'Saving...' : t.save}</span>
+                <span>{isSubmitting ? (locale === 'bn' ? 'সংরক্ষণ হচ্ছে...' : 'Saving...') : t.save}</span>
               </button>
             </div>
           </form>

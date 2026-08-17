@@ -20,6 +20,8 @@ import {
   AiProcessingLog,
   SystemSetting,
   Loan,
+  UtilityBill,
+  Subscription,
 } from './database/entities';
 
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -37,8 +39,12 @@ import { AiModule } from './modules/ai/ai.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { LoansModule } from './modules/loans/loans.module';
+import { BillsModule } from './modules/bills/bills.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { AppController } from './app.controller';
 
 @Module({
+  controllers: [AppController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -69,6 +75,8 @@ import { LoansModule } from './modules/loans/loans.module';
             AiProcessingLog,
             SystemSetting,
             Loan,
+            UtilityBill,
+            Subscription,
           ],
           synchronize: true, // auto synchronize schema in dev
           logging: false,
@@ -91,6 +99,8 @@ import { LoansModule } from './modules/loans/loans.module';
     AnalyticsModule,
     AdminModule,
     LoansModule,
+    BillsModule,
+    SubscriptionsModule,
   ],
   providers: [
     {

@@ -15,6 +15,9 @@ import {
   Receipt,
   AiProcessingLog,
   SystemSetting,
+  UtilityBill,
+  BillStatus,
+  Subscription,
 } from '../entities';
 import { UserRole, CurrencyCode } from '../../common/enums';
 
@@ -240,6 +243,8 @@ async function runSeed() {
       Receipt,
       AiProcessingLog,
       SystemSetting,
+      UtilityBill,
+      Subscription,
     ],
     synchronize: true,
   });
@@ -368,6 +373,218 @@ async function runSeed() {
     }
   }
   console.log('✅ System settings seeded.');
+
+  // 6. Seed Demo Utility Bills
+  const billRepo = dataSource.getRepository(UtilityBill);
+  const now = new Date();
+  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+  const demoBills = [
+    {
+      receiverName: 'DESCO (Electricity Bill)',
+      category: 'Electricity',
+      amount: 2450.00,
+      billingMonth: currentMonthStr,
+      dueDate: `${currentMonthStr}-15`,
+      status: BillStatus.PAID,
+      notes: 'Prepaid meter token recharge via bKash',
+    },
+    {
+      receiverName: 'Dhaka WASA (Water Bill)',
+      category: 'Water',
+      amount: 850.00,
+      billingMonth: currentMonthStr,
+      dueDate: `${currentMonthStr}-20`,
+      status: BillStatus.UNPAID,
+      notes: 'Monthly domestic supply charges',
+    },
+    {
+      receiverName: 'Titas Gas Transmission',
+      category: 'Gas',
+      amount: 1080.00,
+      billingMonth: currentMonthStr,
+      dueDate: `${currentMonthStr}-18`,
+      status: BillStatus.PAID,
+      notes: 'Double burner prepaid card refill',
+    },
+    {
+      receiverName: 'Dot Internet (100 Mbps Fiber)',
+      category: 'Internet',
+      amount: 1200.00,
+      billingMonth: currentMonthStr,
+      dueDate: `${currentMonthStr}-05`,
+      status: BillStatus.PAID,
+      notes: 'Monthly broadband invoice #DOT-8849',
+    },
+    {
+      receiverName: 'House Rent (Green Valley Heights)',
+      category: 'House Rent',
+      amount: 22000.00,
+      billingMonth: currentMonthStr,
+      dueDate: `${currentMonthStr}-07`,
+      status: BillStatus.PAID,
+      notes: 'Apartment 4B monthly residential rent',
+    },
+    {
+      receiverName: 'Building Society Service Charge',
+      category: 'Service Charge',
+      amount: 3500.00,
+      billingMonth: currentMonthStr,
+      dueDate: `${currentMonthStr}-10`,
+      status: BillStatus.UNPAID,
+      notes: 'Lift, security guard, generator diesel maintenance',
+    },
+    {
+      receiverName: 'City Waste Management',
+      category: 'Waste Management',
+      amount: 250.00,
+      billingMonth: currentMonthStr,
+      dueDate: `${currentMonthStr}-25`,
+      status: BillStatus.UNPAID,
+      notes: 'Neighborhood door-to-door trash collection',
+    },
+    {
+      receiverName: 'Grameenphone Postpaid Platinum',
+      category: 'Telephone',
+      amount: 1450.00,
+      billingMonth: currentMonthStr,
+      dueDate: `${currentMonthStr}-22`,
+      status: BillStatus.UNPAID,
+      notes: 'Corporate roaming & 4G data bundle',
+    },
+  ];
+
+  for (const targetUser of [demoUser, admin]) {
+    for (const b of demoBills) {
+      const existing = await billRepo.findOne({
+        where: { userId: targetUser.id, receiverName: b.receiverName, billingMonth: b.billingMonth },
+      });
+      if (!existing) {
+        const newBill = billRepo.create({
+          userId: targetUser.id,
+          receiverName: b.receiverName,
+          category: b.category,
+          amount: b.amount,
+          billingMonth: b.billingMonth,
+          dueDate: b.dueDate,
+          status: b.status,
+          paidAt: b.status === BillStatus.PAID ? new Date() : undefined,
+          notes: b.notes,
+        });
+        await billRepo.save(newBill);
+      }
+    }
+  }
+  console.log('✅ Demo utility bills seeded.');
+
+  // 7. Seed Demo Recurring Subscriptions
+  const subRepo = dataSource.getRepository(Subscription);
+  const demoSubs = [
+    {
+      serviceName: 'Netflix Premium 4K UHD',
+      category: 'Streaming & Video',
+      amount: 1450.00,
+      billingCycle: 'monthly',
+      renewalDate: `${currentMonthStr}-14`,
+      status: BillStatus.PAID,
+      autoRenew: true,
+      notes: 'Family plan 4 screens',
+    },
+    {
+      serviceName: 'Spotify Duo Premium',
+      category: 'Music & Audio',
+      amount: 540.00,
+      billingCycle: 'monthly',
+      renewalDate: `${currentMonthStr}-19`,
+      status: BillStatus.PAID,
+      autoRenew: true,
+      notes: 'High fidelity audio streaming',
+    },
+    {
+      serviceName: 'OpenAI ChatGPT Plus',
+      category: 'AI & Productivity',
+      amount: 2450.00,
+      billingCycle: 'monthly',
+      renewalDate: `${currentMonthStr}-24`,
+      status: BillStatus.UNPAID,
+      autoRenew: true,
+      notes: 'GPT-4o, o3-mini coding assistant',
+    },
+    {
+      serviceName: 'GitHub Copilot Individual',
+      category: 'Cloud & Hosting',
+      amount: 1200.00,
+      billingCycle: 'monthly',
+      renewalDate: `${currentMonthStr}-28`,
+      status: BillStatus.UNPAID,
+      autoRenew: true,
+      notes: 'IDE auto-complete pair programmer',
+    },
+    {
+      serviceName: 'Vercel Pro Developer Plan',
+      category: 'Cloud & Hosting',
+      amount: 2400.00,
+      billingCycle: 'monthly',
+      renewalDate: `${currentMonthStr}-02`,
+      status: BillStatus.PAID,
+      autoRenew: true,
+      notes: 'Next.js frontend edge hosting',
+    },
+    {
+      serviceName: 'Fitverse Gym Membership',
+      category: 'Fitness & Gym',
+      amount: 3000.00,
+      billingCycle: 'monthly',
+      renewalDate: `${currentMonthStr}-05`,
+      status: BillStatus.PAID,
+      autoRenew: true,
+      notes: 'Monthly trainer & access fee',
+    },
+    {
+      serviceName: 'Google One 2TB Cloud Storage',
+      category: 'Cloud & Hosting',
+      amount: 1100.00,
+      billingCycle: 'monthly',
+      renewalDate: `${currentMonthStr}-17`,
+      status: BillStatus.UNPAID,
+      autoRenew: true,
+      notes: 'Drive backup & Google Photos storage',
+    },
+    {
+      serviceName: 'Coursera Plus Learning Pass',
+      category: 'Courses & Learning',
+      amount: 4500.00,
+      billingCycle: 'monthly',
+      renewalDate: `${currentMonthStr}-30`,
+      status: BillStatus.UNPAID,
+      autoRenew: true,
+      notes: 'Unlimited specialization certificates',
+    },
+  ];
+
+  for (const targetUser of [demoUser, admin]) {
+    for (const s of demoSubs) {
+      const existing = await subRepo.findOne({
+        where: { userId: targetUser.id, serviceName: s.serviceName, billingMonth: currentMonthStr },
+      });
+      if (!existing) {
+        const newSub = subRepo.create({
+          userId: targetUser.id,
+          serviceName: s.serviceName,
+          category: s.category,
+          amount: s.amount,
+          billingMonth: currentMonthStr,
+          billingCycle: s.billingCycle as any,
+          renewalDate: s.renewalDate,
+          status: s.status as any,
+          paidAt: s.status === BillStatus.PAID ? new Date() : undefined,
+          notes: s.notes,
+        });
+        await subRepo.save(newSub);
+      }
+    }
+  }
+  console.log('✅ Demo subscriptions seeded.');
 
   await dataSource.destroy();
   console.log('Seeding finished successfully.');

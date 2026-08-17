@@ -5,7 +5,7 @@ import { useAppStore } from '@/store/appStore';
 import { Toaster } from 'sonner';
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { theme, setTheme, setLocale, setUser } = useAppStore();
+  const { theme, setTheme, setLocale, setUser, setFontFamily, setHydrated, fontFamily } = useAppStore();
 
   useEffect(() => {
     // Hydrate state from localStorage on client mount
@@ -18,6 +18,10 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       if (storedLocale === 'en' || storedLocale === 'bn') {
         setLocale(storedLocale);
       }
+      const storedFont = localStorage.getItem('khoroch_font');
+      if (storedFont) {
+        setFontFamily(storedFont as any);
+      }
       const storedUser = localStorage.getItem('khoroch_user');
       const storedToken = localStorage.getItem('khoroch_token');
       if (storedUser && storedToken) {
@@ -25,8 +29,10 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       }
     } catch (e) {
       // ignore
+    } finally {
+      setHydrated();
     }
-  }, [setTheme, setLocale, setUser]);
+  }, [setTheme, setLocale, setUser, setFontFamily, setHydrated]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -36,6 +42,12 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       root.classList.remove('dark');
     }
   }, [theme]);
+
+  useEffect(() => {
+    if (fontFamily) {
+      document.documentElement.setAttribute('data-font', fontFamily);
+    }
+  }, [fontFamily]);
 
   return (
     <>

@@ -5,7 +5,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Sliders, Check, X } from '@phosphor-icons/react';
 import { api } from '@/lib/api';
 import { useAppStore } from '@/store/appStore';
-import { translations } from '@/lib/i18n';
+import { translations, toBengaliNumber } from '@/lib/i18n';
 import { toast } from 'sonner';
 
 interface BudgetModalProps {
@@ -92,7 +92,9 @@ export const BudgetModal: React.FC<BudgetModalProps> = ({
                 {t.setBudget}
               </Dialog.Title>
               <Dialog.Description className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                Target for Month {currentMonth}/{currentYear}
+                {locale === 'bn'
+                  ? `${toBengaliNumber(currentMonth)}/${toBengaliNumber(currentYear)} মাসের বাজেট লক্ষ্যমাত্রা`
+                  : `Target for Month ${currentMonth}/${currentYear}`}
               </Dialog.Description>
             </div>
           </div>
@@ -106,7 +108,7 @@ export const BudgetModal: React.FC<BudgetModalProps> = ({
                 type="number"
                 step="0.01"
                 required
-                placeholder="50000.00"
+                placeholder={locale === 'bn' ? '৫০,০০০' : '50000.00'}
                 value={startingBalance}
                 onChange={(e) => setStartingBalance(e.target.value)}
                 className="input-base w-full text-2xl font-semibold"
@@ -120,7 +122,7 @@ export const BudgetModal: React.FC<BudgetModalProps> = ({
               </button>
               <button type="submit" disabled={isSubmitting} className="btn-accent flex items-center gap-2">
                 <Check size={16} weight="bold" />
-                <span>{isSubmitting ? 'Saving...' : t.save}</span>
+                <span>{isSubmitting ? (locale === 'bn' ? 'সংরক্ষণ হচ্ছে...' : 'Saving...') : t.save}</span>
               </button>
             </div>
           </form>

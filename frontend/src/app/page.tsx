@@ -38,7 +38,7 @@ import {
 } from 'recharts';
 import { api } from '@/lib/api';
 import { useAppStore } from '@/store/appStore';
-import { translations, formatMoney, toBengaliNumber } from '@/lib/i18n';
+import { translations, formatMoney, toBengaliNumber, formatFirstName } from '@/lib/i18n';
 import { Sidebar } from '@/components/Sidebar';
 import { VoiceModal } from '@/components/VoiceModal';
 import { ReceiptModal } from '@/components/ReceiptModal';
@@ -49,7 +49,7 @@ import { toast } from 'sonner';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, locale, setLocale, theme, setTheme } = useAppStore();
+  const { user, isHydrated, locale, setLocale, theme, setTheme } = useAppStore();
   const t = translations[locale];
 
   const [categories, setCategories] = useState<any[]>([]);
@@ -70,12 +70,13 @@ export default function DashboardPage() {
   const [currentDateTime, setCurrentDateTime] = useState<string>('');
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!user) {
       router.push('/login');
       return;
     }
     fetchDashboardData();
-  }, [user]);
+  }, [user, isHydrated]);
 
   useEffect(() => {
     const updateTime = () => {
@@ -206,7 +207,13 @@ export default function DashboardPage() {
     });
   };
 
-  if (!user) return null;
+  if (!isHydrated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-page)' }}>
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   const budget = dashboardData?.budget || {
     startingBalance: 0,
@@ -227,7 +234,7 @@ export default function DashboardPage() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    const name = user?.firstName || '';
+    const name = formatFirstName(user?.firstName, locale);
     if (locale === 'bn') {
       if (hour < 12) return `শুভ সকাল${name ? `, ${name}` : ''}`;
       if (hour < 17) return `শুভ অপরাহ্ন${name ? `, ${name}` : ''}`;
@@ -253,7 +260,7 @@ export default function DashboardPage() {
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <main className="p-5 lg:p-7 space-y-5 max-w-[1640px] w-full mx-auto">
+        <main className="p-5 lg:p-7 space-y-5 max-w-[1640px] w-full mx-auto dashboard-scaled-text">
           {/* 1. Header Hero Card with Actions */}
           <div
             className="rounded-2xl p-5 lg:p-6 text-white shadow-xs relative overflow-hidden transition-all"
@@ -267,12 +274,20 @@ export default function DashboardPage() {
               <div className="flex items-center gap-4">
                 <Link
                   href="/profile"
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-white font-extrabold text-xl shrink-0 shadow-xs transition-all hover:scale-105 hover:bg-white/25 group"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-white font-extrabold text-xl shrink-0 shadow-xs transition-all hover:scale-105 hover:bg-white/25 group overflow-hidden"
                   title="View User Profile"
                 >
-                  <span className="group-hover:scale-110 transition-transform">
-                    {user?.firstName?.[0]?.toUpperCase() || 'U'}
-                  </span>
+                  {user?.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.firstName || 'User'}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                    />
+                  ) : (
+                    <span className="group-hover:scale-110 transition-transform">
+                      {user?.firstName?.[0]?.toUpperCase() || 'U'}
+                    </span>
+                  )}
                 </Link>
 
                 <div className="space-y-1">
@@ -284,17 +299,17 @@ export default function DashboardPage() {
                     {/* High-visibility Voice Entry Action Pill */}
                     <button
                       onClick={() => setIsVoiceOpen(true)}
-                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm hover:bg-red-50 active:scale-95 ml-1"
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm hover:bg-red-50 active:scale-95 ml-1 cursor-pointer"
                       style={{
                         backgroundColor: '#ffffff',
                         color: '#dc2626',
                         border: '1px solid rgba(220, 38, 38, 0.25)',
                       }}
-                      title="Click to speak and automatically add an expense"
+                      title="Click to Voice input and automatically add an expense"
                     >
                       <Microphone size={14} weight="fill" className="text-red-600 animate-pulse" />
                       <span className="font-extrabold text-red-600">
-                        {locale === 'bn' ? 'ভয়েস এন্ট্রি' : 'Voice Input'}
+                        {locale === 'bn' ? 'ক্লিক করে ভয়েস ইনপুট দিন' : 'Click to Voice input'}
                       </span>
                     </button>
                   </div>
@@ -320,23 +335,12 @@ export default function DashboardPage() {
                 {/* Language Switcher */}
                 <button
                   onClick={() => setLocale(locale === 'en' ? 'bn' : 'en')}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-white border border-white/20 transition-all hover:bg-white/20 active:scale-95"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-white border border-white/20 transition-all hover:bg-white/20 active:scale-95 cursor-pointer"
                   style={{ backgroundColor: 'rgba(255, 255, 255, 0.12)' }}
                   title="Switch Language"
                 >
                   <Globe size={14} weight="bold" />
                   <span>{locale === 'en' ? 'বাংলা' : 'English'}</span>
-                </button>
-
-                {/* Notifications */}
-                <button
-                  onClick={() => toast.info('No new unread alerts.')}
-                  className="p-2 rounded-full text-white border border-white/20 relative transition-all hover:bg-white/20 active:scale-95"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.12)' }}
-                  title="Notifications"
-                >
-                  <Bell size={15} weight="bold" />
-                  <span className="w-1.5 h-1.5 rounded-full absolute top-1.5 right-1.5 bg-amber-300 ring-2 ring-emerald-800" />
                 </button>
 
                 {/* Light / Dark Mode Toggle */}
@@ -413,7 +417,7 @@ export default function DashboardPage() {
                   <CalendarBlank size={22} weight="bold" />
                 </div>
                 <span className="inline-flex items-center gap-1 text-xs font-bold transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--accent)' }}>
-                  <span>View All</span>
+                  <span>{t.viewAll}</span>
                   <ArrowUpRight size={12} weight="bold" />
                 </span>
               </div>
@@ -444,7 +448,7 @@ export default function DashboardPage() {
                   <Wallet size={22} weight="bold" />
                 </div>
                 <span className="inline-flex items-center gap-1 text-xs font-bold transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--success-text)' }}>
-                  <span>Adjust</span>
+                  <span>{t.adjust}</span>
                   <ArrowUpRight size={12} weight="bold" />
                 </span>
               </div>
@@ -459,7 +463,7 @@ export default function DashboardPage() {
                     style={{ backgroundColor: 'var(--success-subtle)', color: 'var(--success-text)' }}
                   >
                     <TrendUp size={11} weight="bold" />
-                    <span>Target</span>
+                    <span>{t.target}</span>
                   </span>
                 </div>
               </div>
@@ -502,7 +506,7 @@ export default function DashboardPage() {
                     className="text-xs font-extrabold"
                     style={{ color: budget.remainingBalance < 0 ? 'var(--destructive)' : 'var(--success)' }}
                   >
-                    {budget.remainingBalance < 0 ? 'Exceeded' : 'Available'}
+                    {budget.remainingBalance < 0 ? t.exceeded : t.available}
                   </span>
                 </div>
               </div>
@@ -526,22 +530,22 @@ export default function DashboardPage() {
                     color: 'var(--text-primary)',
                   }}
                 >
-                  <option value="7">Last 7d</option>
-                  <option value="15">Last 15d</option>
-                  <option value="30">Last 30d</option>
+                  <option value="7">{locale === 'bn' ? 'গত ৭ দিন' : 'Last 7d'}</option>
+                  <option value="15">{locale === 'bn' ? 'গত ১৫ দিন' : 'Last 15d'}</option>
+                  <option value="30">{locale === 'bn' ? 'গত ৩০ দিন' : 'Last 30d'}</option>
                 </select>
               </div>
               <div className="space-y-1">
                 <p className="text-2xl lg:text-3xl font-extrabold tabular-nums tracking-tight" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-geist-mono), monospace' }}>
                   {locale === 'bn' ? toBengaliNumber(transactionCount) : transactionCount}
                   <span className="text-xs font-bold ml-1.5 font-sans" style={{ color: 'var(--text-secondary)' }}>
-                    {locale === 'bn' ? 'টি' : 'Records'}
+                    {locale === 'bn' ? 'টি' : 'Transactions'}
                   </span>
                 </p>
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>Recorded</span>
+                  <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>{t.transactions}</span>
                   <span className="text-xs font-extrabold" style={{ color: 'var(--accent)' }}>
-                    {transactionDays === '7' ? '7 Days' : transactionDays === '15' ? '15 Days' : '30 Days'}
+                    {transactionDays === '7' ? (locale === 'bn' ? '৭ দিন' : '7 Days') : transactionDays === '15' ? (locale === 'bn' ? '১৫ দিন' : '15 Days') : (locale === 'bn' ? '৩০ দিন' : '30 Days')}
                   </span>
                 </div>
               </div>
@@ -551,38 +555,38 @@ export default function DashboardPage() {
           {/* 3. Two-Column Analytics Row (Category Breakdown & Spending Amount) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
             {/* Card 1: Category Breakdown (50% width) */}
-            <div className="surface-card p-5 lg:p-6 flex flex-col justify-between min-h-[360px]">
+            <div className="surface-card p-5 lg:p-5.5 flex flex-col justify-between min-h-[330px]">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                    Category Breakdown
+                    {t.categoryBreakdown}
                   </h3>
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-surface-sunken)', color: 'var(--text-secondary)' }}>
-                    This Month
+                    {t.thisMonth}
                   </span>
                 </div>
 
                 {/* Side-by-side Legend (Left) - Pie Chart (Center) - Legend (Right) */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 my-2 min-h-[220px]">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 my-2 min-h-[210px]">
                   {/* Left Side: First Half of Categories (snug against pie chart) */}
-                  <div className="flex flex-col gap-3 justify-center items-start sm:items-end flex-1 max-w-[270px]">
+                  <div className="flex flex-col gap-2.5 justify-center items-start sm:items-end flex-1 max-w-[270px]">
                     {topCategories.slice(0, Math.ceil(topCategories.length / 2)).map((cat: any, idx: number) => {
                       const color = PALETTE_COLORS[idx % PALETTE_COLORS.length];
                       const name = locale === 'bn' ? (cat.categoryNameBn || cat.categoryName) : cat.categoryName;
                       return (
                         <div key={idx} className="flex items-center gap-2 min-w-0">
                           <div
-                            className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
+                            className="w-6.5 h-6.5 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
                             style={{ backgroundColor: `${color}20` }}
                           >
                             <CategoryIcon
                               name={cat.categoryName}
                               color={color}
-                              size={16}
+                              size={15}
                             />
                           </div>
-                          <span className="font-extrabold text-[16px] tracking-tight truncate" style={{ color: 'var(--text-primary)' }}>
-                            {name} - <span className="tabular-nums font-extrabold text-[16px]" style={{ color: color }}>{cat.percentage}%</span>
+                          <span className="font-extrabold text-[15px] tracking-tight truncate" style={{ color: 'var(--text-primary)' }}>
+                            {name} - <span className="tabular-nums font-extrabold text-[15px]" style={{ color: color }}>{locale === 'bn' ? toBengaliNumber(cat.percentage) : cat.percentage}%</span>
                           </span>
                         </div>
                       );
@@ -590,9 +594,11 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Center: Pie Chart Canvas with Inside Percentage Labels */}
-                  <div className="h-52 w-52 shrink-0 relative flex items-center justify-center">
+                  <div className="h-48 w-48 shrink-0 relative flex items-center justify-center">
                     {topCategories.length === 0 ? (
-                      <div className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>No category data</div>
+                      <div className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
+                        {locale === 'bn' ? 'কোনো ক্যাটাগরি তথ্য নেই' : 'No category data'}
+                      </div>
                     ) : (
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
@@ -600,15 +606,16 @@ export default function DashboardPage() {
                             data={topCategories}
                             cx="50%"
                             cy="50%"
-                            outerRadius={84}
+                            outerRadius={80}
                             dataKey="totalSpent"
                             labelLine={false}
                             label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
                               if (percent < 0.06) return null;
-                              const radius = (outerRadius || 84) * 0.62;
+                              const radius = (outerRadius || 80) * 0.62;
                               const radian = Math.PI / 180;
                               const x = cx + radius * Math.cos(-midAngle * radian);
                               const y = cy + radius * Math.sin(-midAngle * radian);
+                              const pctNum = (percent * 100).toFixed(0);
                               return (
                                 <text
                                   x={x}
@@ -622,7 +629,7 @@ export default function DashboardPage() {
                                     filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.7))',
                                   }}
                                 >
-                                  {`${(percent * 100).toFixed(0)}%`}
+                                  {locale === 'bn' ? `${toBengaliNumber(pctNum)}%` : `${pctNum}%`}
                                 </text>
                               );
                             }}
@@ -641,7 +648,7 @@ export default function DashboardPage() {
                               color: chartTooltipText,
                               boxShadow: 'var(--shadow-md)',
                             }}
-                            formatter={(val: any) => [formatMoney(val, locale), 'Spent']}
+                            formatter={(val: any) => [formatMoney(val, locale), locale === 'bn' ? 'খরচ' : 'Spent']}
                           />
                         </PieChart>
                       </ResponsiveContainer>
@@ -649,7 +656,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Right Side: Second Half of Categories (snug against pie chart) */}
-                  <div className="flex flex-col gap-3 justify-center items-start flex-1 max-w-[270px]">
+                  <div className="flex flex-col gap-2.5 justify-center items-start flex-1 max-w-[270px]">
                     {topCategories.slice(Math.ceil(topCategories.length / 2)).map((cat: any, idx: number) => {
                       const globalIdx = Math.ceil(topCategories.length / 2) + idx;
                       const color = PALETTE_COLORS[globalIdx % PALETTE_COLORS.length];
@@ -657,17 +664,17 @@ export default function DashboardPage() {
                       return (
                         <div key={globalIdx} className="flex items-center gap-2 min-w-0">
                           <div
-                            className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
+                            className="w-6.5 h-6.5 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
                             style={{ backgroundColor: `${color}20` }}
                           >
                             <CategoryIcon
                               name={cat.categoryName}
                               color={color}
-                              size={16}
+                              size={15}
                             />
                           </div>
-                          <span className="font-extrabold text-[16px] tracking-tight truncate" style={{ color: 'var(--text-primary)' }}>
-                            {name} - <span className="tabular-nums font-extrabold text-[16px]" style={{ color: color }}>{cat.percentage}%</span>
+                          <span className="font-extrabold text-[15px] tracking-tight truncate" style={{ color: 'var(--text-primary)' }}>
+                            {name} - <span className="tabular-nums font-extrabold text-[15px]" style={{ color: color }}>{locale === 'bn' ? toBengaliNumber(cat.percentage) : cat.percentage}%</span>
                           </span>
                         </div>
                       );
@@ -678,11 +685,11 @@ export default function DashboardPage() {
             </div>
 
             {/* Card 2: Spending Amount Trends (50% width) */}
-            <div className="surface-card p-5 lg:p-6 flex flex-col justify-between min-h-[360px]">
+            <div className="surface-card p-5 lg:p-5.5 flex flex-col justify-between min-h-[330px]">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                    Spending Amount
+                    {t.spendingAmount}
                   </h3>
 
                   {/* Range Dropdown Selector */}
@@ -696,56 +703,60 @@ export default function DashboardPage() {
                       color: 'var(--accent-text)',
                     }}
                   >
-                    <option value="week">Past week</option>
-                    <option value="3m">3 months</option>
-                    <option value="6m">6 months</option>
-                    <option value="year">Year</option>
+                    <option value="week">{locale === 'bn' ? 'বিগত সপ্তাহ' : 'Past week'}</option>
+                    <option value="3m">{locale === 'bn' ? '৩ মাস' : '3 months'}</option>
+                    <option value="6m">{locale === 'bn' ? '৬ মাস' : '6 months'}</option>
+                    <option value="year">{locale === 'bn' ? '১ বছর' : 'Year'}</option>
                   </select>
                 </div>
 
                 {/* Bar Chart Canvas */}
-                <div className="h-60 w-full my-2">
+                <div className="h-56 w-full my-1.5">
                   {getFilteredTrendsData().length === 0 ? (
                     <div className="h-full flex items-center justify-center text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                      No trend records
+                      {locale === 'bn' ? 'কোনো ট্রেন্ড রেকর্ড নেই' : 'No trend records'}
                     </div>
                   ) : (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={getFilteredTrendsData()}
                         barSize={32}
-                        margin={{ top: 22, right: 10, left: -10, bottom: 0 }}
+                        margin={{ top: 24, right: 10, left: -10, bottom: 0 }}
                       >
                         <XAxis
                           dataKey="period"
                           stroke={chartAxisColor}
-                          fontSize={11}
-                          fontWeight={600}
+                          fontSize={13}
+                          fontWeight={700}
                           tickLine={false}
                           axisLine={{ stroke: chartAxisColor, opacity: 0.3 }}
                           tickFormatter={formatMonthLabel}
                         />
                         <YAxis
                           stroke={chartAxisColor}
-                          fontSize={11}
-                          fontWeight={600}
+                          fontSize={13}
+                          fontWeight={700}
                           tickLine={false}
                           axisLine={false}
-                          tickFormatter={(v) => `৳${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`}
+                          tickFormatter={(v) =>
+                            locale === 'bn'
+                              ? `${toBengaliNumber(v >= 1000 ? `${Math.round(v / 1000)}k` : v)} ৳`
+                              : `${v >= 1000 ? `${Math.round(v / 1000)}k` : v} ৳`
+                          }
                         />
                         <Tooltip
                           contentStyle={{
                             backgroundColor: chartTooltipBg,
                             borderColor: chartTooltipBorder,
                             borderRadius: '14px',
-                            fontSize: '13px',
-                            fontWeight: '600',
+                            fontSize: '14px',
+                            fontWeight: '700',
                             color: chartTooltipText,
                             boxShadow: 'var(--shadow-md)',
                           }}
                           labelFormatter={formatFullPeriodLabel}
                           cursor={{ fill: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
-                          formatter={(val: any) => [formatMoney(val, locale), 'Spent']}
+                          formatter={(val: any) => [`${locale === 'bn' ? toBengaliNumber(val) : val} ৳`, locale === 'bn' ? 'খরচ' : 'Spent']}
                         />
                         <Bar
                           dataKey="total"
@@ -754,19 +765,26 @@ export default function DashboardPage() {
                         >
                           <LabelList
                             dataKey="total"
-                            position="top"
-                            formatter={(val: any) =>
-                              val > 0
-                                ? locale === 'bn'
-                                  ? `৳${toBengaliNumber(val)}`
-                                  : `৳${val}`
-                                : ''
-                            }
-                            style={{
-                              fill: theme === 'dark' ? '#ffffff' : '#090d16',
-                              fontSize: '11px',
-                              fontWeight: '800',
-                              fontFamily: 'var(--font-geist-mono), monospace',
+                            content={(props: any) => {
+                              const { x, y, width, value } = props;
+                              if (!value || value <= 0) return null;
+                              const formatted = `${locale === 'bn' ? toBengaliNumber(value) : value} ৳`;
+                              return (
+                                <text
+                                  x={x + width / 2}
+                                  y={y - 8}
+                                  fill={theme === 'dark' ? '#ffffff' : '#090d16'}
+                                  textAnchor="middle"
+                                  dominantBaseline="auto"
+                                  style={{
+                                    fontSize: '12px',
+                                    fontWeight: '800',
+                                    fontFamily: 'var(--font-geist-mono), monospace',
+                                  }}
+                                >
+                                  {formatted}
+                                </text>
+                              );
                             }}
                           />
                         </Bar>
@@ -779,17 +797,17 @@ export default function DashboardPage() {
           </div>
 
           {/* 4. Full-Width Row 3: Recent Expenses Spanning Left to Right */}
-          <div className="surface-card p-5 lg:p-6 border shadow-sm space-y-3.5" style={{ borderColor: 'var(--border-subtle)' }}>
+          <div className="surface-card p-5 lg:p-6 border shadow-sm space-y-3.5 recent-expenses-compact" style={{ borderColor: 'var(--border-subtle)' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <h3 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                  Recent Expenses
+                  {t.recentExpenses}
                 </h3>
                 <span
                   className="text-xs font-extrabold px-2.5 py-0.5 rounded-full shadow-2xs"
                   style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent)' }}
                 >
-                  {recentExpenses.length} Records
+                  {locale === 'bn' ? toBengaliNumber(recentExpenses.length) : recentExpenses.length} {locale === 'bn' ? 'টি লেনদেন' : 'Transactions'}
                 </span>
               </div>
 
@@ -806,7 +824,7 @@ export default function DashboardPage() {
             {/* Horizontal Left-to-Right Seamless Columns of Recent Expenses */}
             {recentExpenses.length === 0 ? (
               <div className="py-8 text-center text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                No expenses recorded yet
+                {t.noExpenses}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 pt-1">

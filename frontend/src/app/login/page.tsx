@@ -13,12 +13,18 @@ import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser, locale } = useAppStore();
+  const { user, isHydrated, setUser, locale } = useAppStore();
   const t = translations[locale];
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    if (isHydrated && user) {
+      router.push('/');
+    }
+  }, [user, isHydrated, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -13,29 +13,52 @@ export interface User {
 }
 
 export type ThemeMode = 'dark' | 'light';
+export type FontFamily = 'jakarta' | 'inter' | 'outfit' | 'poppins' | 'roboto' | 'geist';
 
 interface AppState {
   user: User | null;
   token: string | null;
   locale: Locale;
   theme: ThemeMode;
+  fontFamily: FontFamily;
+  isHydrated: boolean;
   setUser: (user: User | null, token?: string) => void;
   setLocale: (locale: Locale) => void;
   setTheme: (theme: ThemeMode) => void;
+  setFontFamily: (font: FontFamily) => void;
   toggleTheme: () => void;
+  setHydrated: () => void;
   logout: () => void;
 }
 
+// Initial state is always matching SSR (isHydrated: false) until useEffect fires on mount
+const getInitialState = () => {
+  return {
+    user: null,
+    token: null,
+    locale: 'en' as Locale,
+    theme: 'dark' as ThemeMode,
+    fontFamily: 'jakarta' as FontFamily,
+    isHydrated: false,
+  };
+};
+
+const initial = getInitialState();
+
 export const useAppStore = create<AppState>((set, get) => ({
-  user: null,
-  token: null,
-  locale: 'en',
-  theme: 'dark',
+  user: initial.user,
+  token: initial.token,
+  locale: initial.locale,
+  theme: initial.theme,
+  fontFamily: initial.fontFamily,
+  isHydrated: initial.isHydrated,
+  setHydrated: () => set({ isHydrated: true }),
   setUser: (user, token) => {
     if (typeof window !== 'undefined') {
       if (user) localStorage.setItem('khoroch_user', JSON.stringify(user));
       else localStorage.removeItem('khoroch_user');
       if (token) localStorage.setItem('khoroch_token', token);
+      else if (!user) localStorage.removeItem('khoroch_token');
     }
     set((state) => ({ ...state, user, ...(token ? { token } : {}) }));
   },
@@ -55,6 +78,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
     }
     set({ theme });
+  },
+  setFontFamily: (fontFamily) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('khoroch_font', fontFamily);
+      document.documentElement.setAttribute('data-font', fontFamily);
+    }
+    set({ fontFamily });
   },
   toggleTheme: () => {
     const nextTheme = get().theme === 'dark' ? 'light' : 'dark';

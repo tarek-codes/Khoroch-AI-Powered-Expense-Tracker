@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 
 export default function ExpensesPage() {
   const router = useRouter();
-  const { user, locale } = useAppStore();
+  const { user, isHydrated, locale } = useAppStore();
   const t = translations[locale];
 
   const [expenses, setExpenses] = useState<any[]>([]);
@@ -54,16 +54,17 @@ export default function ExpensesPage() {
   const [viewingExpense, setViewingExpense] = useState<any | null>(null);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!user) {
       router.push('/login');
       return;
     }
     fetchFilters();
-  }, [user]);
+  }, [user, isHydrated]);
 
   useEffect(() => {
-    if (user) fetchExpenses();
-  }, [user, page, selectedCategory, selectedPaymentMethod, selectedSource]);
+    if (isHydrated && user) fetchExpenses();
+  }, [user, isHydrated, page, selectedCategory, selectedPaymentMethod, selectedSource]);
 
   const fetchFilters = async () => {
     try {
@@ -126,7 +127,13 @@ export default function ExpensesPage() {
     }
   };
 
-  if (!user) return null;
+  if (!isHydrated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-page)' }}>
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -139,7 +146,7 @@ export default function ExpensesPage() {
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <main className="p-6 lg:p-8 space-y-6 max-w-[1520px] w-full mx-auto">
+        <main className="p-6 lg:p-8 space-y-6 max-w-[1520px] w-full mx-auto dashboard-scaled-text">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -161,11 +168,11 @@ export default function ExpensesPage() {
                     border: '1px solid var(--accent)',
                   }}
                 >
-                  {locale === 'bn' ? toBengaliNumber(totalItems) : totalItems} {locale === 'bn' ? 'টি রেকর্ড' : 'Records'}
+                  {locale === 'bn' ? toBengaliNumber(totalItems) : totalItems} {locale === 'bn' ? 'টি' : 'Transactions'}
                 </span>
               </div>
               <p className="text-xs mt-1.5 font-bold" style={{ color: 'var(--text-secondary)' }}>
-                Full tabular transaction history, multi-filter auditing, and itemized receipts
+                {locale === 'bn' ? 'সম্পূর্ণ খরচের তালিকা, ফিল্টারিং ও রসিদ হিস্ট্রি' : 'Full tabular transaction history, multi-filter auditing, and itemized receipts'}
               </p>
             </div>
 
@@ -221,7 +228,7 @@ export default function ExpensesPage() {
                   type="submit"
                   className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg text-xs font-extrabold text-white shadow-xs transition-transform active:scale-95 bg-emerald-600 hover:bg-emerald-700"
                 >
-                  Search
+                  {t.search}
                 </button>
               </form>
 
@@ -254,7 +261,7 @@ export default function ExpensesPage() {
                 </div>
 
                 {/* Payment Method Dropdown */}
-                <div className="relative min-w-[160px] flex-1 sm:flex-initial">
+                <div className="relative min-w-[155px] flex-1 sm:flex-initial">
                   <select
                     value={selectedPaymentMethod}
                     onChange={(e) => {
@@ -263,14 +270,14 @@ export default function ExpensesPage() {
                     }}
                     className={`w-full appearance-none pl-3.5 pr-8 py-2.5 rounded-xl text-xs font-extrabold outline-none cursor-pointer transition-all shadow-2xs border ${
                       selectedPaymentMethod
-                        ? 'bg-sky-500/10 border-sky-500/40 text-sky-800 dark:text-sky-200'
-                        : 'bg-[var(--bg-surface-sunken)] border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-sky-500/40'
+                        ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-800 dark:text-emerald-200'
+                        : 'bg-[var(--bg-surface-sunken)] border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-emerald-500/40'
                     }`}
                   >
                     <option value="">{t.allPaymentMethods}</option>
-                    {paymentMethods.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {locale === 'bn' ? (p.nameBn || p.name) : p.name}
+                    {paymentMethods.map((pm) => (
+                      <option key={pm.id} value={pm.id}>
+                        {locale === 'bn' ? (pm.nameBn || pm.name) : pm.name}
                       </option>
                     ))}
                   </select>
@@ -279,8 +286,8 @@ export default function ExpensesPage() {
                   </div>
                 </div>
 
-                {/* Source Dropdown */}
-                <div className="relative min-w-[145px] flex-1 sm:flex-initial">
+                {/* Source Filter Dropdown */}
+                <div className="relative min-w-[140px] flex-1 sm:flex-initial">
                   <select
                     value={selectedSource}
                     onChange={(e) => {
@@ -289,14 +296,14 @@ export default function ExpensesPage() {
                     }}
                     className={`w-full appearance-none pl-3.5 pr-8 py-2.5 rounded-xl text-xs font-extrabold outline-none cursor-pointer transition-all shadow-2xs border ${
                       selectedSource
-                        ? 'bg-amber-500/10 border-amber-500/40 text-amber-800 dark:text-amber-200'
-                        : 'bg-[var(--bg-surface-sunken)] border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-amber-500/40'
+                        ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-800 dark:text-emerald-200'
+                        : 'bg-[var(--bg-surface-sunken)] border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-emerald-500/40'
                     }`}
                   >
-                    <option value="">All Sources</option>
-                    <option value="manual">Manual Entry</option>
-                    <option value="voice">AI Voice Entry</option>
-                    <option value="receipt">AI Receipt OCR</option>
+                    <option value="">{t.allSources}</option>
+                    <option value="manual">{t.sourceManual}</option>
+                    <option value="voice">{t.sourceVoice}</option>
+                    <option value="receipt">{t.sourceReceipt}</option>
                   </select>
                   <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold opacity-60">
                     ▼
@@ -311,7 +318,7 @@ export default function ExpensesPage() {
                     title="Reset all filters"
                   >
                     <ArrowClockwise size={14} weight="bold" />
-                    <span>Reset</span>
+                    <span>{t.reset}</span>
                   </button>
                 )}
               </div>
@@ -323,15 +330,17 @@ export default function ExpensesPage() {
             <div className="p-5 lg:p-6 flex items-center justify-between border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div className="flex items-center gap-2.5">
                 <h3 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                  Transactions Log
+                  {t.transactionsLog}
                 </h3>
                 <span className="text-xs font-extrabold px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent)' }}>
-                  5 per page
+                  {locale === 'bn' ? `${toBengaliNumber(5)} টি প্রতি পেজে` : '5 per page'}
                 </span>
               </div>
 
               <div className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                Showing {expenses.length} of {totalItems} entries
+                {locale === 'bn'
+                  ? `মোট ${toBengaliNumber(totalItems)} টির মধ্যে ${toBengaliNumber(expenses.length)} টি দেখানো হচ্ছে`
+                  : `Showing ${expenses.length} of ${totalItems} entries`}
               </div>
             </div>
 
@@ -340,22 +349,22 @@ export default function ExpensesPage() {
                 <thead>
                   <tr style={{ backgroundColor: 'var(--bg-surface-sunken)' }}>
                     <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-                      Description & Merchant
+                      {locale === 'bn' ? 'বিবরণ ও মার্চেন্ট' : 'Description & Merchant'}
                     </th>
                     <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-                      Category
+                      {t.category}
                     </th>
                     <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-                      Payment Channel
+                      {locale === 'bn' ? 'পেমেন্ট চ্যানেল' : 'Payment Channel'}
                     </th>
                     <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-                      Date & Source
+                      {locale === 'bn' ? 'তারিখ ও মাধ্যম' : 'Date & Source'}
                     </th>
                     <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-right" style={{ color: 'var(--text-secondary)' }}>
-                      Amount
+                      {t.amount}
                     </th>
                     <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-center" style={{ color: 'var(--text-secondary)' }}>
-                      Actions
+                      {t.action}
                     </th>
                   </tr>
                 </thead>
@@ -521,7 +530,9 @@ export default function ExpensesPage() {
             {totalPages > 1 && (
               <div className="p-4 flex items-center justify-between border-t" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-surface-sunken)' }}>
                 <span className="text-xs font-extrabold" style={{ color: 'var(--text-primary)' }}>
-                  Page {locale === 'bn' ? toBengaliNumber(page) : page} of {locale === 'bn' ? toBengaliNumber(totalPages) : totalPages}
+                  {locale === 'bn'
+                    ? `${t.page} ${toBengaliNumber(page)} ${t.of} ${toBengaliNumber(totalPages)}`
+                    : `Page ${page} of ${totalPages}`}
                 </span>
 
                 <div className="flex items-center gap-2">
@@ -536,7 +547,7 @@ export default function ExpensesPage() {
                     }}
                   >
                     <CaretLeft size={14} weight="bold" />
-                    <span>Prev</span>
+                    <span>{t.prev}</span>
                   </button>
 
                   {/* Page Indicator Pills */}
@@ -571,7 +582,7 @@ export default function ExpensesPage() {
                       color: 'var(--text-primary)',
                     }}
                   >
-                    <span>Next</span>
+                    <span>{t.next}</span>
                     <CaretRight size={14} weight="bold" />
                   </button>
                 </div>

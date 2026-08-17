@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans, Baloo_Da_2, Outfit } from 'next/font/google';
+import { Plus_Jakarta_Sans, Baloo_Da_2, Outfit, Inter, Poppins, Roboto } from 'next/font/google';
 import { GeistMono } from 'geist/font/mono';
 import './globals.css';
 import ThemeProvider from '@/components/ThemeProvider';
@@ -7,22 +7,49 @@ import ThemeProvider from '@/components/ThemeProvider';
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-sans',
+  variable: '--font-jakarta',
   display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
 });
 
-const outfitDigits = Outfit({
+const interFont = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
-  variable: '--font-digits',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
   display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
+});
+
+const outfitFont = Outfit({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-outfit',
+  display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
+});
+
+const poppinsFont = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-poppins',
+  display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
+});
+
+const robotoFont = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-roboto',
+  display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
 });
 
 const balooDa2 = Baloo_Da_2({
-  subsets: ['bengali'],
+  subsets: ['bengali', 'latin'],
   weight: ['400', '500', '600', '700', '800'],
   variable: '--font-bangla',
   display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
 });
 
 export const metadata: Metadata = {
@@ -43,13 +70,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} ${balooDa2.variable} ${outfitDigits.variable} ${GeistMono.variable} dark`}
+      className={`${plusJakartaSans.variable} ${interFont.variable} ${outfitFont.variable} ${poppinsFont.variable} ${robotoFont.variable} ${balooDa2.variable} ${GeistMono.variable} dark`}
       suppressHydrationWarning
     >
-      <body
-        className="min-h-screen antialiased"
-        style={{ fontFamily: 'var(--font-digits), var(--font-sans), var(--font-bangla), system-ui, sans-serif' }}
-      >
+      <body className="min-h-screen antialiased">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

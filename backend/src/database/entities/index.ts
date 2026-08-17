@@ -9,3 +9,5 @@ export * from './receipt.entity';
 export * from './ai-processing-log.entity';
 export * from './system-setting.entity';
 export * from './loan.entity';
+export * from './bill.entity';
+export * from './subscription.entity';

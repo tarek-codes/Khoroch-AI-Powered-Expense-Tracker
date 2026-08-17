@@ -19,6 +19,7 @@ import {
   User,
   CurrencyDollar,
   Sparkle,
+  Wallet,
   CaretLeft,
   CaretRight,
 } from '@phosphor-icons/react';
@@ -31,7 +32,7 @@ import { toast } from 'sonner';
 
 export default function LoansPage() {
   const router = useRouter();
-  const { user, locale, theme } = useAppStore();
+  const { user, isHydrated, locale } = useAppStore();
   const t = translations[locale];
 
   const [loans, setLoans] = useState<any[]>([]);
@@ -64,12 +65,13 @@ export default function LoansPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!user) {
       router.push('/login');
       return;
     }
     fetchData();
-  }, [user]);
+  }, [user, isHydrated]);
 
   const fetchData = async () => {
     try {
@@ -193,7 +195,7 @@ export default function LoansPage() {
   const formatDateTime = (d: string) => {
     if (!d) return '';
     const dt = new Date(d);
-    return dt.toLocaleString('en-US', {
+    return dt.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -203,7 +205,13 @@ export default function LoansPage() {
     });
   };
 
-  if (!user) return null;
+  if (!isHydrated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-page)' }}>
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -213,7 +221,7 @@ export default function LoansPage() {
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <main className="p-6 lg:p-8 space-y-6 max-w-[1520px] w-full mx-auto">
+        <main className="p-6 lg:p-8 space-y-6 max-w-[1520px] w-full mx-auto dashboard-scaled-text">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -245,60 +253,98 @@ export default function LoansPage() {
           {/* 4 Summary KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Card 1: Total Lent (Pending) */}
-            <div className="surface-card p-5 border flex flex-col justify-between" style={{ borderColor: 'rgba(239, 68, 68, 0.25)' }}>
+            <div
+              className="p-5 rounded-2xl border shadow-xs transition-all flex flex-col justify-between"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                borderColor: summary.totalLentPending > 0 ? 'rgba(239, 68, 68, 0.4)' : 'var(--border-subtle)',
+              }}
+            >
               <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-rose-600 text-white shadow-xs">
-                  <ArrowUpRight size={22} weight="bold" />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-rose-500/10 text-rose-500 font-black">
+                  <ArrowUpRight size={20} weight="bold" />
                 </div>
-                <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-600 border border-rose-500/20">
-                  {locale === 'bn' ? 'আমি পাবো' : 'I Lent (Receivable)'}
+                <span
+                  className="text-xs font-extrabold px-2.5 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: 'var(--destructive-subtle)',
+                    color: 'var(--destructive)',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                  }}
+                >
+                  {locale === 'bn' ? toBengaliNumber(summary.pendingCount) : summary.pendingCount} {locale === 'bn' ? 'টি চলমান' : 'Pending'}
                 </span>
               </div>
               <div className="space-y-1">
-                <p className="text-2xl lg:text-3xl font-extrabold tabular-nums text-rose-600" style={{ fontFamily: 'var(--font-geist-mono), monospace' }}>
+                <p className="text-2xl lg:text-3xl font-black tabular-nums text-rose-500" style={{ fontFamily: 'var(--font-geist-mono), monospace' }}>
                   {formatMoney(summary.totalLentPending, locale)}
                 </p>
                 <p className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                  {locale === 'bn' ? 'ধার দেওয়া অপরিশোধিত টাকা' : 'Active loans given out'}
+                  {locale === 'bn' ? 'মোট ধার দিয়েছি (পাবো)' : 'Total Lent (Pending)'}
                 </p>
               </div>
             </div>
 
             {/* Card 2: Total Borrowed (Pending) */}
-            <div className="surface-card p-5 border flex flex-col justify-between" style={{ borderColor: 'rgba(14, 165, 233, 0.25)' }}>
+            <div
+              className="p-5 rounded-2xl border shadow-xs transition-all flex flex-col justify-between"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                borderColor: summary.totalBorrowedPending > 0 ? 'rgba(14, 165, 233, 0.4)' : 'var(--border-subtle)',
+              }}
+            >
               <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-sky-600 text-white shadow-xs">
-                  <ArrowDownLeft size={22} weight="bold" />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-sky-500/10 text-sky-500 font-black">
+                  <ArrowDownLeft size={20} weight="bold" />
                 </div>
-                <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-600 border border-sky-500/20">
-                  {locale === 'bn' ? 'দিতে হবে' : 'I Borrowed (Payable)'}
+                <span
+                  className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-500 border border-sky-500/25"
+                >
+                  {locale === 'bn' ? 'দিতে হবে' : 'To Repay'}
                 </span>
               </div>
               <div className="space-y-1">
-                <p className="text-2xl lg:text-3xl font-extrabold tabular-nums text-sky-600" style={{ fontFamily: 'var(--font-geist-mono), monospace' }}>
+                <p className="text-2xl lg:text-3xl font-black tabular-nums text-sky-500" style={{ fontFamily: 'var(--font-geist-mono), monospace' }}>
                   {formatMoney(summary.totalBorrowedPending, locale)}
                 </p>
                 <p className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                  {locale === 'bn' ? 'ধার নেওয়া অপরিশোধিত টাকা' : 'Active debt borrowed'}
+                  {locale === 'bn' ? 'মোট ধার নিয়েছি (দিতে হবে)' : 'Total Borrowed (To Repay)'}
                 </p>
               </div>
             </div>
 
-            {/* Card 3: Net Outstanding Balance */}
-            <div className="surface-card p-5 border flex flex-col justify-between" style={{ borderColor: 'rgba(16, 185, 129, 0.25)' }}>
+            {/* Card 3: Net Pending Difference */}
+            <div
+              className="p-5 rounded-2xl border shadow-xs transition-all flex flex-col justify-between"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                borderColor: summary.netPending >= 0 ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)',
+              }}
+            >
               <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-emerald-600 text-white shadow-xs">
-                  <HandCoins size={22} weight="bold" />
+                <div
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center font-black ${
+                    summary.netPending >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+                  }`}
+                >
+                  <Wallet size={20} weight="bold" />
                 </div>
-                <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 border border-emerald-500/20">
-                  {locale === 'bn' ? 'নেট ব্যালেন্স প্রভাব' : 'Net Loan Impact'}
+                <span
+                  className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full border ${
+                    summary.netPending >= 0
+                      ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/25'
+                      : 'bg-rose-500/10 text-rose-500 border-rose-500/25'
+                  }`}
+                >
+                  {summary.netPending >= 0 ? (locale === 'bn' ? 'উদ্বৃত্ত (পাবো)' : 'Net Receivable') : (locale === 'bn' ? 'দেনা (দিতে হবে)' : 'Net Payable')}
                 </span>
               </div>
               <div className="space-y-1">
                 <p
-                  className="text-2xl lg:text-3xl font-extrabold tabular-nums"
+                  className={`text-2xl lg:text-3xl font-black tabular-nums ${
+                    summary.netPending >= 0 ? 'text-emerald-500' : 'text-rose-500'
+                  }`}
                   style={{
-                    color: summary.netPending >= 0 ? '#059669' : '#dc2626',
                     fontFamily: 'var(--font-geist-mono), monospace',
                   }}
                 >
@@ -311,17 +357,25 @@ export default function LoansPage() {
             </div>
 
             {/* Card 4: Total Settled / Paid Back */}
-            <div className="surface-card p-5 border flex flex-col justify-between" style={{ borderColor: 'rgba(13, 148, 136, 0.25)' }}>
+            <div
+              className="p-5 rounded-2xl border shadow-xs transition-all flex flex-col justify-between"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                borderColor: 'var(--border-subtle)',
+              }}
+            >
               <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-teal-600 text-white shadow-xs">
-                  <CheckCircle size={22} weight="bold" />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-teal-500/10 text-teal-500 font-black">
+                  <CheckCircle size={20} weight="bold" />
                 </div>
-                <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/20">
-                  {summary.settledCount} {locale === 'bn' ? 'টি পরিশোধিত' : 'Settled'}
+                <span
+                  className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-500 border border-teal-500/25"
+                >
+                  {locale === 'bn' ? toBengaliNumber(summary.settledCount) : summary.settledCount} {locale === 'bn' ? 'টি পরিশোধিত' : 'Settled'}
                 </span>
               </div>
               <div className="space-y-1">
-                <p className="text-2xl lg:text-3xl font-extrabold tabular-nums text-teal-700 dark:text-teal-300" style={{ fontFamily: 'var(--font-geist-mono), monospace' }}>
+                <p className="text-2xl lg:text-3xl font-black tabular-nums text-teal-500" style={{ fontFamily: 'var(--font-geist-mono), monospace' }}>
                   {formatMoney(summary.totalLentSettled + summary.totalBorrowedSettled, locale)}
                 </p>
                 <p className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
@@ -331,100 +385,119 @@ export default function LoansPage() {
             </div>
           </div>
 
-          {/* Filter Toolbar & Search */}
-          <div className="surface-card p-5 space-y-4 shadow-sm border" style={{ borderColor: 'var(--border-subtle)' }}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              {/* Type Tabs */}
-              <div
-                className="flex items-center gap-1.5 p-1.5 rounded-2xl border transition-colors shadow-2xs"
-                style={{
-                  backgroundColor: 'var(--bg-surface-sunken)',
-                  borderColor: 'var(--border-subtle)',
-                }}
-              >
-                <button
-                  onClick={() => setFilterType('all')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all ${
-                    filterType === 'all'
-                      ? 'bg-emerald-600 text-white shadow-xs'
-                      : 'hover:bg-white dark:hover:bg-zinc-800'
-                  }`}
+          {/* Unified Ledger & Filter Toolbar Card */}
+          <div className="surface-card overflow-hidden shadow-sm border rounded-2xl" style={{ borderColor: 'var(--border-subtle)' }}>
+            {/* Single Unified Header Row: Title on Left, Controls on Right */}
+            <div className="p-5 lg:p-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+              {/* Left Side: Title & Description + Filter Type Tabs */}
+              <div className="flex flex-col md:flex-row md:items-center gap-4 shrink-0">
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent)' }}>
+                    <ArrowsLeftRight size={19} weight="bold" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                      {locale === 'bn' ? 'ধার ও দেনার হিসাব তালিকা' : 'Lend & Borrow Ledger'}
+                    </h3>
+                    <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                      {locale === 'bn' ? 'প্যাজিনেটেড হিসাব বিবরণী' : 'Showing 5 transactions per page'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Filter Type Tabs next to title */}
+                <div
+                  className="flex items-center gap-1 p-1 rounded-2xl transition-colors shadow-2xs self-start md:self-center"
                   style={{
-                    color: filterType === 'all' ? '#ffffff' : 'var(--text-primary)',
+                    backgroundColor: 'var(--bg-surface-sunken)',
+                    border: '1px solid var(--border-subtle)',
                   }}
                 >
-                  <span>{locale === 'bn' ? 'সকল লেনদেন' : 'All'}</span>
-                  <span
-                    className={`text-[11px] px-1.5 py-0.2 rounded-full font-mono font-extrabold ${
+                  <button
+                    onClick={() => setFilterType('all')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
                       filterType === 'all'
-                        ? 'bg-white/25 text-white'
-                        : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : 'hover:bg-white dark:hover:bg-zinc-800'
                     }`}
+                    style={{
+                      color: filterType === 'all' ? '#ffffff' : 'var(--text-primary)',
+                    }}
                   >
-                    {loans.length}
-                  </span>
-                </button>
+                    <span>{locale === 'bn' ? 'সকল লেনদেন' : 'All'}</span>
+                    <span
+                      className={`text-[11px] px-1.5 py-0.2 rounded-full font-mono font-extrabold ${
+                        filterType === 'all'
+                          ? 'bg-white/25 text-white'
+                          : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                      }`}
+                    >
+                      {locale === 'bn' ? toBengaliNumber(loans.length) : loans.length}
+                    </span>
+                  </button>
 
-                <button
-                  onClick={() => setFilterType('lend')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all ${
-                    filterType === 'lend'
-                      ? 'bg-rose-600 text-white shadow-xs'
-                      : 'hover:bg-white dark:hover:bg-zinc-800'
-                  }`}
-                  style={{
-                    color: filterType === 'lend' ? '#ffffff' : 'var(--text-primary)',
-                  }}
-                >
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${filterType === 'lend' ? 'bg-white' : 'bg-rose-600'}`} />
-                  <span>{locale === 'bn' ? 'ধার দিয়েছি' : 'Lent (Receivable)'}</span>
-                </button>
+                  <button
+                    onClick={() => setFilterType('lend')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                      filterType === 'lend'
+                        ? 'bg-rose-600 text-white shadow-xs'
+                        : 'hover:bg-white dark:hover:bg-zinc-800'
+                    }`}
+                    style={{
+                      color: filterType === 'lend' ? '#ffffff' : 'var(--text-primary)',
+                    }}
+                  >
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${filterType === 'lend' ? 'bg-white' : 'bg-rose-600'}`} />
+                    <span>{locale === 'bn' ? 'ধার দিয়েছি' : 'Lent'}</span>
+                  </button>
 
-                <button
-                  onClick={() => setFilterType('borrow')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all ${
-                    filterType === 'borrow'
-                      ? 'bg-sky-600 text-white shadow-xs'
-                      : 'hover:bg-white dark:hover:bg-zinc-800'
-                  }`}
-                  style={{
-                    color: filterType === 'borrow' ? '#ffffff' : 'var(--text-primary)',
-                  }}
-                >
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${filterType === 'borrow' ? 'bg-white' : 'bg-sky-600'}`} />
-                  <span>{locale === 'bn' ? 'ধার নিয়েছি' : 'Borrowed (Payable)'}</span>
-                </button>
+                  <button
+                    onClick={() => setFilterType('borrow')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                      filterType === 'borrow'
+                        ? 'bg-sky-600 text-white shadow-xs'
+                        : 'hover:bg-white dark:hover:bg-zinc-800'
+                    }`}
+                    style={{
+                      color: filterType === 'borrow' ? '#ffffff' : 'var(--text-primary)',
+                    }}
+                  >
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${filterType === 'borrow' ? 'bg-white' : 'bg-sky-600'}`} />
+                    <span>{locale === 'bn' ? 'ধার নিয়েছি' : 'Borrowed'}</span>
+                  </button>
 
-                <button
-                  onClick={() => setFilterType('settled')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all ${
-                    filterType === 'settled'
-                      ? 'bg-teal-600 text-white shadow-xs'
-                      : 'hover:bg-white dark:hover:bg-zinc-800'
-                  }`}
-                  style={{
-                    color: filterType === 'settled' ? '#ffffff' : 'var(--text-primary)',
-                  }}
-                >
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${filterType === 'settled' ? 'bg-white' : 'bg-teal-600'}`} />
-                  <span>{locale === 'bn' ? 'পরিশোধিত' : 'Settled History'}</span>
-                </button>
+                  <button
+                    onClick={() => setFilterType('settled')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                      filterType === 'settled'
+                        ? 'bg-teal-600 text-white shadow-xs'
+                        : 'hover:bg-white dark:hover:bg-zinc-800'
+                    }`}
+                    style={{
+                      color: filterType === 'settled' ? '#ffffff' : 'var(--text-primary)',
+                    }}
+                  >
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${filterType === 'settled' ? 'bg-white' : 'bg-teal-600'}`} />
+                    <span>{locale === 'bn' ? 'পরিশোধিত' : 'Settled'}</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Right: Add Button + Search Box */}
-              <div className="flex items-center gap-2.5">
+              {/* Right Side: Add Button + Search Box */}
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Add Button */}
                 <button
                   onClick={() => setIsAddOpen(true)}
-                  className="btn-accent flex items-center gap-2 text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-xs whitespace-nowrap"
+                  className="btn-accent flex items-center gap-2 text-xs font-extrabold px-3.5 py-2 rounded-xl shadow-xs whitespace-nowrap"
                 >
-                  <Plus size={15} weight="bold" />
+                  <Plus size={14} weight="bold" />
                   <span>{locale === 'bn' ? 'নতুন ধার / দেনা যোগ' : 'Add Lend / Borrow'}</span>
                 </button>
 
                 {/* Search Box */}
-                <div className="relative min-w-[220px]">
+                <div className="relative min-w-[200px]">
                   <MagnifyingGlass
-                    size={16}
+                    size={15}
                     weight="bold"
                     className="absolute left-3.5 top-1/2 -translate-y-1/2"
                     style={{ color: 'var(--accent)' }}
@@ -434,7 +507,7 @@ export default function LoansPage() {
                     placeholder={locale === 'bn' ? 'নাম বা নোট দিয়ে খুঁজুন...' : 'Search person or note...'}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-bold outline-none transition-all shadow-2xs"
+                    className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs font-bold outline-none transition-all shadow-2xs"
                     style={{
                       backgroundColor: 'var(--bg-surface-sunken)',
                       border: '1.5px solid var(--accent)',
@@ -444,49 +517,27 @@ export default function LoansPage() {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Records Table Card */}
-          <div className="surface-card overflow-hidden shadow-sm border rounded-2xl" style={{ borderColor: 'var(--border-subtle)' }}>
-            <div className="p-5 lg:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent)' }}>
-                  <ArrowsLeftRight size={18} weight="bold" />
-                </div>
-                <div>
-                  <h3 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                    {locale === 'bn' ? 'ধার ও দেনার হিসাব তালিকা' : 'Lend & Borrow Ledger'}
-                  </h3>
-                  <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                    {locale === 'bn' ? 'প্যাজিনেটেড হিসাব বিবরণী' : 'Showing 5 records per page'}
-                  </p>
-                </div>
-              </div>
-              <span className="self-start sm:self-auto text-xs font-extrabold px-3 py-1.5 rounded-full" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent)' }}>
-                {locale === 'bn' ? `মোট ${toBengaliNumber(filteredLoans.length)} টি এন্ট্রি` : `${filteredLoans.length} Total Entries`}
-              </span>
-            </div>
-
+            {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr
-                    className="border-b text-xs font-bold uppercase tracking-wider"
+                    className="text-[11px] font-extrabold uppercase tracking-wider"
                     style={{
                       backgroundColor: 'var(--bg-surface-sunken)',
-                      borderColor: 'var(--border-subtle)',
-                      color: 'var(--text-secondary)',
+                      color: 'var(--text-muted)',
                     }}
                   >
-                    <th className="py-4 px-6">{locale === 'bn' ? 'ব্যক্তির নাম' : 'Person Name'}</th>
-                    <th className="py-4 px-6">{locale === 'bn' ? 'ধরন' : 'Type'}</th>
-                    <th className="py-4 px-6">{locale === 'bn' ? 'তারিখ ও সময়' : 'Date & Time'}</th>
-                    <th className="py-4 px-6">{locale === 'bn' ? 'টাকার পরিমাণ' : 'Amount'}</th>
-                    <th className="py-4 px-6">{locale === 'bn' ? 'অবস্থা' : 'Status'}</th>
-                    <th className="py-4 px-6 text-center">{locale === 'bn' ? 'অ্যাকশন' : 'Action'}</th>
+                    <th className="py-3 px-6">{locale === 'bn' ? 'ব্যক্তির নাম' : 'Person Name'}</th>
+                    <th className="py-3 px-6">{locale === 'bn' ? 'ধরন' : 'Type'}</th>
+                    <th className="py-3 px-6">{locale === 'bn' ? 'তারিখ ও সময়' : 'Date & Time'}</th>
+                    <th className="py-3 px-6">{locale === 'bn' ? 'টাকার পরিমাণ' : 'Amount'}</th>
+                    <th className="py-3 px-6">{locale === 'bn' ? 'অবস্থা' : 'Status'}</th>
+                    <th className="py-3 px-6 text-center">{locale === 'bn' ? 'অ্যাকশন' : 'Action'}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
+                <tbody>
                   {loading ? (
                     <tr>
                       <td colSpan={6} className="py-12 text-center text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
@@ -509,16 +560,18 @@ export default function LoansPage() {
                     paginatedLoans.map((loan) => (
                       <tr
                         key={loan.id}
-                        className="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
+                        className="transition-colors border-0"
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                       >
                         {/* Person Name & Notes */}
-                        <td className="py-4 px-6">
+                        <td className="py-3.5 px-6">
                           <div className="flex items-center gap-3">
                             <div
-                              className={`w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-xs shrink-0 border ${
+                              className={`w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-xs shrink-0 ${
                                 loan.type === 'lend'
-                                  ? 'bg-rose-500/15 text-rose-600 border-rose-500/25'
-                                  : 'bg-sky-500/15 text-sky-600 border-sky-500/25'
+                                  ? 'bg-rose-500/10 text-rose-500'
+                                  : 'bg-sky-500/10 text-sky-500'
                               }`}
                             >
                               {loan.personName?.[0]?.toUpperCase() || 'P'}
@@ -528,7 +581,7 @@ export default function LoansPage() {
                                 {loan.personName}
                               </p>
                               {loan.notes && (
-                                <p className="text-xs font-medium truncate max-w-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                                <p className="text-xs font-medium truncate max-w-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                                   {loan.notes}
                                 </p>
                               )}
@@ -537,14 +590,14 @@ export default function LoansPage() {
                         </td>
 
                         {/* Type Badge */}
-                        <td className="py-4 px-6">
+                        <td className="py-3.5 px-6">
                           {loan.type === 'lend' ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-rose-500/10 text-rose-600 border border-rose-500/20">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black bg-rose-500/10 text-rose-500 border border-rose-500/20">
                               <ArrowUpRight size={13} weight="bold" />
                               <span>{locale === 'bn' ? 'ধার দিয়েছি' : 'Lent (Spending)'}</span>
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-sky-500/10 text-sky-600 border border-sky-500/20">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black bg-sky-500/10 text-sky-500 border border-sky-500/20">
                               <ArrowDownLeft size={13} weight="bold" />
                               <span>{locale === 'bn' ? 'ধার নিয়েছি' : 'Borrowed (Inflow)'}</span>
                             </span>
@@ -552,25 +605,25 @@ export default function LoansPage() {
                         </td>
 
                         {/* Date & Time */}
-                        <td className="py-4 px-6">
+                        <td className="py-3.5 px-6">
                           <div className="space-y-0.5">
                             <p className="font-bold text-xs" style={{ color: 'var(--text-primary)' }}>
                               {formatDateTime(loan.transactionDate)}
                             </p>
                             {loan.dueDate && (
-                              <p className="text-[11px] font-semibold text-amber-600 flex items-center gap-1">
+                              <p className="text-[11px] font-bold text-amber-500 flex items-center gap-1">
                                 <Clock size={12} weight="bold" />
-                                <span>Due: {new Date(loan.dueDate).toLocaleDateString()}</span>
+                                <span>{locale === 'bn' ? 'পরিশোধ:' : 'Due:'} {new Date(loan.dueDate).toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US')}</span>
                               </p>
                             )}
                           </div>
                         </td>
 
                         {/* Amount */}
-                        <td className="py-4 px-6">
+                        <td className="py-3.5 px-6">
                           <span
-                            className={`text-sm font-extrabold tabular-nums ${
-                              loan.type === 'lend' ? 'text-rose-600 dark:text-rose-400' : 'text-sky-600 dark:text-sky-400'
+                            className={`text-sm font-black tabular-nums ${
+                              loan.type === 'lend' ? 'text-rose-500' : 'text-sky-500'
                             }`}
                             style={{
                               fontFamily: 'var(--font-geist-mono), monospace',
@@ -581,14 +634,28 @@ export default function LoansPage() {
                         </td>
 
                         {/* Status */}
-                        <td className="py-4 px-6">
+                        <td className="py-3.5 px-6">
                           {loan.status === 'settled' ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <span
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black"
+                              style={{
+                                backgroundColor: 'var(--success-subtle)',
+                                color: 'var(--success-text)',
+                                border: '1px solid rgba(16, 185, 129, 0.25)',
+                              }}
+                            >
                               <CheckCircle size={13} weight="fill" />
                               <span>{locale === 'bn' ? 'পরিশোধিত' : 'Paid Back / Settled'}</span>
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                            <span
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black"
+                              style={{
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                color: '#f59e0b',
+                                border: '1px solid rgba(245, 158, 11, 0.25)',
+                              }}
+                            >
                               <Clock size={13} weight="bold" />
                               <span>{locale === 'bn' ? 'চলমান (বাকি)' : 'Pending'}</span>
                             </span>
@@ -596,7 +663,7 @@ export default function LoansPage() {
                         </td>
 
                         {/* Actions */}
-                        <td className="py-4 px-6 text-center">
+                        <td className="py-3.5 px-6 text-center">
                           <div className="flex items-center justify-center gap-2">
                             {/* Paid Back / Settle Button */}
                             <button
@@ -640,8 +707,8 @@ export default function LoansPage() {
             {/* Pagination Controls */}
             {totalPages > 1 && (
               <div
-                className="p-4 sm:px-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3"
-                style={{ backgroundColor: 'var(--bg-surface-sunken)', borderColor: 'var(--border-subtle)' }}
+                className="p-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+                style={{ backgroundColor: 'var(--bg-surface-sunken)' }}
               >
                 <p className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
                   {locale === 'bn'
@@ -784,7 +851,7 @@ export default function LoansPage() {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Rahim, Tanvir, Boss, Roommate"
+                      placeholder={locale === 'bn' ? 'যেমন: রহিম, তানভীর, রুমমেট' : 'e.g. Rahim, Tanvir, Boss, Roommate'}
                       value={formData.personName}
                       onChange={(e) => setFormData({ ...formData, personName: e.target.value })}
                       className="input-base w-full text-xs font-bold"
@@ -801,7 +868,7 @@ export default function LoansPage() {
                       required
                       min="1"
                       step="any"
-                      placeholder="e.g. 5000"
+                      placeholder={locale === 'bn' ? 'যেমন: ৫০০০' : 'e.g. 5000'}
                       value={formData.amount}
                       onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                       className="input-base w-full text-sm font-bold"
@@ -843,7 +910,7 @@ export default function LoansPage() {
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. For emergency hospital bill, will pay next week"
+                      placeholder={locale === 'bn' ? 'যেমন: জরুরি প্রয়োজনে, আগামী সপ্তাহে ফেরত দেবে' : 'e.g. For emergency hospital bill, will pay next week'}
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       className="input-base w-full text-xs font-bold"
