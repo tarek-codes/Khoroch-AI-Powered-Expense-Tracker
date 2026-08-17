@@ -23,6 +23,8 @@ export enum LoanStatus {
 @Entity('loans')
 @Index(['userId', 'status'])
 @Index(['userId', 'type'])
+@Index(['userId', 'type', 'status'])
+@Index(['userId', 'transactionDate'])
 export class Loan {
   @PrimaryGeneratedColumn('uuid')
   id: string;

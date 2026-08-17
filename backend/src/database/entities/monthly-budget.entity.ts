@@ -17,6 +17,7 @@ import { Expense } from './expense.entity';
 
 @Entity('monthly_budgets')
 @Unique(['user', 'month', 'year'])
+@Index(['userId', 'month', 'year'])
 @Check(`"month" >= 1 AND "month" <= 12`)
 @Check(`"year" >= 2000 AND "year" <= 2100`)
 export class MonthlyBudget {

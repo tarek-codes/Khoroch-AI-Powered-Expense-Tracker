@@ -23,6 +23,10 @@ import { Receipt } from './receipt.entity';
 @Entity('expenses')
 @Check(`"amount" > 0`)
 @Check(`"ai_confidence" IS NULL OR ("ai_confidence" >= 0.00 AND "ai_confidence" <= 1.00)`)
+@Index(['userId', 'isConfirmed', 'expenseDate'])
+@Index(['userId', 'expenseDate'])
+@Index(['userId', 'categoryId', 'expenseDate'])
+@Index(['userId', 'paymentMethodId'])
 export class Expense {
   @PrimaryGeneratedColumn('uuid')
   id: string;

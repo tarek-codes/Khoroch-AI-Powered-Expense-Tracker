@@ -410,7 +410,7 @@ export default function DashboardPage() {
             {/* Card 1: Total Confirmed Expenses */}
             <Link
               href="/expenses"
-              className="surface-card p-4.5 lg:p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md block group relative overflow-hidden"
+              className="surface-card p-4.5 lg:p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md block group relative overflow-hidden border-2 border-emerald-500/30 hover:border-emerald-500/70 transition-all"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-emerald-600 text-white shadow-xs">
@@ -441,7 +441,7 @@ export default function DashboardPage() {
             {/* Card 2: Monthly Budget Target */}
             <div
               onClick={() => setIsBudgetOpen(true)}
-              className="surface-card p-4.5 lg:p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md cursor-pointer group relative overflow-hidden"
+              className="surface-card p-4.5 lg:p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md cursor-pointer group relative overflow-hidden border-2 border-emerald-500/30 hover:border-emerald-500/70 transition-all"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-teal-600 text-white shadow-xs">
@@ -470,7 +470,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Card 3: Remaining Balance Pool */}
-            <div className="surface-card p-4.5 lg:p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md relative overflow-hidden">
+            <div className="surface-card p-4.5 lg:p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md relative overflow-hidden border-2 border-emerald-500/30 hover:border-emerald-500/70 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-sky-600 text-white shadow-xs">
                   <Clock size={22} weight="bold" />
@@ -513,7 +513,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Card 4: Total Transactions with Range Filter */}
-            <div className="surface-card p-4.5 lg:p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md relative overflow-hidden">
+            <div className="surface-card p-4.5 lg:p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md relative overflow-hidden border-2 border-emerald-500/30 hover:border-emerald-500/70 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-amber-600 text-white shadow-xs">
                   <Receipt size={22} weight="bold" />

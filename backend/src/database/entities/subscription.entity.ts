@@ -24,6 +24,8 @@ export enum SubscriptionBillingCycle {
 @Entity('subscriptions')
 @Index(['userId', 'status'])
 @Index(['userId', 'billingMonth'])
+@Index(['userId', 'billingMonth', 'status'])
+@Index(['userId', 'category'])
 export class Subscription {
   @PrimaryGeneratedColumn('uuid')
   id: string;

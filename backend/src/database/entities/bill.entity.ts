@@ -18,6 +18,8 @@ export enum BillStatus {
 @Entity('utility_bills')
 @Index(['userId', 'status'])
 @Index(['userId', 'billingMonth'])
+@Index(['userId', 'billingMonth', 'status'])
+@Index(['userId', 'category'])
 export class UtilityBill {
   @PrimaryGeneratedColumn('uuid')
   id: string;
