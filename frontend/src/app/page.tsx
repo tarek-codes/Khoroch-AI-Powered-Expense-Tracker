@@ -171,11 +171,18 @@ export default function LandingPage() {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-7 space-y-8"
           >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-neutral-950">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-neutral-950 flex flex-wrap items-center gap-x-3 gap-y-2">
               {locale === 'bn' ? (
                 <>
-                  দৈনন্দিন খরচের ওপর সম্পূর্ণ{' '}
-                  <span className="text-[#179B51] font-extrabold">নিয়ন্ত্রণ</span> নিন।
+                  <span>দৈনন্দিন</span>
+                  <img
+                    src="/logo-smooth-rounded.svg"
+                    alt="খরচ"
+                    className="inline-block h-10 sm:h-12 lg:h-14 w-auto object-contain align-middle translate-y-[2px]"
+                  />
+                  <span>-এর ওপর সম্পূর্ণ</span>
+                  <span className="text-[#179B51] font-extrabold">নিয়ন্ত্রণ</span>
+                  <span>নিন।</span>
                 </>
               ) : (
                 <>
