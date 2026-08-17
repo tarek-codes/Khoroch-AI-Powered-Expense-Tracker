@@ -204,23 +204,15 @@ export default function LandingPage() {
               : 'Track expenses with natural voice, scan paper receipts with vision AI, and understand your cashflow in real time.'}
           </p>
 
-          {/* Minimalist CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+          {/* Minimalist CTA */}
+          <div className="flex items-center justify-center pt-2">
             <Link
               href="/register"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#179B51] hover:bg-[#148344] transition-all text-center flex items-center justify-center gap-2 group shadow-xs"
+              className="px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#179B51] hover:bg-[#148344] transition-all text-center flex items-center justify-center gap-2 group shadow-xs"
             >
               <span>{locale === 'bn' ? 'বিনামূল্যে শুরু করুন' : 'Get Started Free'}</span>
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </Link>
-
-            <a
-              href="#voice"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-base font-medium text-neutral-700 bg-white border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all text-center flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
-            >
-              <Microphone size={18} className="text-[#179B51]" />
-              <span>{locale === 'bn' ? 'কীভাবে ভয়েস কাজ করে' : 'Explore Voice AI'}</span>
-            </a>
           </div>
 
           {/* Minimal Metric Strip */}
@@ -269,38 +261,7 @@ export default function LandingPage() {
         </motion.div>
       </div>
 
-      {/* ─── 3. Problem Statement ─── */}
-      <section className="w-full bg-white py-28 border-b border-neutral-200/50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center space-y-5">
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900"
-          >
-            {locale === 'bn' ? (
-              <>
-                আপনার টাকা আসলে <span className="text-[#179B51]">কোথায় যায়?</span>
-              </>
-            ) : (
-              <>
-                Where does your money <span className="text-[#179B51]">actually go?</span>
-              </>
-            )}
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-base text-neutral-500 leading-relaxed max-w-[55ch] mx-auto"
-          >
-            {locale === 'bn'
-              ? 'প্রতিদিনের ছোট ছোট খরচ দ্রুত বড় অংকে পরিণত হয়। খরচ আপনাকে প্রতিটি ব্যয়ের হিসাব রাখতে, অভ্যাস বুঝতে এবং কত টাকা বাকি আছে তা পরিষ্কার দেখতে সাহায্য করে।'
-              : 'Small everyday expenses add up quickly. Khoroch helps you keep track of your spending, understand your habits, and know exactly how much money you have left.'}
-          </motion.p>
-        </div>
-      </section>
+
 
       {/* ─── 4. Feature 1: Spoken Voice AI ─── */}
       <section id="voice" className="w-full py-28 border-b border-neutral-200/50">
@@ -761,19 +722,13 @@ export default function LandingPage() {
               ? 'আজই শুরু করুন সম্পূর্ণ বিনামূল্যে। কোনো ক্রেডিট কার্ডের প্রয়োজন নেই।'
               : 'Start tracking your expenses with Khoroch. Free and open source.'}
           </p>
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          <div className="pt-2 flex items-center justify-center">
             <Link
               href="/register"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full text-base font-semibold text-neutral-950 bg-white hover:bg-neutral-100 transition-all cursor-pointer shadow-xs"
+              className="px-8 py-3.5 rounded-full text-base font-semibold text-neutral-950 bg-white hover:bg-neutral-100 transition-all cursor-pointer shadow-xs"
             >
               {locale === 'bn' ? 'বিনামূল্যে অ্যাকাউন্ট খুলুন' : 'Get Started Free'}
             </Link>
-            <button
-              onClick={handleCopy}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-base font-medium text-white bg-neutral-900/40 border border-white/20 hover:bg-neutral-900/60 transition-all cursor-pointer shadow-2xs"
-            >
-              {copiedInstall ? 'Command Copied' : 'Clone on GitHub'}
-            </button>
           </div>
         </motion.div>
       </section>
