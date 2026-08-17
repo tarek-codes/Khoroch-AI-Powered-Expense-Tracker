@@ -169,26 +169,34 @@ export default function LandingPage() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-8 flex flex-col items-center"
         >
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.15] text-neutral-950 flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-3">
-            {locale === 'bn' ? (
-              <>
-                <span>দৈনন্দিন</span>
-                <img
-                  src="/logo-smooth-rounded.svg"
-                  alt="খরচ"
-                  className="inline-block h-12 sm:h-16 lg:h-20 w-auto object-contain align-middle translate-y-[2px]"
-                />
-                <span>-এর ওপর সম্পূর্ণ</span>
-                <span className="text-[#179B51] font-extrabold">নিয়ন্ত্রণ</span>
-                <span>নিন।</span>
-              </>
-            ) : (
-              <>
-                <span>Take control of your everyday</span>
-                <span className="text-[#179B51] font-extrabold">spending</span>.
-              </>
-            )}
-          </h1>
+          <div className="space-y-4 flex flex-col items-center">
+            {/* Elegant Hero Brand Badge */}
+            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white border border-neutral-200/80 shadow-2xs">
+              <img
+                src="/logo-smooth-rounded.svg"
+                alt="খরচ"
+                className="h-8 sm:h-9 w-auto object-contain"
+              />
+              <span className="w-px h-4 bg-neutral-200" />
+              <span className="text-xs sm:text-sm font-semibold text-neutral-600">
+                {locale === 'bn' ? 'স্মার্ট এআই খরচ ট্র্যাকার' : 'AI-Powered Expense Tracker'}
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-neutral-950 max-w-[20ch] mx-auto">
+              {locale === 'bn' ? (
+                <>
+                  দৈনন্দিন খরচের ওপর সম্পূর্ণ{' '}
+                  <span className="text-[#179B51]">নিয়ন্ত্রণ</span> নিন।
+                </>
+              ) : (
+                <>
+                  Take control of your everyday{' '}
+                  <span className="text-[#179B51]">spending</span>.
+                </>
+              )}
+            </h1>
+          </div>
 
           <p className="text-base sm:text-lg text-neutral-500 font-normal leading-relaxed max-w-[54ch] mx-auto">
             {locale === 'bn'
