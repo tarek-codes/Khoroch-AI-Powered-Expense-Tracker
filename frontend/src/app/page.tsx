@@ -169,19 +169,19 @@ export default function LandingPage() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-8 flex flex-col items-center"
         >
-          <div className="space-y-4 flex flex-col items-center">
-            {/* Elegant Hero Brand Badge */}
-            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white border border-neutral-200/80 shadow-2xs">
+          <div className="space-y-6 flex flex-col items-center">
+            {/* Prominent Large Brand Logo */}
+            <motion.div
+              whileHover={{ scale: 1.04 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+              className="cursor-pointer"
+            >
               <img
                 src="/logo-smooth-rounded.svg"
                 alt="খরচ"
-                className="h-8 sm:h-9 w-auto object-contain"
+                className="h-20 sm:h-28 md:h-36 w-auto object-contain drop-shadow-xs"
               />
-              <span className="w-px h-4 bg-neutral-200" />
-              <span className="text-xs sm:text-sm font-semibold text-neutral-600">
-                {locale === 'bn' ? 'স্মার্ট এআই খরচ ট্র্যাকার' : 'AI-Powered Expense Tracker'}
-              </span>
-            </div>
+            </motion.div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-neutral-950 max-w-[20ch] mx-auto">
               {locale === 'bn' ? (
