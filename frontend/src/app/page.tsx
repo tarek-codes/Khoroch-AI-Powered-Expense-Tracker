@@ -710,23 +710,23 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── 7. Yellow Brand Breakout ─── */}
-      <section className="w-full bg-[#FBC02B] py-24 border-y border-[#d97706]/30">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
+      {/* ─── 7. Yellow Brand Breakout (Slim & Compact) ─── */}
+      <section className="w-full bg-[#FBC02B] py-12 sm:py-14 border-y border-[#d97706]/30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-4">
           <motion.h2
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl sm:text-5xl font-black tracking-tight text-[#171717]"
+            className="text-2xl sm:text-3xl font-black tracking-tight text-[#171717]"
           >
             {locale === 'bn' ? 'সচেতনভাবে খরচ করুন। নিজের টাকা বুঝুন।' : 'Spend intentionally. Understand your money.'}
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-base sm:text-lg text-[#171717] font-medium max-w-[52ch] mx-auto"
+            className="text-sm sm:text-base text-[#171717]/85 font-medium max-w-[50ch] mx-auto"
           >
             {locale === 'bn'
               ? 'খরচ আপনার দৈনন্দিন খরচের হিসাবকে করে তোলে পানির মতো সহজ ও পরিপাটি।'
@@ -736,12 +736,12 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="pt-3"
+            transition={{ delay: 0.15 }}
+            className="pt-1"
           >
             <Link
               href="/register"
-              className="inline-block px-9 py-4 rounded-xl text-base font-bold text-[#171717] bg-white shadow-md hover:bg-neutral-50 hover:shadow-lg transition-all"
+              className="inline-block px-6 py-2.5 rounded-xl text-sm font-bold text-[#171717] bg-white shadow-xs hover:bg-neutral-50 hover:shadow-md transition-all"
             >
               {locale === 'bn' ? 'ট্র্যাকিং শুরু করুন' : 'Start Tracking Now'}
             </Link>
