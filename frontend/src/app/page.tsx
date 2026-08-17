@@ -268,102 +268,38 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* Right Hero Product Stage */}
+          {/* Right Hero Brand Showcase */}
           <motion.div
-            initial={{ opacity: 0, x: 25 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 relative"
+            className="lg:col-span-5 flex flex-col items-center justify-center text-center p-8 sm:p-12 relative"
           >
-            <div className="bg-white/95 backdrop-blur-xl border border-neutral-200/90 rounded-3xl p-6 sm:p-7 shadow-xl space-y-5">
-              <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#179B51] animate-pulse" />
-                  <span className="font-bold text-xs uppercase tracking-wider text-[#171717] font-mono">Live Workspace</span>
-                </div>
-                <span className="text-[11px] font-bold bg-[#FBC02B]/20 text-[#92400e] px-2.5 py-0.5 rounded-full">
-                  August 2026
-                </span>
-              </div>
+            {/* Ambient Brand Glow */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#179B51]/10 via-[#FBC02B]/10 to-transparent rounded-3xl blur-2xl -z-10" />
 
-              {/* Balance Counter */}
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#777777] uppercase tracking-wider">Remaining Balance</p>
-                <div className="flex items-baseline justify-between">
-                  <p className="text-3xl sm:text-4xl font-black text-[#171717] font-mono tracking-tight">
-                    ৳ {remainingBalance.toLocaleString()}
-                  </p>
-                  <span className="text-xs font-bold text-[#179B51] bg-[#179B51]/10 px-2.5 py-1 rounded-full flex items-center gap-1">
-                    <TrendUp size={12} weight="bold" />
-                    <span>68% Left</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-[#179B51] rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: '38%' }}
-                  transition={{ duration: 1, ease: 'easeOut' }}
+            <div className="space-y-6 flex flex-col items-center">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="cursor-pointer"
+              >
+                <img
+                  src={locale === 'en' ? '/khoroch-logo-en.svg' : '/logo-smooth-rounded.svg'}
+                  alt="Khoroch (খরচ)"
+                  className="h-32 sm:h-44 w-auto object-contain drop-shadow-sm"
                 />
-              </div>
+              </motion.div>
 
-              {/* Quick Transaction Simulator Chips */}
-              <div className="space-y-2 pt-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-[#777777]">Interactive Simulation</span>
-                  <span className="text-[11px] text-[#179B51] font-bold">Tap to add</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => addQuickExpense('Cold Coffee', 'Food & Dining', 220, 'bKash')}
-                    className="px-2.5 py-1 rounded-lg border border-neutral-200 bg-[#FAFAF7] hover:border-[#179B51] hover:bg-white text-xs font-semibold text-[#171717] transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus size={11} weight="bold" className="text-[#179B51]" />
-                    <span>Coffee (৳220)</span>
-                  </button>
-                  <button
-                    onClick={() => addQuickExpense('Rickshaw', 'Transportation', 60, 'Cash')}
-                    className="px-2.5 py-1 rounded-lg border border-neutral-200 bg-[#FAFAF7] hover:border-[#179B51] hover:bg-white text-xs font-semibold text-[#171717] transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus size={11} weight="bold" className="text-[#179B51]" />
-                    <span>Rickshaw (৳60)</span>
-                  </button>
-                  <button
-                    onClick={() => addQuickExpense('Kacha Bazar', 'Groceries', 850, 'Nagad')}
-                    className="px-2.5 py-1 rounded-lg border border-neutral-200 bg-[#FAFAF7] hover:border-[#179B51] hover:bg-white text-xs font-semibold text-[#171717] transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus size={11} weight="bold" className="text-[#179B51]" />
-                    <span>Bazar (৳850)</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Transaction Stream */}
-              <div className="space-y-2 pt-1">
-                <AnimatePresence initial={false}>
-                  {heroExpenses.map((exp) => (
-                    <motion.div
-                      key={exp.id}
-                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.2 }}
-                      className="flex items-center justify-between p-2.5 bg-[#FAFAF7] rounded-xl border border-neutral-100 hover:border-neutral-200 transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <PaymentMethodLogo name={exp.method} size={20} />
-                        <div>
-                          <p className="text-xs font-bold text-[#171717]">{exp.name}</p>
-                          <p className="text-[10px] text-[#777777]">{exp.category} • {exp.time}</p>
-                        </div>
-                      </div>
-                      <span className="font-mono text-xs font-black text-[#171717]">-৳ {exp.amount.toLocaleString()}</span>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+              <div className="space-y-2 max-w-sm">
+                <p className="text-lg sm:text-xl font-extrabold text-[#171717] tracking-tight">
+                  {locale === 'bn' ? 'দৈনন্দিন খরচের আধুনিক ও নির্ভুল সমাধান' : 'Modern everyday financial clarity'}
+                </p>
+                <p className="text-xs sm:text-sm text-[#666666] font-medium leading-relaxed">
+                  {locale === 'bn'
+                    ? 'স্মার্ট ভয়েস ইনপুট ও ইনস্ট্যান্ট রসিদ স্ক্যানিংয়ের সাথে দ্রুত ও সহজ ট্র্যাকিং।'
+                    : 'Smart expense tracking with natural voice AI and instant receipt OCR.'}
+                </p>
               </div>
             </div>
           </motion.div>
