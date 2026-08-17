@@ -9,14 +9,13 @@ import {
   ArrowRight,
   Globe,
   Plus,
-  Wallet,
-  CheckCircle,
   TrendUp,
   Sliders,
+  Play,
+  Pause,
 } from '@phosphor-icons/react';
 import { useAppStore } from '@/store/appStore';
-import { translations, toBengaliNumber } from '@/lib/i18n';
-import { VoiceModal } from '@/components/VoiceModal';
+import { translations } from '@/lib/i18n';
 import { PaymentMethodLogo } from '@/components/PaymentMethodLogo';
 import { toast } from 'sonner';
 
@@ -32,9 +31,9 @@ export default function LandingPage() {
     restDelta: 0.001,
   });
 
-  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
   const [copiedInstall, setCopiedInstall] = useState(false);
   const [activeVoiceTab, setActiveVoiceTab] = useState<'bn' | 'mixed' | 'en'>('bn');
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   // Interactive Live Budget Slider
   const [interactiveBudget, setInteractiveBudget] = useState(35000);
@@ -100,6 +99,13 @@ export default function LandingPage() {
 
   const remainingBalance = 30000 - heroExpenses.reduce((s, e) => s + e.amount, 9000);
 
+  const toggleSimulatedAudio = () => {
+    setIsPlayingAudio((prev) => !prev);
+    if (!isPlayingAudio) {
+      toast.info(locale === 'bn' ? 'ভয়েস অডিও ডেমো প্লে হচ্ছে...' : 'Playing voice demo simulation...');
+    }
+  };
+
   return (
     <div
       className="min-h-screen text-[#171717] selection:bg-[#179B51] selection:text-white relative overflow-x-hidden"
@@ -114,11 +120,11 @@ export default function LandingPage() {
         style={{ scaleX }}
       />
 
-      {/* ─── Navigation Bar with Prominent Logo ─── */}
-      <header className="w-full bg-[#FAFAF7]/90 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-200/70">
+      {/* ─── Navigation Bar with Large Logo ─── */}
+      <header className="w-full bg-[#FAFAF7]/90 backdrop-blur-md sticky top-0 z-50 border-b border-neutral-200/80">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          {/* Prominent Khoroch Logo */}
-          <Link href="/" className="flex items-center group py-2">
+          {/* Khoroch Brand Logo */}
+          <Link href="/" className="flex items-center py-2 group">
             <img
               src="/logo-smooth-rounded.svg"
               alt="খরচ — Khoroch"
@@ -126,7 +132,7 @@ export default function LandingPage() {
             />
           </Link>
 
-          {/* Clean Navigation Links */}
+          {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-9 text-[15px] font-semibold text-[#171717]">
             <a href="#voice" className="hover:text-[#179B51] transition-colors">
               {locale === 'bn' ? 'ভয়েস এআই' : 'Voice AI'}
@@ -185,10 +191,10 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ─── Hero Section with Generous Spacing ─── */}
+      {/* ─── 1. Hero Section (Warm Background #FAFAF7) ─── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-24 lg:pt-24 lg:pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left Column */}
+          {/* Left Hero Content */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
@@ -220,7 +226,7 @@ export default function LandingPage() {
                 : 'Track expenses with natural voice, scan paper receipts with vision AI, and understand your cashflow in real time.'}
             </p>
 
-            {/* Hero CTAs */}
+            {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-1">
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Link
@@ -233,18 +239,17 @@ export default function LandingPage() {
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <button
-                  onClick={() => setIsVoiceModalOpen(true)}
+                <a
+                  href="#voice"
                   className="w-full sm:w-auto px-7 py-4 rounded-xl text-base font-bold text-[#171717] bg-white border border-neutral-300 shadow-2xs hover:border-[#179B51] hover:bg-neutral-50 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
                   <Microphone size={18} weight="fill" className="text-red-500" />
-                  <span>{locale === 'bn' ? 'লাইভ ভয়েস ট্রাই করুন' : 'Try Live Voice AI'}</span>
-                </button>
+                  <span>{locale === 'bn' ? 'কীভাবে ভয়েস কাজ করে' : 'Explore Voice AI'}</span>
+                </a>
               </motion.div>
             </div>
 
-            {/* Fluid Open Stat Strip */}
+            {/* Metric Strip */}
             <div className="flex items-center gap-8 sm:gap-12 pt-6 border-t border-neutral-200/80">
               <div>
                 <p className="font-mono text-2xl font-black text-[#179B51]">৳ 0</p>
@@ -263,7 +268,7 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* Right Column Product Stage */}
+          {/* Right Hero Product Stage */}
           <motion.div
             initial={{ opacity: 0, x: 25 }}
             animate={{ opacity: 1, x: 0 }}
@@ -336,7 +341,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Live Animated Transaction List */}
+              {/* Transaction Stream */}
               <div className="space-y-2 pt-1">
                 <AnimatePresence initial={false}>
                   {heroExpenses.map((exp) => (
@@ -365,8 +370,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Smooth Infinite Scrolling Marquee Ticker ─── */}
-      <div className="w-full bg-[#171717] text-[#FAFAF7] py-4.5 overflow-hidden border-y border-neutral-800 relative">
+      {/* ─── 2. Infinite Scrolling Ticker (High Contrast Band) ─── */}
+      <div className="w-full bg-[#171717] text-[#FAFAF7] py-5 overflow-hidden border-y border-neutral-800 relative shadow-inner">
         <motion.div
           animate={{ x: [0, -1035] }}
           transition={{ repeat: Infinity, duration: 24, ease: 'linear' }}
@@ -391,315 +396,322 @@ export default function LandingPage() {
         </motion.div>
       </div>
 
-      {/* ─── Editorial Problem Statement ─── */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-28 text-center space-y-6">
-        <motion.h2
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-3xl sm:text-5xl font-black tracking-tight text-[#171717]"
-        >
-          {locale === 'bn' ? (
-            <>
-              আপনার টাকা আসলে{' '}
-              <span className="text-[#179B51] underline decoration-[#FBC02B] decoration-4 underline-offset-6">কোথায় যায়?</span>
-            </>
-          ) : (
-            <>
-              Where does your money{' '}
-              <span className="text-[#179B51] underline decoration-[#FBC02B] decoration-4 underline-offset-6">actually go?</span>
-            </>
-          )}
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
-          className="text-base sm:text-lg text-[#666666] font-normal leading-relaxed max-w-[62ch] mx-auto"
-        >
-          {locale === 'bn'
-            ? 'প্রতিদিনের ছোট ছোট খরচ দ্রুত বড় অংকে পরিণত হয়। খরচ আপনাকে প্রতিটি ব্যয়ের হিসাব রাখতে, অভ্যাস বুঝতে এবং কত টাকা বাকি আছে তা পরিষ্কার দেখতে সাহায্য করে।'
-            : 'Small everyday expenses add up quickly. Khoroch helps you keep track of your spending, understand your habits, and know exactly how much money you have left.'}
-        </motion.p>
+      {/* ─── 3. Problem Statement (White Section #FFFFFF) ─── */}
+      <section className="w-full bg-white py-28 border-b border-neutral-200/80">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl sm:text-5xl font-black tracking-tight text-[#171717]"
+          >
+            {locale === 'bn' ? (
+              <>
+                আপনার টাকা আসলে{' '}
+                <span className="text-[#179B51] underline decoration-[#FBC02B] decoration-4 underline-offset-6">কোথায় যায়?</span>
+              </>
+            ) : (
+              <>
+                Where does your money{' '}
+                <span className="text-[#179B51] underline decoration-[#FBC02B] decoration-4 underline-offset-6">actually go?</span>
+              </>
+            )}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-base sm:text-lg text-[#666666] font-normal leading-relaxed max-w-[62ch] mx-auto"
+          >
+            {locale === 'bn'
+              ? 'প্রতিদিনের ছোট ছোট খরচ দ্রুত বড় অংকে পরিণত হয়। খরচ আপনাকে প্রতিটি ব্যয়ের হিসাব রাখতে, অভ্যাস বুঝতে এবং কত টাকা বাকি আছে তা পরিষ্কার দেখতে সাহায্য করে।'
+              : 'Small everyday expenses add up quickly. Khoroch helps you keep track of your spending, understand your habits, and know exactly how much money you have left.'}
+          </motion.p>
+        </div>
       </section>
 
-      {/* ─── Feature 1: Spoken Voice AI ─── */}
-      <section id="voice" className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-6 space-y-5"
-          >
-            <div className="w-11 h-11 rounded-2xl bg-amber-500/15 flex items-center justify-center text-amber-600">
-              <Microphone size={24} weight="bold" />
-            </div>
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-600">
-              01. Conversational Voice AI
-            </span>
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171717]">
-              {locale === 'bn' ? 'শুধু বলুন আপনি কী খরচ করেছেন।' : 'Just say what you spent.'}
-            </h3>
-            <p className="text-base text-[#666666] leading-relaxed">
-              {locale === 'bn'
-                ? 'বাংলা, ইংরেজি বা চলতি বাংলিশে কথা বলুন। এআই স্বয়ংক্রিয়ভাবে ক্যাটাগরি, মার্চেন্ট ও টাকার পরিমাণ আলাদা করে সনাক্ত করবে।'
-                : 'Speak naturally in colloquial Bangla, English, or mixed phrases. Gemini LLM parses multiple line items in under 300ms.'}
-            </p>
-
-            <div className="flex items-center gap-2 pt-2">
-              {(['bn', 'mixed', 'en'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveVoiceTab(tab)}
-                  className={`px-3.5 py-1.5 rounded-xl font-bold text-xs cursor-pointer transition-all ${
-                    activeVoiceTab === tab
-                      ? 'bg-[#FBC02B] text-[#171717] shadow-xs'
-                      : 'bg-neutral-200/70 text-[#666666] hover:bg-neutral-200'
-                  }`}
-                >
-                  {voiceDemos[tab].label}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-6 bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4"
-          >
-            <div className="p-4 bg-[#FAFAF7] rounded-2xl border border-neutral-200/60 flex items-center justify-between gap-3">
-              <div className="space-y-1 flex-1">
-                <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider font-mono">Input Stream</span>
-                <p className="text-xs font-semibold text-[#171717] italic">
-                  "{voiceDemos[activeVoiceTab].text}"
-                </p>
+      {/* ─── 4. Feature 1: Spoken Voice AI (Warm Section #FAFAF7) ─── */}
+      <section id="voice" className="w-full py-28 border-b border-neutral-200/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-6 space-y-6"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/15 flex items-center justify-center text-amber-600">
+                <Microphone size={26} weight="bold" />
               </div>
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-600">
+                01. Conversational Voice AI
+              </span>
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171717]">
+                {locale === 'bn' ? 'শুধু বলুন আপনি কী খরচ করেছেন।' : 'Just say what you spent.'}
+              </h3>
+              <p className="text-base text-[#666666] leading-relaxed">
+                {locale === 'bn'
+                  ? 'বাংলা, ইংরেজি বা চলতি বাংলিশে কথা বলুন। এআই স্বয়ংক্রিয়ভাবে ক্যাটাগরি, মার্চেন্ট ও টাকার পরিমাণ আলাদা করে সনাক্ত করবে।'
+                  : 'Speak naturally in colloquial Bangla, English, or mixed phrases. Gemini LLM parses multiple line items in under 300ms.'}
+              </p>
 
-              {/* Dynamic Animated Sound Wave Bars */}
-              <div className="flex items-center gap-0.5 h-7 shrink-0">
-                {[14, 24, 18, 28, 16, 26, 20, 12].map((h, i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ height: [h, Math.max(6, (h * 1.6) % 28), h] }}
-                    transition={{ repeat: Infinity, duration: 0.9, delay: i * 0.1 }}
-                    className="w-1 bg-[#179B51] rounded-full"
-                  />
+              <div className="flex items-center gap-2 pt-2">
+                {(['bn', 'mixed', 'en'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveVoiceTab(tab)}
+                    className={`px-4 py-2 rounded-xl font-bold text-xs cursor-pointer transition-all ${
+                      activeVoiceTab === tab
+                        ? 'bg-[#FBC02B] text-[#171717] shadow-xs'
+                        : 'bg-neutral-200/70 text-[#666666] hover:bg-neutral-200'
+                    }`}
+                  >
+                    {voiceDemos[tab].label}
+                  </button>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            <div className="space-y-2">
-              {voiceDemos[activeVoiceTab].parsed.map((item, idx) => (
-                <div key={idx} className="p-3 bg-[#FAFAF7] rounded-xl border border-neutral-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <PaymentMethodLogo name={item.method} size={20} />
-                    <div>
-                      <p className="text-xs font-bold text-[#171717]">{item.name}</p>
-                      <p className="text-[10px] text-[#777777]">{item.category} • {item.method}</p>
-                    </div>
-                  </div>
-                  <span className="font-mono text-xs font-black text-[#179B51]">৳ {item.amount}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => setIsVoiceModalOpen(true)}
-                className="flex-1 py-2.5 bg-white text-[#171717] font-bold text-xs rounded-xl border border-neutral-300 shadow-2xs hover:bg-neutral-50 cursor-pointer"
-              >
-                Test Microphone
-              </button>
-              <button
-                type="button"
-                onClick={() => toast.success(locale === 'bn' ? 'ভয়েস খরচ নিশ্চিত হয়েছে!' : 'Voice expense confirmed!')}
-                className="flex-1 py-2.5 bg-[#179B51] text-white font-bold text-xs rounded-xl shadow-xs hover:bg-[#148344] cursor-pointer"
-              >
-                Confirm & Log
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── Feature 2: Receipt Vision OCR ─── */}
-      <section id="vision" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 border-t border-neutral-200/60">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-6 space-y-5 lg:order-2"
-          >
-            <div className="w-11 h-11 rounded-2xl bg-sky-500/15 flex items-center justify-center text-sky-600">
-              <Receipt size={24} weight="bold" />
-            </div>
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-sky-600">
-              02. Receipt Vision OCR
-            </span>
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171717]">
-              {locale === 'bn' ? 'রসিদের ছবি থেকে সরাসরি খরচ।' : 'Turn receipts into expenses.'}
-            </h3>
-            <p className="text-base text-[#666666] leading-relaxed">
-              {locale === 'bn'
-                ? 'কাগজের রসিদের ছবি তুলুন। মার্চেন্টের নাম, মোট টাকা ও প্রতিটি আইটেম স্বয়ংক্রিয়ভাবে এক্সট্র্যাক্ট হয়ে যাবে।'
-                : 'Snap a photo of printed supermarket or dining receipts. Extract merchant, date, VAT, and line items in seconds.'}
-            </p>
-
-            <div className="flex items-center gap-2 text-xs font-bold text-[#666666]">
-              <span className="px-3 py-1 bg-neutral-200/70 rounded-lg">Receipt</span>
-              <span>→</span>
-              <span className="px-3 py-1 bg-neutral-200/70 rounded-lg">Scan</span>
-              <span>→</span>
-              <span className="px-3 py-1 bg-neutral-200/70 rounded-lg">Extract</span>
-              <span>→</span>
-              <span className="px-3 py-1 bg-[#179B51] text-white rounded-lg">Confirm</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-6 bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4 lg:order-1"
-          >
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-2">
-              <span className="font-bold text-sm">Receipt Extracted</span>
-              <span className="text-xs font-mono font-bold bg-[#179B51]/10 text-[#179B51] px-2.5 py-0.5 rounded-full">
-                17 Aug 2026
-              </span>
-            </div>
-
-            <div className="space-y-2.5 text-xs">
-              <div className="flex justify-between py-1 border-b border-dashed border-neutral-200">
-                <span className="font-semibold text-[#777777]">Merchant</span>
-                <span className="font-bold text-[#171717]">Shwapno Superstore</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-dashed border-neutral-200">
-                <span className="font-semibold text-[#777777]">Category</span>
-                <span className="font-bold text-[#171717]">Groceries</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-dashed border-neutral-200">
-                <span className="font-semibold text-[#777777]">Items Detected</span>
-                <span className="font-bold text-[#171717]">3 Line Items (VAT Included)</span>
-              </div>
-              <div className="flex justify-between py-2 pt-3 font-bold text-sm border-t border-neutral-200">
-                <span className="text-[#171717]">Total Amount</span>
-                <span className="font-mono text-base font-black text-[#179B51]">৳ 1,850.00</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => toast.success(locale === 'bn' ? 'রসিদ সংরক্ষিত হয়েছে!' : 'Receipt confirmed and saved!')}
-              className="w-full py-2.5 bg-[#179B51] text-white font-bold text-xs rounded-xl shadow-2xs hover:bg-[#148344] transition-all cursor-pointer"
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-6 bg-white border border-neutral-200/90 rounded-3xl p-7 shadow-sm space-y-5"
             >
-              Confirm & Save Receipt
-            </button>
-          </motion.div>
+              <div className="p-4 bg-[#FAFAF7] rounded-2xl border border-neutral-200/60 flex items-center justify-between gap-3">
+                <div className="space-y-1 flex-1">
+                  <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider font-mono">Spoken Sentence Demo</span>
+                  <p className="text-xs font-semibold text-[#171717] italic">
+                    "{voiceDemos[activeVoiceTab].text}"
+                  </p>
+                </div>
+
+                {/* Simulated Waveform */}
+                <div className="flex items-center gap-1 h-7 shrink-0">
+                  {[14, 24, 18, 28, 16, 26, 20, 12].map((h, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ height: isPlayingAudio ? [h, Math.max(6, (h * 1.8) % 28), h] : h }}
+                      transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.1 }}
+                      className="w-1 bg-[#179B51] rounded-full"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {voiceDemos[activeVoiceTab].parsed.map((item, idx) => (
+                  <div key={idx} className="p-3.5 bg-[#FAFAF7] rounded-xl border border-neutral-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <PaymentMethodLogo name={item.method} size={22} />
+                      <div>
+                        <p className="text-xs font-bold text-[#171717]">{item.name}</p>
+                        <p className="text-[10px] text-[#777777]">{item.category} • {item.method}</p>
+                      </div>
+                    </div>
+                    <span className="font-mono text-xs font-black text-[#179B51]">৳ {item.amount}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={toggleSimulatedAudio}
+                  className="flex-1 py-3 bg-white text-[#171717] font-bold text-xs rounded-xl border border-neutral-300 shadow-2xs hover:bg-neutral-50 cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  {isPlayingAudio ? <Pause size={14} weight="bold" /> : <Play size={14} weight="bold" className="text-[#179B51]" />}
+                  <span>{isPlayingAudio ? 'Pause Simulation' : 'Play Audio Simulation'}</span>
+                </button>
+                <Link
+                  href="/register"
+                  className="flex-1 py-3 bg-[#179B51] text-white font-bold text-xs rounded-xl shadow-xs hover:bg-[#148344] transition-all text-center"
+                >
+                  Try in Full App →
+                </Link>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ─── Feature 3: Interactive Budget Calculator ─── */}
-      <section id="budget" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 border-t border-neutral-200/60">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-6 space-y-5"
-          >
-            <div className="w-11 h-11 rounded-2xl bg-[#179B51]/15 flex items-center justify-center text-[#179B51]">
-              <Sliders size={24} weight="bold" />
-            </div>
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#179B51]">
-              03. Interactive Monthly Budget
-            </span>
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171717]">
-              {locale === 'bn' ? 'মাসিক বাজেটের ওপর পূর্ণ নিয়ন্ত্রণ।' : 'Stay on top of your monthly budget.'}
-            </h3>
-            <p className="text-base text-[#666666] leading-relaxed">
-              {locale === 'bn'
-                ? 'মাসের শুরুতে টার্গেট বাজেট নির্ধারণ করুন এবং কত খরচ হয়েছে ও কত বাকি আছে তা লাইভ ট্র্যাক করুন।'
-                : 'Slide to adjust targets, observe spending pace, and prevent unexpected end-of-month budget shocks.'}
-            </p>
+      {/* ─── 5. Feature 2: Receipt Vision OCR (White Section #FFFFFF) ─── */}
+      <section id="vision" className="w-full bg-white py-28 border-b border-neutral-200/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-6 space-y-6 lg:order-2"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-sky-500/15 flex items-center justify-center text-sky-600">
+                <Receipt size={26} weight="bold" />
+              </div>
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-sky-600">
+                02. Receipt Vision OCR
+              </span>
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171717]">
+                {locale === 'bn' ? 'রসিদের ছবি থেকে সরাসরি খরচ।' : 'Turn receipts into expenses.'}
+              </h3>
+              <p className="text-base text-[#666666] leading-relaxed">
+                {locale === 'bn'
+                  ? 'কাগজের রসিদের ছবি তুলুন। মার্চেন্টের নাম, মোট টাকা ও প্রতিটি আইটেম স্বয়ংক্রিয়ভাবে এক্সট্র্যাক্ট হয়ে যাবে।'
+                  : 'Snap a photo of printed supermarket or dining receipts. Extract merchant, date, VAT, and line items in seconds.'}
+              </p>
 
-            {/* Interactive Slider Input */}
-            <div className="space-y-2 pt-2">
-              <div className="flex justify-between text-xs font-bold text-[#555555]">
-                <span>Set Monthly Target:</span>
-                <span className="font-mono font-black text-[#171717]">৳ {interactiveBudget.toLocaleString()}</span>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#666666]">
+                <span className="px-3 py-1 bg-neutral-100 rounded-lg">Receipt Photo</span>
+                <span>→</span>
+                <span className="px-3 py-1 bg-neutral-100 rounded-lg">Vision Scan</span>
+                <span>→</span>
+                <span className="px-3 py-1 bg-neutral-100 rounded-lg">Itemized Extract</span>
+                <span>→</span>
+                <span className="px-3 py-1 bg-[#179B51] text-white rounded-lg">Save</span>
               </div>
-              <input
-                type="range"
-                min="10000"
-                max="80000"
-                step="5000"
-                value={interactiveBudget}
-                onChange={(e) => setInteractiveBudget(Number(e.target.value))}
-                className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-[#179B51]"
-              />
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-6 bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-7 shadow-sm space-y-5"
-          >
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <div>
-                <span className="text-xs font-semibold text-[#777777]">Target Budget</span>
-                <p className="text-2xl font-black text-[#171717] font-mono">৳ {interactiveBudget.toLocaleString()}</p>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-6 bg-[#FAFAF7] border border-neutral-200 rounded-3xl p-7 shadow-sm space-y-4 lg:order-1"
+            >
+              <div className="flex items-center justify-between border-b border-neutral-200 pb-2.5">
+                <span className="font-bold text-sm">Receipt Extracted Preview</span>
+                <span className="text-xs font-mono font-bold bg-[#179B51]/10 text-[#179B51] px-2.5 py-0.5 rounded-full">
+                  17 Aug 2026
+                </span>
               </div>
-              <div className="text-right">
-                <span className="text-xs font-semibold text-[#777777]">Remaining</span>
-                <p className="text-2xl font-black text-[#179B51] font-mono">
-                  ৳ {(interactiveBudget - interactiveSpent).toLocaleString()}
-                </p>
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-bold text-[#171717]">
-                <span>Spent: ৳ {interactiveSpent.toLocaleString()}</span>
-                <span>{Math.round((interactiveSpent / interactiveBudget) * 100)}% spent</span>
+              <div className="space-y-2.5 text-xs bg-white p-4 rounded-2xl border border-neutral-200/60">
+                <div className="flex justify-between py-1 border-b border-dashed border-neutral-200">
+                  <span className="font-semibold text-[#777777]">Merchant</span>
+                  <span className="font-bold text-[#171717]">Shwapno Superstore</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-dashed border-neutral-200">
+                  <span className="font-semibold text-[#777777]">Category</span>
+                  <span className="font-bold text-[#171717]">Groceries</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-dashed border-neutral-200">
+                  <span className="font-semibold text-[#777777]">Items Detected</span>
+                  <span className="font-bold text-[#171717]">3 Line Items (VAT Included)</span>
+                </div>
+                <div className="flex justify-between py-2 pt-3 font-bold text-sm border-t border-neutral-200">
+                  <span className="text-[#171717]">Total Amount</span>
+                  <span className="font-mono text-base font-black text-[#179B51]">৳ 1,850.00</span>
+                </div>
               </div>
-              <div className="w-full h-3 bg-neutral-100 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-[#179B51] rounded-full"
-                  animate={{ width: `${Math.min(100, Math.round((interactiveSpent / interactiveBudget) * 100))}%` }}
-                  transition={{ duration: 0.4 }}
+
+              <Link
+                href="/register"
+                className="w-full py-3 bg-[#179B51] text-white font-bold text-xs rounded-xl shadow-xs hover:bg-[#148344] transition-all block text-center"
+              >
+                Scan Your Receipts in Full App →
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 6. Feature 3: Interactive Budget Calculator (Warm #FAFAF7) ─── */}
+      <section id="budget" className="w-full py-28 border-b border-neutral-200/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-6 space-y-6"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#179B51]/15 flex items-center justify-center text-[#179B51]">
+                <Sliders size={26} weight="bold" />
+              </div>
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#179B51]">
+                03. Interactive Monthly Budget
+              </span>
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#171717]">
+                {locale === 'bn' ? 'মাসিক বাজেটের ওপর পূর্ণ নিয়ন্ত্রণ।' : 'Stay on top of your monthly budget.'}
+              </h3>
+              <p className="text-base text-[#666666] leading-relaxed">
+                {locale === 'bn'
+                  ? 'মাসের শুরুতে টার্গেট বাজেট নির্ধারণ করুন এবং কত খরচ হয়েছে ও কত বাকি আছে তা লাইভ ট্র্যাক করুন।'
+                  : 'Slide to adjust targets, observe spending pace, and prevent unexpected end-of-month budget shocks.'}
+              </p>
+
+              {/* Interactive Range Slider */}
+              <div className="space-y-2 pt-2 bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-2xs">
+                <div className="flex justify-between text-xs font-bold text-[#555555]">
+                  <span>Adjust Simulated Target:</span>
+                  <span className="font-mono font-black text-[#171717]">৳ {interactiveBudget.toLocaleString()}</span>
+                </div>
+                <input
+                  type="range"
+                  min="10000"
+                  max="80000"
+                  step="5000"
+                  value={interactiveBudget}
+                  onChange={(e) => setInteractiveBudget(Number(e.target.value))}
+                  className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-[#179B51]"
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs font-bold">
-              <div className="p-3 bg-[#FAFAF7] rounded-xl border border-neutral-100">
-                <p className="text-[#888888] text-[10px]">Daily Average</p>
-                <p className="font-mono text-[#171717] font-bold text-sm">৳ {Math.round(interactiveSpent / 16)}</p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-6 bg-white border border-neutral-200/90 rounded-3xl p-7 shadow-sm space-y-5"
+            >
+              <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                <div>
+                  <span className="text-xs font-semibold text-[#777777]">Target Budget</span>
+                  <p className="text-2xl font-black text-[#171717] font-mono">৳ {interactiveBudget.toLocaleString()}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-semibold text-[#777777]">Remaining</span>
+                  <p className="text-2xl font-black text-[#179B51] font-mono">
+                    ৳ {(interactiveBudget - interactiveSpent).toLocaleString()}
+                  </p>
+                </div>
               </div>
-              <div className="p-3 bg-[#FAFAF7] rounded-xl border border-neutral-100">
-                <p className="text-[#888888] text-[10px]">Pace Status</p>
-                <p className="text-[#179B51] font-bold text-sm">Healthy</p>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-bold text-[#171717]">
+                  <span>Spent: ৳ {interactiveSpent.toLocaleString()}</span>
+                  <span>{Math.round((interactiveSpent / interactiveBudget) * 100)}% spent</span>
+                </div>
+                <div className="w-full h-3 bg-neutral-100 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-[#179B51] rounded-full"
+                    animate={{ width: `${Math.min(100, Math.round((interactiveSpent / interactiveBudget) * 100))}%` }}
+                    transition={{ duration: 0.4 }}
+                  />
+                </div>
               </div>
-              <div className="p-3 bg-[#FAFAF7] rounded-xl border border-neutral-100">
-                <p className="text-[#888888] text-[10px]">Days Left</p>
-                <p className="font-mono text-[#171717] font-bold text-sm">14 Days</p>
+
+              <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs font-bold">
+                <div className="p-3 bg-[#FAFAF7] rounded-xl border border-neutral-100">
+                  <p className="text-[#888888] text-[10px]">Daily Average</p>
+                  <p className="font-mono text-[#171717] font-bold text-sm">৳ {Math.round(interactiveSpent / 16)}</p>
+                </div>
+                <div className="p-3 bg-[#FAFAF7] rounded-xl border border-neutral-100">
+                  <p className="text-[#888888] text-[10px]">Pace Status</p>
+                  <p className="text-[#179B51] font-bold text-sm">Healthy</p>
+                </div>
+                <div className="p-3 bg-[#FAFAF7] rounded-xl border border-neutral-100">
+                  <p className="text-[#888888] text-[10px]">Days Left</p>
+                  <p className="font-mono text-[#171717] font-bold text-sm">14 Days</p>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ─── Full-Width Yellow Brand Breakout ─── */}
-      <section className="w-full bg-[#FBC02B] py-20 my-10">
+      {/* ─── 7. Yellow Brand Breakout ─── */}
+      <section className="w-full bg-[#FBC02B] py-24 border-y border-[#d97706]/30">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
           <motion.h2
             initial={{ opacity: 0, y: 15 }}
@@ -725,11 +737,11 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="pt-2"
+            className="pt-3"
           >
             <Link
               href="/register"
-              className="inline-block px-8 py-3.5 rounded-xl text-base font-bold text-[#171717] bg-white shadow-md hover:bg-neutral-50 hover:shadow-lg transition-all"
+              className="inline-block px-9 py-4 rounded-xl text-base font-bold text-[#171717] bg-white shadow-md hover:bg-neutral-50 hover:shadow-lg transition-all"
             >
               {locale === 'bn' ? 'ট্র্যাকিং শুরু করুন' : 'Start Tracking Now'}
             </Link>
@@ -737,180 +749,184 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Spending Insights ─── */}
-      <section id="insights" className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
-        <div className="max-w-2xl mb-12 space-y-3">
-          <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-[#171717]">
-            {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
-          </h3>
-          <p className="text-base text-[#666666]">
-            {locale === 'bn'
-              ? 'ক্যাটাগরি অনুযায়ী খরচের বিশ্লেষণ দেখে বুঝে নিন কোন খাতে বেশি খরচ হচ্ছে।'
-              : 'Clean, understandable category share without confusing visual clutter.'}
-          </p>
+      {/* ─── 8. Spending Insights (White Section #FFFFFF) ─── */}
+      <section id="insights" className="w-full bg-white py-28 border-b border-neutral-200/80">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
+          <div className="max-w-2xl space-y-3">
+            <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-[#171717]">
+              {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
+            </h3>
+            <p className="text-base text-[#666666]">
+              {locale === 'bn'
+                ? 'ক্যাটাগরি অনুযায়ী খরচের বিশ্লেষণ দেখে বুঝে নিন কোন খাতে বেশি খরচ হচ্ছে।'
+                : 'Clean, understandable category share without confusing visual clutter.'}
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-[#171717]">
+                <span>Food & Dining</span>
+                <span className="font-mono">৳ 4,200 (35%)</span>
+              </div>
+              <div className="w-full h-3 bg-neutral-100 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: '65%' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  className="h-full bg-[#179B51] rounded-full"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-[#171717]">
+                <span>Utility Bills</span>
+                <span className="font-mono">৳ 3,200 (26%)</span>
+              </div>
+              <div className="w-full h-3 bg-neutral-100 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: '48%' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                  className="h-full bg-[#179B51] rounded-full"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-[#171717]">
+                <span>Groceries & Shopping</span>
+                <span className="font-mono">৳ 2,300 (19%)</span>
+              </div>
+              <div className="w-full h-3 bg-neutral-100 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: '35%' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="h-full bg-[#FBC02B] rounded-full"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-[#171717]">
+                <span>Transportation</span>
+                <span className="font-mono">৳ 1,850 (15%)</span>
+              </div>
+              <div className="w-full h-3 bg-neutral-100 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: '28%' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="h-full bg-[#171717] rounded-full"
+                />
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div className="space-y-5">
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-bold text-[#171717]">
-              <span>Food & Dining</span>
-              <span className="font-mono">৳ 4,200 (35%)</span>
-            </div>
-            <div className="w-full h-3 bg-neutral-200/70 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: '65%' }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="h-full bg-[#179B51] rounded-full"
-              />
-            </div>
+      {/* ─── 9. How It Works (Warm #FAFAF7) ─── */}
+      <section id="how-it-works" className="w-full py-28 border-b border-neutral-200/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="max-w-2xl mb-16 space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[#171717]">
+              {locale === 'bn' ? 'সহজ চার ধাপে সম্পূর্ণ নিয়ন্ত্রণ' : 'How Khoroch Works'}
+            </h2>
+            <p className="text-base text-[#666666]">
+              {locale === 'bn'
+                ? 'কোনো জটিলতা ছাড়া চার ধাপে আপনার পার্সোনাল ফাইন্যান্স সাজিয়ে নিন।'
+                : 'Four straightforward steps to achieve daily clarity.'}
+            </p>
           </div>
 
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-bold text-[#171717]">
-              <span>Utility Bills</span>
-              <span className="font-mono">৳ 3,200 (26%)</span>
-            </div>
-            <div className="w-full h-3 bg-neutral-200/70 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: '48%' }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                className="h-full bg-[#179B51] rounded-full"
-              />
-            </div>
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-3.5"
+            >
+              <span className="text-4xl font-black text-[#179B51] font-mono block">01</span>
+              <h4 className="font-bold text-lg text-[#171717]">
+                {locale === 'bn' ? 'বাজেট সেট করুন' : 'Set your budget'}
+              </h4>
+              <p className="text-xs text-[#666666] leading-relaxed">
+                {locale === 'bn'
+                  ? 'মাসের শুরুতে স্টার্টিং ব্যালেন্স ও খরচের লিমিট নির্ধারণ করুন।'
+                  : 'Define your starting monthly target and spending boundary.'}
+              </p>
+            </motion.div>
 
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-bold text-[#171717]">
-              <span>Groceries & Shopping</span>
-              <span className="font-mono">৳ 2,300 (19%)</span>
-            </div>
-            <div className="w-full h-3 bg-neutral-200/70 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: '35%' }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="h-full bg-[#FBC02B] rounded-full"
-              />
-            </div>
-          </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="space-y-3.5"
+            >
+              <span className="text-4xl font-black text-[#179B51] font-mono block">02</span>
+              <h4 className="font-bold text-lg text-[#171717]">
+                {locale === 'bn' ? 'খরচ রেকর্ড করুন' : 'Track expenses'}
+              </h4>
+              <p className="text-xs text-[#666666] leading-relaxed">
+                {locale === 'bn'
+                  ? 'ভয়েস ইনপুট, রসিদ স্ক্যান বা কুইক ফর্মের মাধ্যমে সহজে রেকর্ড করুন।'
+                  : 'Log expenses in seconds via voice capture, receipt camera scan, or form.'}
+              </p>
+            </motion.div>
 
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-bold text-[#171717]">
-              <span>Transportation</span>
-              <span className="font-mono">৳ 1,850 (15%)</span>
-            </div>
-            <div className="w-full h-3 bg-neutral-200/70 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: '28%' }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="h-full bg-[#171717] rounded-full"
-              />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="space-y-3.5"
+            >
+              <span className="text-4xl font-black text-[#179B51] font-mono block">03</span>
+              <h4 className="font-bold text-lg text-[#171717]">
+                {locale === 'bn' ? 'অভ্যাস বুঝুন' : 'Understand habits'}
+              </h4>
+              <p className="text-xs text-[#666666] leading-relaxed">
+                {locale === 'bn'
+                  ? 'ক্যাটাগরি ও পেমেন্ট চ্যানেল ভিত্তিক হিসাব দেখে খরচ অপ্টিমাইজ করুন।'
+                  : 'See where money flows across bKash, Nagad, cards, and cash.'}
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="space-y-3.5"
+            >
+              <span className="text-4xl font-black text-[#179B51] font-mono block">04</span>
+              <h4 className="font-bold text-lg text-[#171717]">
+                {locale === 'bn' ? 'নিয়ন্ত্রণে থাকুন' : 'Stay in control'}
+              </h4>
+              <p className="text-xs text-[#666666] leading-relaxed">
+                {locale === 'bn'
+                  ? 'ইউটিলিটি বিল, সাবস্ক্রিপশন ও ধার-দেনার নিখুঁত ব্যালেন্স বজায় রাখুন।'
+                  : 'Keep utility bills, memberships, and peer loans settled on time.'}
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ─── How It Works ─── */}
-      <section id="how-it-works" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 border-t border-neutral-200/60">
-        <div className="max-w-2xl mb-14 space-y-2">
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[#171717]">
-            {locale === 'bn' ? 'সহজ চার ধাপে সম্পূর্ণ নিয়ন্ত্রণ' : 'How Khoroch Works'}
-          </h2>
-          <p className="text-base text-[#666666]">
-            {locale === 'bn'
-              ? 'কোনো জটিলতা ছাড়া চার ধাপে আপনার পার্সোনাল ফাইন্যান্স সাজিয়ে নিন।'
-              : 'Four straightforward steps to achieve daily clarity.'}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-3"
-          >
-            <span className="text-4xl font-black text-[#179B51] font-mono block">01</span>
-            <h4 className="font-bold text-lg text-[#171717]">
-              {locale === 'bn' ? 'বাজেট সেট করুন' : 'Set your budget'}
-            </h4>
-            <p className="text-xs text-[#666666] leading-relaxed">
-              {locale === 'bn'
-                ? 'মাসের শুরুতে স্টার্টিং ব্যালেন্স ও খরচের লিমিট নির্ধারণ করুন।'
-                : 'Define your starting monthly target and spending boundary.'}
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="space-y-3"
-          >
-            <span className="text-4xl font-black text-[#179B51] font-mono block">02</span>
-            <h4 className="font-bold text-lg text-[#171717]">
-              {locale === 'bn' ? 'খরচ রেকর্ড করুন' : 'Track expenses'}
-            </h4>
-            <p className="text-xs text-[#666666] leading-relaxed">
-              {locale === 'bn'
-                ? 'ভয়েস ইনপুট, রসিদ স্ক্যান বা কুইক ফর্মের মাধ্যমে সহজে রেকর্ড করুন।'
-                : 'Log expenses in seconds via voice capture, receipt camera scan, or form.'}
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="space-y-3"
-          >
-            <span className="text-4xl font-black text-[#179B51] font-mono block">03</span>
-            <h4 className="font-bold text-lg text-[#171717]">
-              {locale === 'bn' ? 'অভ্যাস বুঝুন' : 'Understand habits'}
-            </h4>
-            <p className="text-xs text-[#666666] leading-relaxed">
-              {locale === 'bn'
-                ? 'ক্যাটাগরি ও পেমেন্ট চ্যানেল ভিত্তিক হিসাব দেখে খরচ অপ্টিমাইজ করুন।'
-                : 'See where money flows across bKash, Nagad, cards, and cash.'}
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="space-y-3"
-          >
-            <span className="text-4xl font-black text-[#179B51] font-mono block">04</span>
-            <h4 className="font-bold text-lg text-[#171717]">
-              {locale === 'bn' ? 'নিয়ন্ত্রণে থাকুন' : 'Stay in control'}
-            </h4>
-            <p className="text-xs text-[#666666] leading-relaxed">
-              {locale === 'bn'
-                ? 'ইউটিলিটি বিল, সাবস্ক্রিপশন ও ধার-দেনার নিখুঁত ব্যালেন্স বজায় রাখুন।'
-                : 'Keep utility bills, memberships, and peer loans settled on time.'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── Final Conversion Banner ─── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      {/* ─── 10. Final Call to Action ─── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-24">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="bg-[#179B51] text-white rounded-3xl p-8 sm:p-14 text-center space-y-5 shadow-xl"
+          className="bg-[#179B51] text-white rounded-3xl p-8 sm:p-16 text-center space-y-6 shadow-xl"
         >
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
             {locale === 'bn'
@@ -922,16 +938,16 @@ export default function LandingPage() {
               ? 'আজই শুরু করুন সম্পূর্ণ বিনামূল্যে। কোনো ক্রেডিট কার্ডের প্রয়োজন নেই।'
               : 'Start tracking your expenses with Khoroch. Free and open source.'}
           </p>
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/register"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl text-base font-bold text-[#171717] bg-[#FBC02B] shadow-md hover:bg-amber-400 hover:shadow-lg transition-all cursor-pointer"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-[#171717] bg-[#FBC02B] shadow-md hover:bg-amber-400 hover:shadow-lg transition-all cursor-pointer"
             >
               {locale === 'bn' ? 'বিনামূল্যে অ্যাকাউন্ট খুলুন' : 'Get Started Free'}
             </Link>
             <button
               onClick={handleCopy}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl text-base font-semibold text-white bg-[#171717] shadow-md hover:bg-neutral-900 transition-all cursor-pointer"
+              className="w-full sm:w-auto px-7 py-4 rounded-xl text-base font-semibold text-white bg-[#171717] shadow-md hover:bg-neutral-900 transition-all cursor-pointer"
             >
               {copiedInstall ? 'Command Copied' : 'Clone on GitHub'}
             </button>
@@ -939,7 +955,7 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ─── Clean Dark Footer ─── */}
+      {/* ─── 11. Dark Footer ─── */}
       <footer className="w-full bg-[#171717] text-[#FAFAF7] py-14 border-t border-neutral-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center sm:text-left">
@@ -972,18 +988,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-
-      {/* Live Voice Modal */}
-      <VoiceModal
-        isOpen={isVoiceModalOpen}
-        onClose={() => setIsVoiceModalOpen(false)}
-        onSuccess={() => {
-          setIsVoiceModalOpen(false);
-          toast.success(locale === 'bn' ? 'ভয়েস প্রসেস সম্পন্ন হয়েছে' : 'Voice processed successfully');
-        }}
-        categories={[]}
-        paymentMethods={[]}
-      />
     </div>
   );
 }
