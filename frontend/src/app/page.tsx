@@ -546,25 +546,28 @@ export default function LandingPage() {
 
       {/* ─── 7. Spending Insights with Interactive Pie Chart ─── */}
       <section id="insights" className="w-full bg-white py-28 border-b border-neutral-200/50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
-          <div className="max-w-xl space-y-2">
-            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#179B51]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+
+          {/* Header */}
+          <div className="flex flex-col items-center text-center mb-16 space-y-3">
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#179B51]">
               Category Analytics
             </span>
             <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
-              {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
+              {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
             </h3>
-            <p className="text-base text-neutral-500">
+            <p className="text-base text-neutral-400 max-w-md">
               {locale === 'bn'
-                ? 'ক্যাটাগরি অনুযায়ী খরচের বিশ্লেষণ দেখে বুঝে নিন কোন খাতে বেশি খরচ হচ্ছে।'
-                : 'Clean, understandable category share without confusing visual clutter.'}
+                ? 'ক্যাটাগরি অনুযায়ী খরচের বিশ্লেষণ দেখে বুঝে নিন কোন খাতে বেশি খরচ হচ্ছে।'
+                : 'Hover any slice or category to explore your spending breakdown.'}
             </p>
           </div>
 
-          {/* Interactive Pie Chart Showcase */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-[#FAFAF8] p-6 sm:p-10 rounded-3xl border border-neutral-200/80 shadow-2xs">
-            {/* Left Column: Recharts Pie Chart with Hover Animation */}
-            <div className="lg:col-span-6 h-72 sm:h-80 relative flex items-center justify-center">
+          {/* Chart + Legend side by side — NO BOXES */}
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-16">
+
+            {/* Donut Chart */}
+            <div className="relative w-72 h-72 sm:w-80 sm:h-80 shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Tooltip
@@ -572,10 +575,18 @@ export default function LandingPage() {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
                         return (
-                          <div className="bg-neutral-900 text-white px-3.5 py-2 rounded-xl text-xs shadow-lg border border-neutral-800 space-y-0.5">
-                            <p className="font-semibold">{locale === 'bn' ? data.nameBn : data.name}</p>
-                            <p className="font-mono text-[#FBC02B] font-bold">
-                              ৳ {data.value.toLocaleString()} ({data.percentage}%)
+                          <div style={{
+                            background: 'rgba(10,10,10,0.88)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: '12px',
+                            padding: '10px 14px',
+                          }}>
+                            <p style={{ color: '#fff', fontSize: '11px', fontWeight: 600, margin: 0 }}>
+                              {locale === 'bn' ? data.nameBn : data.name}
+                            </p>
+                            <p style={{ color: '#FBC02B', fontSize: '13px', fontWeight: 700, fontFamily: 'monospace', margin: '3px 0 0' }}>
+                              ৳ {data.value.toLocaleString()} · {data.percentage}%
                             </p>
                           </div>
                         );
@@ -585,17 +596,17 @@ export default function LandingPage() {
                   />
                   <Pie
                     data={[
-                      { name: 'Food & Dining', nameBn: 'খাবার ও রেস্তোরাঁ', value: 4200, percentage: 35, color: '#179B51' },
-                      { name: 'Utility Bills', nameBn: 'ইউটিলিটি ও বিল', value: 3200, percentage: 26, color: '#148344' },
-                      { name: 'Groceries & Shopping', nameBn: 'বাজার ও কেনাকাটা', value: 2300, percentage: 19, color: '#FBC02B' },
-                      { name: 'Transportation', nameBn: 'যাতায়াত ও ভ্রমণ', value: 1850, percentage: 15, color: '#171717' },
-                      { name: 'Others', nameBn: 'অন্যান্য', value: 600, percentage: 5, color: '#9CA3AF' },
+                      { name: 'Food & Dining',        nameBn: 'খাবার ও রেস্তোরাঁ', value: 4200, percentage: 35, color: '#179B51' },
+                      { name: 'Utility Bills',         nameBn: 'ইউটিলিটি ও বিল',   value: 3200, percentage: 26, color: '#10b981' },
+                      { name: 'Groceries & Shopping', nameBn: 'বাজার ও কেনাকাটা',  value: 2300, percentage: 19, color: '#FBC02B' },
+                      { name: 'Transportation',        nameBn: 'যাতায়াত ও ভ্রমণ',   value: 1850, percentage: 15, color: '#334155' },
+                      { name: 'Others',                nameBn: 'অন্যান্য',            value: 600,  percentage: 5,  color: '#d1d5db' },
                     ]}
                     cx="50%"
                     cy="50%"
-                    innerRadius={70}
-                    outerRadius={105}
-                    paddingAngle={4}
+                    innerRadius={88}
+                    outerRadius={118}
+                    paddingAngle={3}
                     dataKey="value"
                     activeIndex={activePieIndex}
                     activeShape={(props: any) => {
@@ -603,52 +614,44 @@ export default function LandingPage() {
                       return (
                         <g>
                           <Sector
-                            cx={cx}
-                            cy={cy}
-                            innerRadius={innerRadius - 4}
-                            outerRadius={outerRadius + 8}
+                            cx={cx} cy={cy}
+                            innerRadius={innerRadius - 5}
+                            outerRadius={outerRadius + 10}
                             startAngle={startAngle}
                             endAngle={endAngle}
                             fill={fill}
-                            className="transition-all duration-300 drop-shadow-md"
+                            style={{ filter: `drop-shadow(0 4px 16px ${fill}55)` }}
                           />
                         </g>
                       );
                     }}
                     onMouseEnter={(_, index) => setActivePieIndex(index)}
+                    stroke="none"
                   >
                     {[
-                      { color: '#179B51' },
-                      { color: '#148344' },
-                      { color: '#FBC02B' },
-                      { color: '#171717' },
-                      { color: '#9CA3AF' },
-                    ].map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.color}
-                        className="cursor-pointer outline-none transition-all duration-300"
-                      />
+                      '#179B51', '#10b981', '#FBC02B', '#334155', '#d1d5db'
+                    ].map((color, index) => (
+                      <Cell key={`cell-${index}`} fill={color} stroke="none" className="cursor-pointer" />
                     ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
 
-              {/* Centered Donut Badge */}
-              <div className="absolute flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-xs text-neutral-400 font-medium">Total Tracked</span>
-                <span className="text-xl sm:text-2xl font-black text-neutral-900 font-mono">৳ 12,150</span>
+              {/* Center label — floating, no box */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-[11px] font-medium text-neutral-400 tracking-wide uppercase">This Month</span>
+                <span className="text-3xl font-black text-neutral-900 font-mono leading-tight">৳ 12,150</span>
               </div>
             </div>
 
-            {/* Right Column: Interactive Category Legend Cards */}
-            <div className="lg:col-span-6 space-y-2.5">
+            {/* Legend — clean rows, no borders, no backgrounds */}
+            <div className="w-full lg:w-auto space-y-0 divide-y divide-neutral-100">
               {[
-                { name: 'Food & Dining', nameBn: 'খাবার ও রেস্তোরাঁ', value: 4200, percentage: 35, color: '#179B51' },
-                { name: 'Utility Bills', nameBn: 'ইউটিলিটি ও বিল', value: 3200, percentage: 26, color: '#148344' },
-                { name: 'Groceries & Shopping', nameBn: 'বাজার ও কেনাকাটা', value: 2300, percentage: 19, color: '#FBC02B' },
-                { name: 'Transportation', nameBn: 'যাতায়াত ও ভ্রমণ', value: 1850, percentage: 15, color: '#171717' },
-                { name: 'Others', nameBn: 'অন্যান্য', value: 600, percentage: 5, color: '#9CA3AF' },
+                { name: 'Food & Dining',        nameBn: 'খাবার ও রেস্তোরাঁ', value: 4200, percentage: 35, color: '#179B51' },
+                { name: 'Utility Bills',         nameBn: 'ইউটিলিটি ও বিল',   value: 3200, percentage: 26, color: '#10b981' },
+                { name: 'Groceries & Shopping', nameBn: 'বাজার ও কেনাকাটা',  value: 2300, percentage: 19, color: '#FBC02B' },
+                { name: 'Transportation',        nameBn: 'যাতায়াত ও ভ্রমণ',   value: 1850, percentage: 15, color: '#334155' },
+                { name: 'Others',                nameBn: 'অন্যান্য',            value: 600,  percentage: 5,  color: '#d1d5db' },
               ].map((item, idx) => {
                 const isActive = activePieIndex === idx;
                 return (
