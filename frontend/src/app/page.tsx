@@ -119,7 +119,7 @@ export default function LandingPage() {
             <a href="#voice" className="hover:text-neutral-950 transition-colors">
               {locale === 'bn' ? 'ভয়েস এআই' : 'Voice AI'}
             </a>
-            <a href="#vision" className="hover:text-neutral-950 transition-colors">
+            <a href="#receipt" className="hover:text-neutral-950 transition-colors">
               {locale === 'bn' ? 'রসিদ স্ক্যান' : 'Receipt OCR'}
             </a>
             <a href="#budget" className="hover:text-neutral-950 transition-colors">
@@ -128,25 +128,21 @@ export default function LandingPage() {
             <a href="#insights" className="hover:text-neutral-950 transition-colors">
               {locale === 'bn' ? 'ইনসাইটস' : 'Insights'}
             </a>
-            <a href="#how-it-works" className="hover:text-neutral-950 transition-colors">
-              {locale === 'bn' ? 'কীভাবে কাজ করে' : 'How It Works'}
-            </a>
           </nav>
 
-          {/* Minimal Action Area */}
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setLocale(locale === 'en' ? 'bn' : 'en')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border border-neutral-200 bg-white hover:border-neutral-300 text-neutral-700 transition-all cursor-pointer shadow-2xs"
+              onClick={() => setLocale(locale === 'bn' ? 'en' : 'bn')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-neutral-700 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/15 transition-colors"
             >
-              <Globe size={14} className="text-[#179B51]" />
-              <span>{locale === 'en' ? 'বাংলা' : 'English'}</span>
+              <Globe size={14} />
+              <span>{locale === 'bn' ? 'English' : 'বাংলা'}</span>
             </button>
 
             {isHydrated && user ? (
               <Link
                 href="/dashboard"
-                className="px-5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#179B51] hover:bg-[#148344] transition-all flex items-center gap-1.5 shadow-2xs"
+                className="px-5 py-2.5 rounded-full text-xs font-semibold text-neutral-900 bg-gradient-to-r from-[#FBC02B] to-[#F59E0B] hover:brightness-105 transition-all flex items-center gap-1.5 shadow-2xs"
               >
                 <span>{locale === 'bn' ? 'ড্যাশবোর্ড' : 'Dashboard'}</span>
                 <ArrowRight size={13} />
@@ -172,8 +168,8 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ─── 1. Hero Section (Centered Minimalist Layout) ─── */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-28 lg:pt-28 lg:pb-36 text-center">
+      {/* ─── 1. Hero Section ─── */}
+      <section className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-28 lg:pt-28 lg:pb-36 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,16 +177,16 @@ export default function LandingPage() {
           className="space-y-8 flex flex-col items-center"
         >
           <div className="space-y-6 flex flex-col items-center">
-            {/* Prominent Large Brand Logo */}
             <motion.div
               whileHover={{ scale: 1.04 }}
               transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-              className="cursor-pointer"
+              className="cursor-pointer relative"
             >
+              <div className="absolute inset-0 bg-[#FBC02B]/20 blur-2xl rounded-full scale-125 pointer-events-none" />
               <img
                 src="/logo-smooth-rounded.svg"
                 alt="খরচ"
-                className="h-20 sm:h-28 md:h-36 w-auto object-contain drop-shadow-xs"
+                className="relative h-20 sm:h-28 md:h-36 w-auto object-contain drop-shadow-xs"
               />
             </motion.div>
 
@@ -209,37 +205,35 @@ export default function LandingPage() {
             </h1>
           </div>
 
-          <p className="text-base sm:text-lg text-neutral-500 font-normal leading-relaxed max-w-[54ch] mx-auto">
+          <p className="text-base sm:text-lg text-neutral-600 font-normal leading-relaxed max-w-[54ch] mx-auto">
             {locale === 'bn'
               ? 'বাংলা বা ইংরেজিতে কথা বলে খরচ এন্ট্রি করুন, রসিদ স্ক্যান করুন এবং মাসিক বাজেট রাখুন সম্পূর্ণ নিয়ন্ত্রণে।'
               : 'Track expenses with natural voice, scan paper receipts with vision AI, and understand your cashflow in real time.'}
           </p>
 
-          {/* Minimalist CTA */}
           <div className="flex items-center justify-center pt-2">
             <Link
               href="/register"
-              className="px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#179B51] hover:bg-[#148344] transition-all text-center flex items-center justify-center gap-2 group shadow-xs"
+              className="px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#179B51] hover:bg-[#148344] transition-all text-center flex items-center justify-center gap-2 group shadow-xs hover:shadow-md"
             >
               <span>{locale === 'bn' ? 'বিনামূল্যে শুরু করুন' : 'Get Started Free'}</span>
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
 
-          {/* Minimal Metric Strip */}
-          <div className="flex items-center justify-center gap-8 sm:gap-14 pt-8 border-t border-neutral-200/60 max-w-lg mx-auto w-full">
+          <div className="flex items-center justify-center gap-8 sm:gap-14 pt-8 border-t border-amber-900/10 max-w-lg mx-auto w-full">
             <div>
               <p className="font-mono text-2xl font-bold text-neutral-900">৳ 0</p>
               <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? '১০০% ফ্রি' : 'Platform Fee'}</p>
             </div>
-            <div className="w-px h-7 bg-neutral-200" />
+            <div className="w-px h-7 bg-amber-900/10" />
             <div>
               <p className="font-mono text-2xl font-bold text-[#179B51]">&lt; 300ms</p>
               <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? 'এআই স্পিড' : 'AI Parse Speed'}</p>
             </div>
-            <div className="w-px h-7 bg-neutral-200" />
+            <div className="w-px h-7 bg-amber-900/10" />
             <div>
-              <p className="font-mono text-2xl font-bold text-neutral-900">100%</p>
+              <p className="font-mono text-2xl font-bold text-[#D97706]">100%</p>
               <p className="text-xs text-neutral-500 mt-0.5">{locale === 'bn' ? 'এনক্রিপ্টেড' : 'Private & Secure'}</p>
             </div>
           </div>
@@ -247,7 +241,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── 2. Minimal Scrolling Ticker ─── */}
-      <div className="w-full bg-neutral-900 text-neutral-200 py-4.5 overflow-hidden border-y border-neutral-800">
+      <div className="relative z-10 w-full bg-neutral-900 text-neutral-200 py-4.5 overflow-hidden border-y border-neutral-800">
         <motion.div
           animate={{ x: [0, -1035] }}
           transition={{ repeat: Infinity, duration: 26, ease: 'linear' }}
@@ -272,10 +266,8 @@ export default function LandingPage() {
         </motion.div>
       </div>
 
-
-
       {/* ─── 4. Feature 1: Spoken Voice AI ─── */}
-      <section id="voice" className="w-full py-28 border-b border-neutral-200/50">
+      <section id="voice" className="relative z-10 w-full py-28 bg-gradient-to-b from-[#FAF6EB]/80 via-[#FDFBF7] to-[#FAFAF7] border-b border-amber-900/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
             <motion.div
@@ -284,13 +276,13 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="lg:col-span-6 space-y-6"
             >
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#179B51]">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#D97706] bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
                 01. Conversational Voice AI
               </span>
               <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
                 {locale === 'bn' ? 'শুধু বলুন আপনি কী খরচ করেছেন।' : 'Just say what you spent.'}
               </h3>
-              <p className="text-base text-neutral-500 leading-relaxed">
+              <p className="text-base text-neutral-600 leading-relaxed">
                 {locale === 'bn'
                   ? 'বাংলা, ইংরেজি বা চলতি বাংলিশে কথা বলুন। এআই স্বয়ংক্রিয়ভাবে ক্যাটাগরি, মার্চেন্ট ও টাকার পরিমাণ আলাদা করে সনাক্ত করবে।'
                   : 'Speak naturally in colloquial Bangla, English, or mixed phrases. Gemini LLM parses multiple line items in under 300ms.'}
@@ -300,16 +292,34 @@ export default function LandingPage() {
                 {(['bn', 'mixed', 'en'] as const).map((tab) => (
                   <button
                     key={tab}
-                    onClick={() => setActiveVoiceTab(tab)}
-                    className={`px-4 py-2 rounded-full font-medium text-xs cursor-pointer transition-all ${
+                    onClick={() => {
+                      setActiveVoiceTab(tab);
+                      setIsPlayingAudio(false);
+                    }}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
                       activeVoiceTab === tab
-                        ? 'bg-neutral-900 text-white shadow-2xs'
-                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                        ? 'bg-neutral-950 text-white shadow-xs'
+                        : 'bg-amber-900/5 text-neutral-600 hover:bg-amber-900/10'
                     }`}
                   >
                     {voiceDemos[tab].label}
                   </button>
                 ))}
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-white/90 backdrop-blur-xs border border-amber-500/20 rounded-2xl shadow-2xs">
+                <button
+                  onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FBC02B] to-[#F59E0B] text-neutral-950 flex items-center justify-center hover:scale-105 transition-transform shrink-0 shadow-2xs"
+                >
+                  {isPlayingAudio ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
+                </button>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-neutral-400 font-medium">Recorded sample</p>
+                  <p className="text-xs font-semibold text-neutral-800 truncate">
+                    &quot;{voiceDemos[activeVoiceTab].text}&quot;
+                  </p>
+                </div>
               </div>
             </motion.div>
 
@@ -317,67 +327,58 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="lg:col-span-6 bg-white border border-neutral-200/80 rounded-2xl p-7 shadow-2xs space-y-5"
+              className="lg:col-span-6 bg-gradient-to-b from-white to-[#FDFBF7] border border-amber-500/20 rounded-2xl p-7 shadow-xs space-y-4"
             >
-              <div className="p-4 bg-[#FAFAF8] rounded-xl border border-neutral-100 flex items-center justify-between gap-3">
-                <div className="space-y-1 flex-1">
-                  <span className="text-[11px] font-medium text-neutral-400 font-mono">Spoken Demo</span>
-                  <p className="text-xs font-medium text-neutral-800 italic">
-                    "{voiceDemos[activeVoiceTab].text}"
-                  </p>
+              <div className="flex items-center justify-between border-b border-amber-900/10 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#179B51] animate-pulse" />
+                  <span className="text-xs font-semibold text-neutral-700">Instant AI Extraction</span>
                 </div>
-
-                {/* Waveform */}
-                <div className="flex items-center gap-1 h-6 shrink-0">
-                  {[12, 22, 16, 26, 14, 24, 18, 10].map((h, i) => (
-                    <motion.div
-                      key={i}
-                      animate={{ height: isPlayingAudio ? [h, Math.max(6, (h * 1.6) % 26), h] : h }}
-                      transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.1 }}
-                      className="w-1 bg-[#179B51] rounded-full"
-                    />
-                  ))}
-                </div>
+                <span className="text-xs font-mono text-[#D97706] font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+                  240ms parsed
+                </span>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {voiceDemos[activeVoiceTab].parsed.map((item, idx) => (
-                  <div key={idx} className="p-3.5 bg-[#FAFAF8] rounded-xl border border-neutral-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <PaymentMethodLogo name={item.method} size={20} />
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-amber-900/5 shadow-2xs hover:border-amber-500/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-700 font-bold flex items-center justify-center text-xs">
+                        ৳
+                      </div>
                       <div>
-                        <p className="text-xs font-semibold text-neutral-800">{item.name}</p>
-                        <p className="text-[10px] text-neutral-400">{item.category} • {item.method}</p>
+                        <p className="text-xs font-semibold text-neutral-900">{item.name}</p>
+                        <p className="text-[11px] text-neutral-400 font-medium">
+                          {item.category} • {item.method}
+                        </p>
                       </div>
                     </div>
-                    <span className="font-mono text-xs font-bold text-[#179B51]">৳ {item.amount}</span>
+                    <span className="font-mono font-bold text-sm text-neutral-900">
+                      ৳ {item.amount.toLocaleString()}
+                    </span>
                   </div>
                 ))}
               </div>
 
-              <div className="flex items-center gap-3 pt-1">
-                <button
-                  type="button"
-                  onClick={toggleSimulatedAudio}
-                  className="flex-1 py-2.5 bg-white text-neutral-700 font-medium text-xs rounded-full border border-neutral-200 hover:bg-neutral-50 cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
-                >
-                  {isPlayingAudio ? <Pause size={14} /> : <Play size={14} className="text-[#179B51]" />}
-                  <span>{isPlayingAudio ? 'Pause Simulation' : 'Play Audio'}</span>
-                </button>
-                <Link
-                  href="/register"
-                  className="flex-1 py-2.5 bg-[#179B51] text-white font-medium text-xs rounded-full hover:bg-[#148344] transition-all text-center shadow-2xs"
-                >
-                  Try in Full App →
-                </Link>
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-900 flex items-center justify-between">
+                <span className="font-medium">Total logged</span>
+                <span className="font-mono font-bold">
+                  ৳{' '}
+                  {voiceDemos[activeVoiceTab].parsed
+                    .reduce((acc, curr) => acc + curr.amount, 0)
+                    .toLocaleString()}
+                </span>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ─── 5. Feature 2: Receipt Vision OCR ─── */}
-      <section id="vision" className="w-full bg-white py-28 border-b border-neutral-200/50">
+      {/* ─── 5. Feature 2: Receipt OCR ─── */}
+      <section id="receipt" className="relative z-10 w-full py-28 border-b border-amber-900/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
             <motion.div
@@ -386,26 +387,26 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="lg:col-span-6 space-y-6 lg:order-2"
             >
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                02. Receipt Vision OCR
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#179B51] bg-[#179B51]/10 px-3 py-1 rounded-full border border-[#179B51]/20">
+                02. Vision Receipt Scanner
               </span>
               <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
-                {locale === 'bn' ? 'রসিদের ছবি থেকে সরাসরি খরচ।' : 'Turn receipts into expenses.'}
+                {locale === 'bn' ? 'কাগজের রসিদ স্ক্যান করুন মুহূর্তেই।' : 'Snap physical paper receipts.'}
               </h3>
-              <p className="text-base text-neutral-500 leading-relaxed">
+              <p className="text-base text-neutral-600 leading-relaxed">
                 {locale === 'bn'
-                  ? 'কাগজের রসিদের ছবি তুলুন। মার্চেন্টের নাম, মোট টাকা ও প্রতিটি আইটেম স্বয়ংক্রিয়ভাবে এক্সট্র্যাক্ট হয়ে যাবে।'
-                  : 'Snap a photo of printed supermarket or dining receipts. Extract merchant, date, VAT, and line items in seconds.'}
+                  ? 'সুপারশপ, রেস্তোরাঁ বা ফার্মেসির মেমো ছবি তুলে আপলোড করুন। এআই স্বয়ংক্রিয়ভাবে মোট খরচ এবং ক্যাটাগরি হিসাবভুক্ত করবে।'
+                  : 'Point your camera at handwritten or printed chalan bills. Our OCR identifies total amounts, VAT, and line items cleanly.'}
               </p>
 
-              <div className="flex items-center gap-2 text-xs font-medium text-neutral-500">
-                <span className="px-3 py-1 bg-neutral-100 rounded-full">Photo</span>
+              <div className="flex items-center gap-2 text-xs font-medium text-neutral-600">
+                <span className="px-3 py-1 bg-amber-900/5 rounded-full border border-amber-900/10">Photo</span>
                 <span>→</span>
-                <span className="px-3 py-1 bg-neutral-100 rounded-full">Vision Scan</span>
+                <span className="px-3 py-1 bg-amber-900/5 rounded-full border border-amber-900/10">Vision Scan</span>
                 <span>→</span>
-                <span className="px-3 py-1 bg-neutral-100 rounded-full">Extract</span>
+                <span className="px-3 py-1 bg-amber-900/5 rounded-full border border-amber-900/10">Extract</span>
                 <span>→</span>
-                <span className="px-3 py-1 bg-[#179B51] text-white rounded-full">Save</span>
+                <span className="px-3 py-1 bg-[#179B51] text-white rounded-full font-semibold shadow-2xs">Save</span>
               </div>
             </motion.div>
 
@@ -413,16 +414,16 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="lg:col-span-6 bg-[#FAFAF8] border border-neutral-200/80 rounded-2xl p-7 shadow-2xs space-y-4 lg:order-1"
+              className="lg:col-span-6 bg-gradient-to-b from-white to-[#FAF8F2] border border-amber-900/10 rounded-2xl p-7 shadow-xs space-y-4 lg:order-1"
             >
-              <div className="flex items-center justify-between border-b border-neutral-200/60 pb-2.5">
-                <span className="font-semibold text-xs text-neutral-600">Receipt Extracted Preview</span>
-                <span className="text-xs font-mono font-medium text-[#179B51]">
+              <div className="flex items-center justify-between border-b border-amber-900/10 pb-2.5">
+                <span className="font-semibold text-xs text-neutral-700">Receipt Extracted Preview</span>
+                <span className="text-xs font-mono font-bold text-[#179B51]">
                   17 Aug 2026
                 </span>
               </div>
 
-              <div className="space-y-2.5 text-xs bg-white p-4 rounded-xl border border-neutral-100">
+              <div className="space-y-2.5 text-xs bg-white p-4 rounded-xl border border-amber-900/5 shadow-2xs">
                 <div className="flex justify-between py-1 border-b border-neutral-100">
                   <span className="text-neutral-500">Merchant</span>
                   <span className="font-semibold text-neutral-800">Shwapno Superstore</span>
@@ -443,7 +444,7 @@ export default function LandingPage() {
 
               <Link
                 href="/register"
-                className="w-full py-2.5 bg-[#179B51] text-white font-medium text-xs rounded-full hover:bg-[#148344] transition-all block text-center shadow-2xs"
+                className="w-full py-2.5 bg-[#179B51] text-white font-semibold text-xs rounded-full hover:bg-[#148344] transition-all block text-center shadow-2xs"
               >
                 Scan Your Receipts in Full App →
               </Link>
@@ -453,7 +454,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── 6. Feature 3: Interactive Budget Calculator ─── */}
-      <section id="budget" className="w-full py-28 border-b border-neutral-200/50">
+      <section id="budget" className="relative z-10 w-full py-28 bg-[#FAFAF7] border-b border-amber-900/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
             <motion.div
@@ -462,21 +463,20 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="lg:col-span-6 space-y-6"
             >
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#179B51]">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#D97706] bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
                 03. Interactive Monthly Budget
               </span>
               <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
                 {locale === 'bn' ? 'মাসিক বাজেটের ওপর পূর্ণ নিয়ন্ত্রণ।' : 'Stay on top of your monthly budget.'}
               </h3>
-              <p className="text-base text-neutral-500 leading-relaxed">
+              <p className="text-base text-neutral-600 leading-relaxed">
                 {locale === 'bn'
                   ? 'মাসের শুরুতে টার্গেট বাজেট নির্ধারণ করুন এবং কত খরচ হয়েছে ও কত বাকি আছে তা লাইভ ট্র্যাক করুন।'
                   : 'Slide to adjust targets, observe spending pace, and prevent unexpected end-of-month budget shocks.'}
               </p>
 
-              {/* Slider */}
-              <div className="space-y-2 pt-2 bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-2xs">
-                <div className="flex justify-between text-xs font-medium text-neutral-600">
+              <div className="space-y-2 pt-2 bg-white p-5 rounded-2xl border border-amber-500/20 shadow-xs">
+                <div className="flex justify-between text-xs font-medium text-neutral-700">
                   <span>Adjust Simulated Target:</span>
                   <span className="font-mono font-bold text-neutral-900">৳ {interactiveBudget.toLocaleString()}</span>
                 </div>
@@ -496,15 +496,15 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="lg:col-span-6 bg-white border border-neutral-200/80 rounded-2xl p-7 shadow-2xs space-y-5"
+              className="lg:col-span-6 bg-gradient-to-b from-white to-[#FDFBF7] border border-amber-500/20 rounded-2xl p-7 shadow-xs space-y-5"
             >
-              <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <div className="flex items-center justify-between border-b border-amber-900/10 pb-3">
                 <div>
-                  <span className="text-xs text-neutral-400 font-medium">Target Budget</span>
+                  <span className="text-xs text-neutral-500 font-medium">Target Budget</span>
                   <p className="text-2xl font-bold text-neutral-900 font-mono">৳ {interactiveBudget.toLocaleString()}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs text-neutral-400 font-medium">Remaining</span>
+                  <span className="text-xs text-neutral-500 font-medium">Remaining</span>
                   <p className="text-2xl font-bold text-[#179B51] font-mono">
                     ৳ {(interactiveBudget - interactiveSpent).toLocaleString()}
                   </p>
@@ -512,13 +512,13 @@ export default function LandingPage() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex justify-between text-xs font-medium text-neutral-600">
+                <div className="flex justify-between text-xs font-medium text-neutral-700">
                   <span>Spent: ৳ {interactiveSpent.toLocaleString()}</span>
                   <span>{Math.round((interactiveSpent / interactiveBudget) * 100)}% spent</span>
                 </div>
                 <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-[#179B51] rounded-full"
+                    className="h-full bg-gradient-to-r from-[#179B51] to-[#10B981] rounded-full"
                     animate={{ width: `${Math.min(100, Math.round((interactiveSpent / interactiveBudget) * 100))}%` }}
                     transition={{ duration: 0.3 }}
                   />
@@ -526,12 +526,12 @@ export default function LandingPage() {
               </div>
 
               <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs font-medium">
-                <div className="p-3 bg-[#FAFAF8] rounded-xl border border-neutral-100">
-                  <p className="text-neutral-400 text-[11px]">Daily Average</p>
-                  <p className="font-mono text-neutral-800 font-bold text-sm">৳ {Math.round(interactiveSpent / 16)}</p>
+                <div className="p-3 bg-amber-500/5 rounded-xl border border-amber-500/15">
+                  <p className="text-neutral-500 text-[11px]">Daily Average</p>
+                  <p className="font-mono text-neutral-900 font-bold text-sm">৳ {Math.round(interactiveSpent / 16)}</p>
                 </div>
-                <div className="p-3 bg-[#FAFAF8] rounded-xl border border-neutral-100">
-                  <p className="text-neutral-400 text-[11px]">Pace Status</p>
+                <div className="p-3 bg-emerald-500/5 rounded-xl border border-emerald-500/15">
+                  <p className="text-neutral-500 text-[11px]">Pace Status</p>
                   <p className="text-[#179B51] font-bold text-sm">Healthy</p>
                 </div>
                 <div className="p-3 bg-[#FAFAF8] rounded-xl border border-neutral-100">
@@ -545,20 +545,20 @@ export default function LandingPage() {
       </section>
 
       {/* ─── 7. Spending Insights with Interactive Pie Chart ─── */}
-      <section id="insights" className="w-full bg-white py-28 border-b border-neutral-200/50">
+      <section id="insights" className="relative z-10 w-full bg-gradient-to-b from-[#FAF6EB]/90 via-[#FDFBF7] to-[#FAFAF7] py-28 border-b border-amber-900/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
           {/* Header */}
           <div className="flex flex-col items-center text-center mb-16 space-y-3">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#179B51]">
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#D97706] bg-amber-500/10 px-3.5 py-1 rounded-full border border-amber-500/20">
               Category Analytics
             </span>
             <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
-              {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
+              {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
             </h3>
-            <p className="text-base text-neutral-400 max-w-md">
+            <p className="text-base text-neutral-600 max-w-md">
               {locale === 'bn'
-                ? 'ক্যাটাগরি অনুযায়ী খরচের বিশ্লেষণ দেখে বুঝে নিন কোন খাতে বেশি খরচ হচ্ছে।'
+                ? 'ক্যাটাগরি অনুযায়ী খরচের বিশ্লেষণ দেখে বুঝে নিন কোন খাতে বেশি খরচ হচ্ছে।'
                 : 'Hover any slice or category to explore your spending breakdown.'}
             </p>
           </div>
@@ -689,14 +689,17 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── 8. How It Works ─── */}
-      <section id="how-it-works" className="w-full py-28 border-b border-neutral-200/50">
+      {/* ─── 8. How It Works (Warm Cream/Gold Subtle Tone) ─── */}
+      <section id="how-it-works" className="relative z-10 w-full bg-[#FAFAF7] py-28 border-b border-amber-900/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl mb-14 space-y-2">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#D97706] bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+              Simple Workflow
+            </span>
             <h2 className="text-3xl font-bold tracking-tight text-neutral-900">
               {locale === 'bn' ? 'সহজ চার ধাপে সম্পূর্ণ নিয়ন্ত্রণ' : 'How Khoroch Works'}
             </h2>
-            <p className="text-base text-neutral-500">
+            <p className="text-base text-neutral-600">
               {locale === 'bn'
                 ? 'কোনো জটিলতা ছাড়া চার ধাপে আপনার পার্সোনাল ফাইন্যান্স সাজিয়ে নিন।'
                 : 'Four straightforward steps to achieve daily clarity.'}
@@ -708,7 +711,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="space-y-2"
+              className="space-y-2 p-5 bg-white rounded-2xl border border-amber-900/5 shadow-2xs"
             >
               <span className="text-3xl font-bold text-[#179B51] font-mono block">01</span>
               <h4 className="font-semibold text-base text-neutral-900">
@@ -726,9 +729,9 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="space-y-2"
+              className="space-y-2 p-5 bg-white rounded-2xl border border-amber-900/5 shadow-2xs"
             >
-              <span className="text-3xl font-bold text-[#179B51] font-mono block">02</span>
+              <span className="text-3xl font-bold text-[#D97706] font-mono block">02</span>
               <h4 className="font-semibold text-base text-neutral-900">
                 {locale === 'bn' ? 'খরচ রেকর্ড করুন' : 'Track expenses'}
               </h4>
@@ -744,7 +747,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="space-y-2"
+              className="space-y-2 p-5 bg-white rounded-2xl border border-amber-900/5 shadow-2xs"
             >
               <span className="text-3xl font-bold text-[#179B51] font-mono block">03</span>
               <h4 className="font-semibold text-base text-neutral-900">
@@ -762,9 +765,9 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="space-y-2"
+              className="space-y-2 p-5 bg-white rounded-2xl border border-amber-900/5 shadow-2xs"
             >
-              <span className="text-3xl font-bold text-[#179B51] font-mono block">04</span>
+              <span className="text-3xl font-bold text-[#D97706] font-mono block">04</span>
               <h4 className="font-semibold text-base text-neutral-900">
                 {locale === 'bn' ? 'নিয়ন্ত্রণে থাকুন' : 'Stay in control'}
               </h4>
@@ -779,27 +782,30 @@ export default function LandingPage() {
       </section>
 
       {/* ─── 9. Minimalist Final Call to Action ─── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-24">
+      <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-24">
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="bg-[#179B51] text-white rounded-3xl p-8 sm:p-16 text-center space-y-6 shadow-md"
+          className="bg-gradient-to-br from-[#179B51] via-[#148344] to-[#0D5C2E] text-white rounded-3xl p-8 sm:p-16 text-center space-y-6 shadow-xl relative overflow-hidden border border-emerald-400/20"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
+          {/* Subtle gold decorative orb inside CTA */}
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-[#FBC02B]/20 rounded-full blur-2xl pointer-events-none" />
+
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight relative z-10">
             {locale === 'bn'
               ? 'খরচের হিসাব সাজাতে আপনি প্রস্তুত?'
               : 'Ready to take control of your spending?'}
           </h2>
-          <p className="text-base text-emerald-100 font-normal max-w-[44ch] mx-auto leading-relaxed">
+          <p className="text-base text-emerald-100 font-normal max-w-[44ch] mx-auto leading-relaxed relative z-10">
             {locale === 'bn'
               ? 'আজই শুরু করুন সম্পূর্ণ বিনামূল্যে। কোনো ক্রেডিট কার্ডের প্রয়োজন নেই।'
               : 'Start tracking your expenses with Khoroch. Free and open source.'}
           </p>
-          <div className="pt-2 flex items-center justify-center">
+          <div className="pt-2 flex items-center justify-center relative z-10">
             <Link
               href="/register"
-              className="px-8 py-3.5 rounded-full text-base font-semibold text-neutral-950 bg-white hover:bg-neutral-100 transition-all cursor-pointer shadow-xs"
+              className="px-8 py-3.5 rounded-full text-base font-semibold text-neutral-950 bg-gradient-to-r from-white via-amber-50 to-white hover:brightness-105 transition-all cursor-pointer shadow-md"
             >
               {locale === 'bn' ? 'বিনামূল্যে অ্যাকাউন্ট খুলুন' : 'Get Started Free'}
             </Link>
@@ -808,16 +814,16 @@ export default function LandingPage() {
       </section>
 
       {/* ─── 10. Clean Minimal Footer ─── */}
-      <footer className="w-full bg-white text-neutral-600 py-12 border-t border-neutral-200/50">
+      <footer className="relative z-10 w-full bg-[#FAF6EB]/60 text-neutral-600 py-12 border-t border-amber-900/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <img src="/logo-smooth-rounded.svg" alt="খরচ" className="h-8 w-auto object-contain" />
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-neutral-500">
               {locale === 'bn' ? 'নিজের খরচ ট্র্যাক করুন। টাকাকে বুঝুন।' : 'Track your spending. Understand your money.'}
             </p>
           </div>
 
-          <div className="flex items-center gap-6 text-xs font-medium text-neutral-500">
+          <div className="flex items-center gap-6 text-xs font-medium text-neutral-600">
             <a href="#voice" className="hover:text-neutral-900 transition-colors">{locale === 'bn' ? 'ভয়েস এআই' : 'Voice AI'}</a>
             <a href="#how-it-works" className="hover:text-neutral-900 transition-colors">{locale === 'bn' ? 'কীভাবে কাজ করে' : 'How It Works'}</a>
             <Link href="/login" className="hover:text-neutral-900 transition-colors">{t.login}</Link>
@@ -832,7 +838,7 @@ export default function LandingPage() {
             </a>
           </div>
 
-          <div className="text-xs text-neutral-400 font-mono">
+          <div className="text-xs text-neutral-500 font-mono">
             © {new Date().getFullYear()} Khoroch. All rights reserved.
           </div>
         </div>
