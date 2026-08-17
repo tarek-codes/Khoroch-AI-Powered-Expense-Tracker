@@ -285,8 +285,8 @@ export default function LandingPage() {
                 className="cursor-pointer"
               >
                 <img
-                  src={locale === 'en' ? '/khoroch-logo-en.svg' : '/logo-smooth-rounded.svg'}
-                  alt="Khoroch (খরচ)"
+                  src="/logo-smooth-rounded.svg"
+                  alt="খরচ"
                   className="h-32 sm:h-44 w-auto object-contain drop-shadow-sm"
                 />
               </motion.div>
