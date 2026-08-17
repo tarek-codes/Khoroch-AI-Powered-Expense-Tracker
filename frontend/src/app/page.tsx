@@ -278,7 +278,7 @@ export default function LandingPage() {
             {/* Ambient Brand Glow */}
             <div className="absolute inset-0 bg-gradient-to-tr from-[#179B51]/10 via-[#FBC02B]/10 to-transparent rounded-3xl blur-2xl -z-10" />
 
-            <div className="space-y-6 flex flex-col items-center">
+            <div className="flex flex-col items-center">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
@@ -287,20 +287,9 @@ export default function LandingPage() {
                 <img
                   src="/logo-smooth-rounded.svg"
                   alt="খরচ"
-                  className="h-32 sm:h-44 w-auto object-contain drop-shadow-sm"
+                  className="h-36 sm:h-52 w-auto object-contain drop-shadow-sm"
                 />
               </motion.div>
-
-              <div className="space-y-2 max-w-sm">
-                <p className="text-lg sm:text-xl font-extrabold text-[#171717] tracking-tight">
-                  {locale === 'bn' ? 'দৈনন্দিন খরচের আধুনিক ও নির্ভুল সমাধান' : 'Modern everyday financial clarity'}
-                </p>
-                <p className="text-xs sm:text-sm text-[#666666] font-medium leading-relaxed">
-                  {locale === 'bn'
-                    ? 'স্মার্ট ভয়েস ইনপুট ও ইনস্ট্যান্ট রসিদ স্ক্যানিংয়ের সাথে দ্রুত ও সহজ ট্র্যাকিং।'
-                    : 'Smart expense tracking with natural voice AI and instant receipt OCR.'}
-                </p>
-              </div>
             </div>
           </motion.div>
         </div>
