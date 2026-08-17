@@ -38,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = () => {
   };
 
   const navItems = [
-    { name: t.dashboard, href: '/', icon: SquaresFour },
+    { name: t.dashboard, href: '/dashboard', icon: SquaresFour },
     { name: t.expenses, href: '/expenses', icon: Receipt },
     { name: t.bills || 'Bills', href: '/bills', icon: FileText },
     { name: t.subscriptions || 'Subscriptions', href: '/subscriptions', icon: ArrowsClockwise },
@@ -62,7 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         <div className="space-y-7 flex-1">
           {/* Brand & Logo Header (Brought down from top with ample spacing and larger logo) */}
           <div className="pb-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-            <Link href="/" className="block group">
+            <Link href="/dashboard" className="block group">
               <div className="w-full flex items-center justify-start">
                 <img
                   src="/logo-smooth-rounded.svg"

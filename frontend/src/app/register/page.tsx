@@ -37,7 +37,7 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (isHydrated && user) {
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [user, isHydrated, router]);
 
@@ -96,7 +96,7 @@ export default function RegisterPage() {
           ? 'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! খরচে আপনাকে স্বাগতম।'
           : 'Registration successful! Welcome to Khoroch.'
       );
-      router.push('/');
+      router.push('/dashboard');
     } catch (err: any) {
       toast.error(err.message || (locale === 'bn' ? 'নিবন্ধন ব্যর্থ হয়েছে' : 'Registration failed'));
     } finally {

@@ -22,7 +22,7 @@ export default function LoginPage() {
 
   React.useEffect(() => {
     if (isHydrated && user) {
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [user, isHydrated, router]);
 
@@ -33,7 +33,7 @@ export default function LoginPage() {
       const res: any = await api.post('/auth/login', { email, password });
       setUser(res.data.user, res.data.accessToken);
       toast.success(res.message || 'Login successful!');
-      router.push('/');
+      router.push('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Invalid credentials');
     } finally {

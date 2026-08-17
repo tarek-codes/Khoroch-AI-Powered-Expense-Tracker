@@ -47,7 +47,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
-      router.push('/');
+      router.push('/dashboard');
       return;
     }
     fetchAdminData();

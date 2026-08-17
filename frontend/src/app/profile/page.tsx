@@ -147,7 +147,7 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => router.push('/')}
+                onClick={() => router.push('/dashboard')}
                 className="p-2 rounded-xl border transition-colors hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
                 style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-secondary)' }}
                 title="Back to Dashboard"
