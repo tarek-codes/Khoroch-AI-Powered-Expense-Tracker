@@ -266,8 +266,8 @@ export default function LandingPage() {
         </motion.div>
       </div>
 
-      {/* ─── 4. Feature 1: Spoken Voice AI ─── */}
-      <section id="voice" className="relative z-10 w-full py-28 bg-gradient-to-b from-[#FAF6EB]/80 via-[#FDFBF7] to-[#FAFAF7] border-b border-amber-900/10">
+      {/* ─── 4. Feature 1: Spoken Voice AI (Golden Cream Background) ─── */}
+      <section id="voice" className="relative z-10 w-full py-28 bg-[#FBF6E9] border-y border-[#EADBBD]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
             <motion.div
@@ -276,13 +276,13 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="lg:col-span-6 space-y-6"
             >
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#D97706] bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#B45309] bg-[#F5E6C4] px-3.5 py-1.5 rounded-full border border-[#DFC48C]">
                 01. Conversational Voice AI
               </span>
               <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
                 {locale === 'bn' ? 'শুধু বলুন আপনি কী খরচ করেছেন।' : 'Just say what you spent.'}
               </h3>
-              <p className="text-base text-neutral-600 leading-relaxed">
+              <p className="text-base text-neutral-700 leading-relaxed">
                 {locale === 'bn'
                   ? 'বাংলা, ইংরেজি বা চলতি বাংলিশে কথা বলুন। এআই স্বয়ংক্রিয়ভাবে ক্যাটাগরি, মার্চেন্ট ও টাকার পরিমাণ আলাদা করে সনাক্ত করবে।'
                   : 'Speak naturally in colloquial Bangla, English, or mixed phrases. Gemini LLM parses multiple line items in under 300ms.'}
@@ -299,7 +299,7 @@ export default function LandingPage() {
                     className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
                       activeVoiceTab === tab
                         ? 'bg-neutral-950 text-white shadow-xs'
-                        : 'bg-amber-900/5 text-neutral-600 hover:bg-amber-900/10'
+                        : 'bg-white/80 text-neutral-700 hover:bg-white border border-[#DFC48C]/50'
                     }`}
                   >
                     {voiceDemos[tab].label}
@@ -307,34 +307,36 @@ export default function LandingPage() {
                 ))}
               </div>
 
-              <div className="flex items-center gap-3 p-3 bg-white/90 backdrop-blur-xs border border-amber-500/20 rounded-2xl shadow-2xs">
+              {/* Voice playback pill */}
+              <div className="flex items-center gap-3 p-3 bg-white border border-[#DFC48C] rounded-2xl shadow-xs">
                 <button
                   onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                  className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FBC02B] to-[#F59E0B] text-neutral-950 flex items-center justify-center hover:scale-105 transition-transform shrink-0 shadow-2xs"
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FBC02B] to-[#F59E0B] text-neutral-950 flex items-center justify-center hover:scale-105 transition-transform shrink-0 shadow-xs"
                 >
                   {isPlayingAudio ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
                 </button>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs text-neutral-400 font-medium">Recorded sample</p>
-                  <p className="text-xs font-semibold text-neutral-800 truncate">
+                  <p className="text-[11px] text-neutral-500 font-medium">Recorded sample</p>
+                  <p className="text-xs font-semibold text-neutral-900 truncate">
                     &quot;{voiceDemos[activeVoiceTab].text}&quot;
                   </p>
                 </div>
               </div>
             </motion.div>
 
+            {/* Voice Preview Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="lg:col-span-6 bg-gradient-to-b from-white to-[#FDFBF7] border border-amber-500/20 rounded-2xl p-7 shadow-xs space-y-4"
+              className="lg:col-span-6 bg-white border border-[#DFC48C] rounded-3xl p-7 sm:p-8 shadow-sm space-y-4"
             >
-              <div className="flex items-center justify-between border-b border-amber-900/10 pb-3">
+              <div className="flex items-center justify-between border-b border-neutral-100 pb-3.5">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#179B51] animate-pulse" />
-                  <span className="text-xs font-semibold text-neutral-700">Instant AI Extraction</span>
+                  <span className="text-xs font-semibold text-neutral-800">Instant AI Extraction</span>
                 </div>
-                <span className="text-xs font-mono text-[#D97706] font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+                <span className="text-xs font-mono text-[#B45309] font-bold bg-[#F5E6C4] px-2.5 py-0.5 rounded-full">
                   240ms parsed
                 </span>
               </div>
@@ -343,15 +345,15 @@ export default function LandingPage() {
                 {voiceDemos[activeVoiceTab].parsed.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-amber-900/5 shadow-2xs hover:border-amber-500/30 transition-colors"
+                    className="flex items-center justify-between p-3.5 bg-[#FBF6E9]/60 rounded-2xl border border-[#DFC48C]/40 hover:border-[#B45309]/40 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-700 font-bold flex items-center justify-center text-xs">
+                      <div className="w-8 h-8 rounded-full bg-[#F5E6C4] text-[#B45309] font-bold flex items-center justify-center text-xs">
                         ৳
                       </div>
                       <div>
                         <p className="text-xs font-semibold text-neutral-900">{item.name}</p>
-                        <p className="text-[11px] text-neutral-400 font-medium">
+                        <p className="text-[11px] text-neutral-500 font-medium">
                           {item.category} • {item.method}
                         </p>
                       </div>
@@ -363,9 +365,9 @@ export default function LandingPage() {
                 ))}
               </div>
 
-              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-900 flex items-center justify-between">
-                <span className="font-medium">Total logged</span>
-                <span className="font-mono font-bold">
+              <div className="p-3.5 bg-[#F5E6C4] border border-[#DFC48C] rounded-2xl text-xs text-neutral-900 flex items-center justify-between">
+                <span className="font-semibold">Total logged</span>
+                <span className="font-mono font-bold text-sm text-[#B45309]">
                   ৳{' '}
                   {voiceDemos[activeVoiceTab].parsed
                     .reduce((acc, curr) => acc + curr.amount, 0)
@@ -377,8 +379,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── 5. Feature 2: Receipt OCR ─── */}
-      <section id="receipt" className="relative z-10 w-full py-28 border-b border-amber-900/10">
+      {/* ─── 5. Feature 2: Receipt OCR (Clean White Background) ─── */}
+      <section id="receipt" className="relative z-10 w-full py-28 bg-white border-b border-neutral-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
             <motion.div
@@ -387,7 +389,7 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="lg:col-span-6 space-y-6 lg:order-2"
             >
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#179B51] bg-[#179B51]/10 px-3 py-1 rounded-full border border-[#179B51]/20">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#179B51] bg-[#179B51]/10 px-3.5 py-1.5 rounded-full border border-[#179B51]/20">
                 02. Vision Receipt Scanner
               </span>
               <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
@@ -400,13 +402,13 @@ export default function LandingPage() {
               </p>
 
               <div className="flex items-center gap-2 text-xs font-medium text-neutral-600">
-                <span className="px-3 py-1 bg-amber-900/5 rounded-full border border-amber-900/10">Photo</span>
+                <span className="px-3.5 py-1 bg-neutral-100 rounded-full border border-neutral-200">Photo</span>
                 <span>→</span>
-                <span className="px-3 py-1 bg-amber-900/5 rounded-full border border-amber-900/10">Vision Scan</span>
+                <span className="px-3.5 py-1 bg-neutral-100 rounded-full border border-neutral-200">Vision Scan</span>
                 <span>→</span>
-                <span className="px-3 py-1 bg-amber-900/5 rounded-full border border-amber-900/10">Extract</span>
+                <span className="px-3.5 py-1 bg-neutral-100 rounded-full border border-neutral-200">Extract</span>
                 <span>→</span>
-                <span className="px-3 py-1 bg-[#179B51] text-white rounded-full font-semibold shadow-2xs">Save</span>
+                <span className="px-3.5 py-1 bg-[#179B51] text-white rounded-full font-semibold shadow-2xs">Save</span>
               </div>
             </motion.div>
 
@@ -414,37 +416,37 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="lg:col-span-6 bg-gradient-to-b from-white to-[#FAF8F2] border border-amber-900/10 rounded-2xl p-7 shadow-xs space-y-4 lg:order-1"
+              className="lg:col-span-6 bg-[#FAFAF8] border border-neutral-200/90 rounded-3xl p-7 sm:p-8 shadow-xs space-y-4 lg:order-1"
             >
-              <div className="flex items-center justify-between border-b border-amber-900/10 pb-2.5">
-                <span className="font-semibold text-xs text-neutral-700">Receipt Extracted Preview</span>
-                <span className="text-xs font-mono font-bold text-[#179B51]">
+              <div className="flex items-center justify-between border-b border-neutral-200/80 pb-3">
+                <span className="font-semibold text-xs text-neutral-800">Receipt Extracted Preview</span>
+                <span className="text-xs font-mono font-bold text-[#179B51] bg-[#179B51]/10 px-2.5 py-0.5 rounded-full">
                   17 Aug 2026
                 </span>
               </div>
 
-              <div className="space-y-2.5 text-xs bg-white p-4 rounded-xl border border-amber-900/5 shadow-2xs">
-                <div className="flex justify-between py-1 border-b border-neutral-100">
-                  <span className="text-neutral-500">Merchant</span>
-                  <span className="font-semibold text-neutral-800">Shwapno Superstore</span>
+              <div className="space-y-2.5 text-xs bg-white p-4.5 rounded-2xl border border-neutral-200/60 shadow-2xs">
+                <div className="flex justify-between py-1.5 border-b border-neutral-100">
+                  <span className="text-neutral-500 font-medium">Merchant</span>
+                  <span className="font-semibold text-neutral-900">Shwapno Superstore</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-neutral-100">
-                  <span className="text-neutral-500">Category</span>
-                  <span className="font-semibold text-neutral-800">Groceries</span>
+                <div className="flex justify-between py-1.5 border-b border-neutral-100">
+                  <span className="text-neutral-500 font-medium">Category</span>
+                  <span className="font-semibold text-neutral-900">Groceries</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-neutral-100">
-                  <span className="text-neutral-500">Items Detected</span>
-                  <span className="font-semibold text-neutral-800">3 Line Items (VAT Included)</span>
+                <div className="flex justify-between py-1.5 border-b border-neutral-100">
+                  <span className="text-neutral-500 font-medium">Items Detected</span>
+                  <span className="font-semibold text-neutral-900">3 Line Items (VAT Included)</span>
                 </div>
                 <div className="flex justify-between py-2 pt-3 font-semibold text-sm">
                   <span className="text-neutral-900">Total Amount</span>
-                  <span className="font-mono font-bold text-[#179B51]">৳ 1,850.00</span>
+                  <span className="font-mono font-bold text-[#179B51] text-base">৳ 1,850.00</span>
                 </div>
               </div>
 
               <Link
                 href="/register"
-                className="w-full py-2.5 bg-[#179B51] text-white font-semibold text-xs rounded-full hover:bg-[#148344] transition-all block text-center shadow-2xs"
+                className="w-full py-3 bg-[#179B51] text-white font-semibold text-xs rounded-full hover:bg-[#148344] transition-all block text-center shadow-xs"
               >
                 Scan Your Receipts in Full App →
               </Link>
@@ -453,8 +455,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── 6. Feature 3: Interactive Budget Calculator ─── */}
-      <section id="budget" className="relative z-10 w-full py-28 bg-[#FAFAF7] border-b border-amber-900/10">
+      {/* ─── 6. Feature 3: Interactive Budget Calculator (Subtle Slate/Warm Neutral Tint) ─── */}
+      <section id="budget" className="relative z-10 w-full py-28 bg-[#F4F4F0] border-b border-neutral-300/80">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
             <motion.div
@@ -463,19 +465,19 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="lg:col-span-6 space-y-6"
             >
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#D97706] bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-neutral-800 bg-neutral-200/80 px-3.5 py-1.5 rounded-full border border-neutral-300">
                 03. Interactive Monthly Budget
               </span>
               <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
                 {locale === 'bn' ? 'মাসিক বাজেটের ওপর পূর্ণ নিয়ন্ত্রণ।' : 'Stay on top of your monthly budget.'}
               </h3>
-              <p className="text-base text-neutral-600 leading-relaxed">
+              <p className="text-base text-neutral-700 leading-relaxed">
                 {locale === 'bn'
                   ? 'মাসের শুরুতে টার্গেট বাজেট নির্ধারণ করুন এবং কত খরচ হয়েছে ও কত বাকি আছে তা লাইভ ট্র্যাক করুন।'
                   : 'Slide to adjust targets, observe spending pace, and prevent unexpected end-of-month budget shocks.'}
               </p>
 
-              <div className="space-y-2 pt-2 bg-white p-5 rounded-2xl border border-amber-500/20 shadow-xs">
+              <div className="space-y-2.5 pt-2 bg-white p-5 rounded-2xl border border-neutral-300 shadow-xs">
                 <div className="flex justify-between text-xs font-medium text-neutral-700">
                   <span>Adjust Simulated Target:</span>
                   <span className="font-mono font-bold text-neutral-900">৳ {interactiveBudget.toLocaleString()}</span>
@@ -496,9 +498,9 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="lg:col-span-6 bg-gradient-to-b from-white to-[#FDFBF7] border border-amber-500/20 rounded-2xl p-7 shadow-xs space-y-5"
+              className="lg:col-span-6 bg-white border border-neutral-300 rounded-3xl p-7 sm:p-8 shadow-sm space-y-5"
             >
-              <div className="flex items-center justify-between border-b border-amber-900/10 pb-3">
+              <div className="flex items-center justify-between border-b border-neutral-100 pb-3.5">
                 <div>
                   <span className="text-xs text-neutral-500 font-medium">Target Budget</span>
                   <p className="text-2xl font-bold text-neutral-900 font-mono">৳ {interactiveBudget.toLocaleString()}</p>
@@ -516,7 +518,7 @@ export default function LandingPage() {
                   <span>Spent: ৳ {interactiveSpent.toLocaleString()}</span>
                   <span>{Math.round((interactiveSpent / interactiveBudget) * 100)}% spent</span>
                 </div>
-                <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-neutral-100 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-gradient-to-r from-[#179B51] to-[#10B981] rounded-full"
                     animate={{ width: `${Math.min(100, Math.round((interactiveSpent / interactiveBudget) * 100))}%` }}
@@ -526,17 +528,17 @@ export default function LandingPage() {
               </div>
 
               <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs font-medium">
-                <div className="p-3 bg-amber-500/5 rounded-xl border border-amber-500/15">
+                <div className="p-3.5 bg-neutral-50 rounded-2xl border border-neutral-200/80">
                   <p className="text-neutral-500 text-[11px]">Daily Average</p>
-                  <p className="font-mono text-neutral-900 font-bold text-sm">৳ {Math.round(interactiveSpent / 16)}</p>
+                  <p className="font-mono text-neutral-900 font-bold text-sm mt-0.5">৳ {Math.round(interactiveSpent / 16)}</p>
                 </div>
-                <div className="p-3 bg-emerald-500/5 rounded-xl border border-emerald-500/15">
-                  <p className="text-neutral-500 text-[11px]">Pace Status</p>
-                  <p className="text-[#179B51] font-bold text-sm">Healthy</p>
+                <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200/80">
+                  <p className="text-emerald-700 text-[11px]">Pace Status</p>
+                  <p className="text-[#179B51] font-bold text-sm mt-0.5">Healthy</p>
                 </div>
-                <div className="p-3 bg-[#FAFAF8] rounded-xl border border-neutral-100">
-                  <p className="text-neutral-400 text-[11px]">Days Left</p>
-                  <p className="font-mono text-neutral-800 font-bold text-sm">14 Days</p>
+                <div className="p-3.5 bg-neutral-50 rounded-2xl border border-neutral-200/80">
+                  <p className="text-neutral-500 text-[11px]">Days Left</p>
+                  <p className="font-mono text-neutral-900 font-bold text-sm mt-0.5">14 Days</p>
                 </div>
               </div>
             </motion.div>
@@ -544,19 +546,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── 7. Spending Insights with Interactive Pie Chart ─── */}
-      <section id="insights" className="relative z-10 w-full bg-gradient-to-b from-[#FAF6EB]/90 via-[#FDFBF7] to-[#FAFAF7] py-28 border-b border-amber-900/10">
+      {/* ─── 7. Spending Insights with Interactive Pie Chart (Rich Golden Amber Background) ─── */}
+      <section id="insights" className="relative z-10 w-full bg-[#FAF3E1] py-28 border-b border-[#EADBBD]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
           {/* Header */}
           <div className="flex flex-col items-center text-center mb-16 space-y-3">
-            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#D97706] bg-amber-500/10 px-3.5 py-1 rounded-full border border-amber-500/20">
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-[#B45309] bg-[#F5E6C4] px-4 py-1.5 rounded-full border border-[#DFC48C]">
               Category Analytics
             </span>
             <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
               {locale === 'bn' ? 'কোথায় কত খরচ হচ্ছে তার পরিষ্কার চিত্র' : 'Where your money goes'}
             </h3>
-            <p className="text-base text-neutral-600 max-w-md">
+            <p className="text-base text-neutral-700 max-w-md">
               {locale === 'bn'
                 ? 'ক্যাটাগরি অনুযায়ী খরচের বিশ্লেষণ দেখে বুঝে নিন কোন খাতে বেশি খরচ হচ্ছে।'
                 : 'Hover any slice or category to explore your spending breakdown.'}
@@ -639,13 +641,13 @@ export default function LandingPage() {
 
               {/* Center label — floating, no box */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-[11px] font-medium text-neutral-400 tracking-wide uppercase">This Month</span>
+                <span className="text-[11px] font-medium text-neutral-500 tracking-wide uppercase">This Month</span>
                 <span className="text-3xl font-black text-neutral-900 font-mono leading-tight">৳ 12,150</span>
               </div>
             </div>
 
-            {/* Legend — clean rows, no borders, no backgrounds */}
-            <div className="w-full lg:w-auto space-y-0 divide-y divide-neutral-100">
+            {/* Legend — clean rows, no boxes */}
+            <div className="w-full lg:w-auto space-y-0 divide-y divide-[#EADBBD]/80">
               {[
                 { name: 'Food & Dining',        nameBn: 'খাবার ও রেস্তোরাঁ', value: 4200, percentage: 35, color: '#179B51' },
                 { name: 'Utility Bills',         nameBn: 'ইউটিলিটি ও বিল',   value: 3200, percentage: 26, color: '#10b981' },
@@ -658,28 +660,45 @@ export default function LandingPage() {
                   <motion.div
                     key={idx}
                     onMouseEnter={() => setActivePieIndex(idx)}
-                    whileHover={{ scale: 1.01 }}
-                    className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white border-neutral-300 shadow-xs'
-                        : 'bg-white/60 border-neutral-200/60 hover:bg-white'
-                    }`}
+                    animate={{ opacity: isActive ? 1 : 0.6 }}
+                    transition={{ duration: 0.18 }}
+                    className="flex items-center justify-between gap-8 py-4 cursor-pointer"
                   >
-                    <div className="flex items-center gap-3">
+                    {/* Left: dot + category name + bar */}
+                    <div className="flex items-center gap-3.5 min-w-0">
                       <span
-                        className="w-3 h-3 rounded-full shrink-0 transition-transform"
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
                         style={{
                           backgroundColor: item.color,
-                          transform: isActive ? 'scale(1.25)' : 'scale(1)',
+                          boxShadow: isActive ? `0 0 0 3px ${item.color}30` : 'none',
+                          transform: isActive ? 'scale(1.3)' : 'scale(1)',
+                          transition: 'all 0.2s ease',
                         }}
                       />
-                      <span className="text-xs sm:text-sm font-semibold text-neutral-800">
-                        {locale === 'bn' ? item.nameBn : item.name}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className={`text-sm font-semibold transition-colors ${isActive ? 'text-neutral-950' : 'text-neutral-700'}`}>
+                          {locale === 'bn' ? item.nameBn : item.name}
+                        </span>
+                        {/* Thin progress bar */}
+                        <div className="w-32 sm:w-44 h-1.5 bg-[#EADBBD]/60 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${item.percentage * 2.5}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.7, delay: idx * 0.08 }}
+                            className="h-full rounded-full"
+                            style={{ backgroundColor: item.color }}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 font-mono text-xs sm:text-sm">
-                      <span className="font-bold text-neutral-900">৳ {item.value.toLocaleString()}</span>
-                      <span className="text-neutral-400 font-medium text-xs">({item.percentage}%)</span>
+
+                    {/* Right: amount + percent */}
+                    <div className="text-right shrink-0">
+                      <p className={`font-mono font-bold text-sm transition-colors ${isActive ? 'text-neutral-950' : 'text-neutral-700'}`}>
+                        ৳ {item.value.toLocaleString()}
+                      </p>
+                      <p className="text-xs font-semibold text-neutral-500">{item.percentage}%</p>
                     </div>
                   </motion.div>
                 );
@@ -689,11 +708,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── 8. How It Works (Warm Cream/Gold Subtle Tone) ─── */}
-      <section id="how-it-works" className="relative z-10 w-full bg-[#FAFAF7] py-28 border-b border-amber-900/10">
+      {/* ─── 8. How It Works (Clean White Background) ─── */}
+      <section id="how-it-works" className="relative z-10 w-full bg-white py-28 border-b border-neutral-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="max-w-2xl mb-14 space-y-2">
-            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#D97706] bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#179B51] bg-[#179B51]/10 px-3.5 py-1.5 rounded-full border border-[#179B51]/20">
               Simple Workflow
             </span>
             <h2 className="text-3xl font-bold tracking-tight text-neutral-900">
@@ -711,7 +730,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="space-y-2 p-5 bg-white rounded-2xl border border-amber-900/5 shadow-2xs"
+              className="space-y-2.5 p-6 bg-[#FAFAF8] rounded-2xl border border-neutral-200 shadow-2xs"
             >
               <span className="text-3xl font-bold text-[#179B51] font-mono block">01</span>
               <h4 className="font-semibold text-base text-neutral-900">
@@ -729,7 +748,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="space-y-2 p-5 bg-white rounded-2xl border border-amber-900/5 shadow-2xs"
+              className="space-y-2.5 p-6 bg-[#FAFAF8] rounded-2xl border border-neutral-200 shadow-2xs"
             >
               <span className="text-3xl font-bold text-[#D97706] font-mono block">02</span>
               <h4 className="font-semibold text-base text-neutral-900">
@@ -747,7 +766,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="space-y-2 p-5 bg-white rounded-2xl border border-amber-900/5 shadow-2xs"
+              className="space-y-2.5 p-6 bg-[#FAFAF8] rounded-2xl border border-neutral-200 shadow-2xs"
             >
               <span className="text-3xl font-bold text-[#179B51] font-mono block">03</span>
               <h4 className="font-semibold text-base text-neutral-900">
